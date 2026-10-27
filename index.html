@@ -232,7 +232,7 @@
                     </div>
                 </div>
 
-                <!-- 3. 生活日誌 (雙檢視切換) -->
+                <!-- 3. 生活日誌 (雙檢視切換，項目多選) -->
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-4">
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-100 pb-4">
                         <div class="flex items-center gap-2">
@@ -265,7 +265,7 @@
                             <thead>
                                 <tr class="bg-stone-50 text-stone-600 border-b border-stone-200/60 font-semibold">
                                     <th class="py-3 px-3 whitespace-nowrap">日期</th>
-                                    <th class="py-3 px-3 whitespace-nowrap">生活項目</th>
+                                    <th class="py-3 px-3 min-w-[140px]">生活護理項目</th>
                                     <th class="py-3 px-3 min-w-[120px]">品牌 / 用品 / 診所</th>
                                     <th class="py-3 px-3 whitespace-nowrap">配合度</th>
                                     <th class="py-3 px-3 whitespace-nowrap">下次預定</th>
@@ -335,7 +335,7 @@
 
             </div>
 
-            <!-- 右側欄：生活開銷帳本 -->
+            <!-- 右側欄：生活開銷帳本 (歸屬支援 Kinako / Sumi / 貓貓們) -->
             <div class="lg:col-span-4 space-y-6">
 
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-5">
@@ -351,7 +351,7 @@
                         </button>
                     </div>
 
-                    <!-- 快速篩選按鈕列 -->
+                    <!-- 快速篩選按鈕列 (全體 / Kinako / Sumi / 貓貓們) -->
                     <div class="space-y-2 bg-stone-50 p-3 rounded-2xl border border-stone-200/60 text-xs">
                         <div class="flex items-center justify-between">
                             <span class="text-stone-500 font-semibold text-[11px]">查看對象：</span>
@@ -359,6 +359,7 @@
                                 <button onclick="setExpenseCatFilter('all')" data-val="all" class="px-2 py-0.5 rounded-md font-semibold transition bg-white text-emerald-700 shadow-2xs">全體</button>
                                 <button onclick="setExpenseCatFilter('cat_kinako')" data-val="cat_kinako" class="px-2 py-0.5 rounded-md text-stone-500 hover:text-stone-800 transition">Kinako</button>
                                 <button onclick="setExpenseCatFilter('cat_sumi')" data-val="cat_sumi" class="px-2 py-0.5 rounded-md text-stone-500 hover:text-stone-800 transition">Sumi</button>
+                                <button onclick="setExpenseCatFilter('shared_cats')" data-val="shared_cats" class="px-2 py-0.5 rounded-md text-stone-500 hover:text-stone-800 transition">貓貓們</button>
                             </div>
                         </div>
                         <div class="flex items-center justify-between">
@@ -410,7 +411,7 @@
 
     </main>
 
-    <!-- Modal 彈窗系列 (飲食、觀察、生活、就醫、體重、開銷、貓咪) -->
+    <!-- Modal 彈窗系列 -->
 
     <!-- 1. 飲食 Modal -->
     <div id="diet-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
@@ -605,7 +606,7 @@
         </div>
     </div>
 
-    <!-- 3. 生活 Modal -->
+    <!-- 3. 生活 Modal (護理項目改為 Checkbox 多選) -->
     <div id="life-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
@@ -616,25 +617,59 @@
             </div>
             <form onsubmit="saveLifeRecord(event)" class="mt-4 space-y-3.5 text-xs">
                 <input type="hidden" id="life-edit-id">
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block font-semibold text-stone-600 mb-1">記錄日期 *</label>
-                        <input type="date" id="life-date" required class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-teal-200">
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-stone-600 mb-1">生活護理項目 *</label>
-                        <select id="life-category" required class="w-full px-3 py-2 border rounded-xl bg-white outline-none font-semibold text-teal-700">
-                            <option value="剪指甲">剪指甲</option>
-                            <option value="驅蟲藥">驅蟲藥</option>
-                            <option value="疫苗施打">疫苗施打</option>
-                            <option value="刷牙/潔牙">刷牙/潔牙</option>
-                            <option value="健康體檢">健康體檢</option>
-                            <option value="洗澡沐浴">洗澡沐浴</option>
-                            <option value="梳毛理毛">梳毛理毛</option>
-                            <option value="剃腳毛/肉球修整">剃腳毛/肉球修整</option>
-                            <option value="換全盆貓砂">換全盆貓砂</option>
-                            <option value="其他護理">其他護理</option>
-                        </select>
+                
+                <div>
+                    <label class="block font-semibold text-stone-600 mb-1">記錄日期 *</label>
+                    <input type="date" id="life-date" required class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-teal-200">
+                </div>
+
+                <!-- 護理項目多選按鈕區 -->
+                <div class="p-3.5 bg-teal-50/50 rounded-2xl border border-teal-100 space-y-2">
+                    <label class="block font-bold text-teal-900 flex items-center justify-between">
+                        <span><i class="fa-solid fa-check-double mr-1 text-teal-600"></i> 生活護理項目 (可多選) *</span>
+                        <span class="text-[10px] text-teal-600 font-normal">可同時勾選多個項目</span>
+                    </label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="life-category-checkboxes">
+                        <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-teal-100 hover:border-teal-300 cursor-pointer text-[11px] text-stone-700">
+                            <input type="checkbox" name="life_categories" value="剪指甲" class="rounded text-teal-600 focus:ring-teal-300">
+                            <span>剪指甲</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-teal-100 hover:border-teal-300 cursor-pointer text-[11px] text-stone-700">
+                            <input type="checkbox" name="life_categories" value="驅蟲藥" class="rounded text-teal-600 focus:ring-teal-300">
+                            <span>驅蟲藥</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-teal-100 hover:border-teal-300 cursor-pointer text-[11px] text-stone-700">
+                            <input type="checkbox" name="life_categories" value="疫苗施打" class="rounded text-teal-600 focus:ring-teal-300">
+                            <span>疫苗施打</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-teal-100 hover:border-teal-300 cursor-pointer text-[11px] text-stone-700">
+                            <input type="checkbox" name="life_categories" value="刷牙/潔牙" class="rounded text-teal-600 focus:ring-teal-300">
+                            <span>刷牙/潔牙</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-teal-100 hover:border-teal-300 cursor-pointer text-[11px] text-stone-700">
+                            <input type="checkbox" name="life_categories" value="健康體檢" class="rounded text-teal-600 focus:ring-teal-300">
+                            <span>健康體檢</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-teal-100 hover:border-teal-300 cursor-pointer text-[11px] text-stone-700">
+                            <input type="checkbox" name="life_categories" value="洗澡沐浴" class="rounded text-teal-600 focus:ring-teal-300">
+                            <span>洗澡沐浴</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-teal-100 hover:border-teal-300 cursor-pointer text-[11px] text-stone-700">
+                            <input type="checkbox" name="life_categories" value="梳毛理毛" class="rounded text-teal-600 focus:ring-teal-300">
+                            <span>梳毛理毛</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-teal-100 hover:border-teal-300 cursor-pointer text-[11px] text-stone-700">
+                            <input type="checkbox" name="life_categories" value="剃腳毛/肉球" class="rounded text-teal-600 focus:ring-teal-300">
+                            <span>剃腳毛/肉球</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-teal-100 hover:border-teal-300 cursor-pointer text-[11px] text-stone-700">
+                            <input type="checkbox" name="life_categories" value="換全盆貓砂" class="rounded text-teal-600 focus:ring-teal-300">
+                            <span>換全盆貓砂</span>
+                        </label>
+                        <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-teal-100 hover:border-teal-300 cursor-pointer text-[11px] text-stone-700">
+                            <input type="checkbox" name="life_categories" value="其他護理" class="rounded text-teal-600 focus:ring-teal-300">
+                            <span>其他護理</span>
+                        </label>
                     </div>
                 </div>
 
@@ -777,7 +812,7 @@
         </div>
     </div>
 
-    <!-- 6. 開銷 Modal -->
+    <!-- 6. 開銷 Modal (歸屬對象支援 Kinako / Sumi / 貓貓們) -->
     <div id="expense-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
@@ -790,9 +825,10 @@
                 <input type="hidden" id="exp-edit-id">
                 <div>
                     <label class="block font-semibold text-stone-600 mb-1">歸屬對象 *</label>
-                    <select id="exp-target-cat" required class="w-full px-3 py-2 border rounded-xl bg-white outline-none">
-                        <option value="cat_kinako">Kinako 專屬</option>
-                        <option value="cat_sumi">Sumi 專屬</option>
+                    <select id="exp-target-cat" required class="w-full px-3 py-2 border rounded-xl bg-white outline-none font-medium text-stone-800">
+                        <option value="cat_kinako">Kinako</option>
+                        <option value="cat_sumi">Sumi</option>
+                        <option value="shared_cats">貓貓們（共用）</option>
                     </select>
                 </div>
                 <div>
@@ -817,7 +853,7 @@
                 </div>
                 <div>
                     <label class="block font-semibold text-stone-600 mb-1">項目與品項名稱 *</label>
-                    <input type="text" id="exp-note" placeholder="例如：補貨貓砂、罐頭" required class="w-full px-3 py-2 border rounded-xl outline-none">
+                    <input type="text" id="exp-note" placeholder="例如：補貨共用貓砂、大箱罐頭" required class="w-full px-3 py-2 border rounded-xl outline-none">
                 </div>
                 <div class="flex justify-end gap-2 pt-3">
                     <button type="button" onclick="closeModal('expense-modal')" class="px-4 py-2 border rounded-xl text-stone-600">取消</button>
@@ -932,6 +968,7 @@
         const DEFAULT_DATA = {
             activeCatId: 'cat_kinako',
             dismissedReminders: [],
+            sharedExpenses: [], // 貓貓們（共用）開銷
             cats: [
                 {
                     id: 'cat_kinako',
@@ -973,7 +1010,6 @@
         let expenseDoughnutInstance = null;
         let expenseBarInstance = null;
 
-        // 四大日誌獨立檢視偏好（card / list）
         const viewPreferences = {
             diet: localStorage.getItem('meowlog_view_diet') || 'card',
             obs: localStorage.getItem('meowlog_view_obs') || 'card',
@@ -981,8 +1017,8 @@
             med: localStorage.getItem('meowlog_view_med') || 'card'
         };
 
-        let currentExpenseCatFilter = 'all';
-        let currentExpenseTypeFilter = 'all';
+        let currentExpenseCatFilter = 'all'; // 'all', 'cat_kinako', 'cat_sumi', 'shared_cats'
+        let currentExpenseTypeFilter = 'all'; // 'all', 'medical', 'supplies'
         let tempAvatarBase64 = '';
 
         function initApp() {
@@ -997,6 +1033,7 @@
             } else {
                 appData = loadedData;
                 if (!appData.dismissedReminders) appData.dismissedReminders = [];
+                if (!appData.sharedExpenses) appData.sharedExpenses = [];
                 appData.cats.forEach(c => {
                     if (!c.photo) c.photo = c.id === 'cat_kinako' ? DEFAULT_AVATARS.kinako : DEFAULT_AVATARS.sumi;
                     if (!c.adoptDate) c.adoptDate = c.birthday || '';
@@ -1032,7 +1069,6 @@
             return appData.cats.find(c => c.id === appData.activeCatId) || appData.cats[0];
         }
 
-        // 通用檢視模式切換
         function switchView(module, mode) {
             viewPreferences[module] = mode;
             localStorage.setItem(`meowlog_view_${module}`, mode);
@@ -1156,7 +1192,6 @@
             const now = new Date();
             const alerts = [];
 
-            // 1. 就醫回診
             (cat.medicalRecords || []).forEach(r => {
                 if (!r.nextDate) return;
                 if ((appData.dismissedReminders || []).includes(r.id)) return;
@@ -1168,16 +1203,15 @@
                 alerts.push({ id: r.id, type: '就醫', note: r.nextNote || '回診追蹤', date: r.nextDate, diffDays });
             });
 
-            // 2. 生活護理提醒
             (cat.lifeRecords || []).forEach(l => {
                 if (!l.nextDate) return;
                 if ((appData.dismissedReminders || []).includes(l.id)) return;
-                const isFulfilled = (cat.lifeRecords || []).some(other => other.id !== l.id && other.category === l.category && other.date >= l.nextDate);
+                const isFulfilled = (cat.lifeRecords || []).some(other => other.id !== l.id && other.date >= l.nextDate);
                 if (isFulfilled) return;
 
                 const target = new Date(l.nextDate);
                 const diffDays = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
-                alerts.push({ id: l.id, type: l.category, note: l.nextNote || `${l.category}提醒`, date: l.nextDate, diffDays });
+                alerts.push({ id: l.id, type: '生活', note: l.nextNote || '生活護理提醒', date: l.nextDate, diffDays });
             });
 
             if (alerts.length === 0) {
@@ -1264,7 +1298,7 @@
             });
         }
 
-        // 1. 飲食日誌渲染 (卡片 & 條列)
+        // 1. 飲食日誌渲染
         function renderDietRecords() {
             const cat = getCurrentCat();
             const records = (cat.dietRecords || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1283,7 +1317,6 @@
             }
             emptyTip.classList.add('hidden');
 
-            // 卡片
             cardBox.innerHTML = records.map(d => `
                 <div class="p-3.5 rounded-2xl border border-stone-200/80 bg-stone-50/40 hover:bg-stone-50 transition flex items-start justify-between text-xs">
                     <div class="space-y-1">
@@ -1306,7 +1339,6 @@
                 </div>
             `).join('');
 
-            // 條列表格
             tableRows.innerHTML = records.map(d => `
                 <tr class="hover:bg-amber-50/30 transition">
                     <td class="py-3 px-3 whitespace-nowrap font-bold text-stone-800">${d.date}</td>
@@ -1324,7 +1356,7 @@
             `).join('');
         }
 
-        // 2. 觀察日誌渲染 (卡片 & 條列)
+        // 2. 觀察日誌渲染
         function renderObservations() {
             const cat = getCurrentCat();
             const list = (cat.observations || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1413,7 +1445,7 @@
             }).join('');
         }
 
-        // 3. 生活日誌渲染 (卡片 & 條列)
+        // 3. 生活日誌渲染 (護理項目支援多選顯示)
         function renderLifeRecords() {
             const cat = getCurrentCat();
             const list = (cat.lifeRecords || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1432,48 +1464,60 @@
             }
             emptyTip.classList.add('hidden');
 
-            cardBox.innerHTML = list.map(l => `
-                <div class="p-3.5 rounded-2xl border border-teal-100 bg-teal-50/20 hover:bg-teal-50/40 transition flex items-start justify-between text-xs">
-                    <div class="space-y-1.5">
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-stone-800">${l.date}</span>
-                            <span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded-md font-semibold">${l.category}</span>
-                            ${l.item ? `<strong class="text-stone-700">${l.item}</strong>` : ''}
-                        </div>
-                        <div class="flex flex-wrap items-center gap-x-4 text-stone-500">
-                            <span>配合度：<strong class="text-teal-700">${l.attitude || '⭐⭐⭐⭐ 乖乖完成'}</strong></span>
-                            ${l.nextDate ? `<span class="text-teal-600 font-medium"><i class="fa-solid fa-calendar-check mr-1"></i>下次預定：${l.nextDate} (${l.nextNote || '定期護理'})</span>` : ''}
-                        </div>
-                        ${l.note ? `<p class="text-stone-500 text-[11px] pt-0.5"><i class="fa-regular fa-comment-dots mr-1 text-teal-400"></i>${l.note}</p>` : ''}
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <button onclick="editLifeRecord('${l.id}')" title="編輯" class="text-stone-400 hover:text-teal-600 transition p-1"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteLifeRecord('${l.id}')" title="刪除" class="text-stone-300 hover:text-red-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
-                    </div>
-                </div>
-            `).join('');
+            cardBox.innerHTML = list.map(l => {
+                const catsArr = Array.isArray(l.categories) ? l.categories : (l.category ? [l.category] : []);
+                const catBadges = catsArr.map(c => `
+                    <span class="bg-teal-100 text-teal-800 px-2 py-0.5 rounded-md font-semibold text-[11px]">${c}</span>
+                `).join(' ');
 
-            tableRows.innerHTML = list.map(l => `
-                <tr class="hover:bg-teal-50/20 transition">
-                    <td class="py-3 px-3 whitespace-nowrap font-bold text-stone-800">${l.date}</td>
-                    <td class="py-3 px-3 whitespace-nowrap">
-                        <span class="bg-teal-50 text-teal-800 px-2 py-0.5 rounded-md font-semibold">${l.category}</span>
-                    </td>
-                    <td class="py-3 px-3 font-medium text-stone-700">${l.item || '-'}</td>
-                    <td class="py-3 px-3 whitespace-nowrap font-medium text-teal-700">${l.attitude ? l.attitude.slice(0, 5) : '-'}</td>
-                    <td class="py-3 px-3 whitespace-nowrap">
-                        ${l.nextDate ? `<span class="bg-teal-50 text-teal-700 px-2 py-0.5 rounded text-[11px] font-medium border border-teal-200">${l.nextDate}</span>` : '-'}
-                    </td>
-                    <td class="py-3 px-3 text-stone-500">${l.note || '-'}</td>
-                    <td class="py-3 px-2 text-center whitespace-nowrap">
-                        <button onclick="editLifeRecord('${l.id}')" title="編輯" class="text-stone-400 hover:text-teal-600 transition p-1 mr-1"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteLifeRecord('${l.id}')" title="刪除" class="text-stone-300 hover:text-red-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
-                    </td>
-                </tr>
-            `).join('');
+                return `
+                    <div class="p-3.5 rounded-2xl border border-teal-100 bg-teal-50/20 hover:bg-teal-50/40 transition flex items-start justify-between text-xs">
+                        <div class="space-y-1.5">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="font-bold text-stone-800">${l.date}</span>
+                                ${catBadges}
+                                ${l.item ? `<strong class="text-stone-700">${l.item}</strong>` : ''}
+                            </div>
+                            <div class="flex flex-wrap items-center gap-x-4 text-stone-500">
+                                <span>配合度：<strong class="text-teal-700">${l.attitude || '⭐⭐⭐⭐ 乖乖完成'}</strong></span>
+                                ${l.nextDate ? `<span class="text-teal-600 font-medium"><i class="fa-solid fa-calendar-check mr-1"></i>下次預定：${l.nextDate} (${l.nextNote || '定期護理'})</span>` : ''}
+                            </div>
+                            ${l.note ? `<p class="text-stone-500 text-[11px] pt-0.5"><i class="fa-regular fa-comment-dots mr-1 text-teal-400"></i>${l.note}</p>` : ''}
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button onclick="editLifeRecord('${l.id}')" title="編輯" class="text-stone-400 hover:text-teal-600 transition p-1"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteLifeRecord('${l.id}')" title="刪除" class="text-stone-300 hover:text-red-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            tableRows.innerHTML = list.map(l => {
+                const catsArr = Array.isArray(l.categories) ? l.categories : (l.category ? [l.category] : []);
+                return `
+                    <tr class="hover:bg-teal-50/20 transition">
+                        <td class="py-3 px-3 whitespace-nowrap font-bold text-stone-800">${l.date}</td>
+                        <td class="py-3 px-3">
+                            <div class="flex flex-wrap gap-1">
+                                ${catsArr.map(c => `<span class="bg-teal-50 text-teal-800 border border-teal-100 px-1.5 py-0.2 rounded font-semibold text-[10px]">${c}</span>`).join('')}
+                            </div>
+                        </td>
+                        <td class="py-3 px-3 font-medium text-stone-700">${l.item || '-'}</td>
+                        <td class="py-3 px-3 whitespace-nowrap font-medium text-teal-700">${l.attitude ? l.attitude.slice(0, 5) : '-'}</td>
+                        <td class="py-3 px-3 whitespace-nowrap">
+                            ${l.nextDate ? `<span class="bg-teal-50 text-teal-700 px-2 py-0.5 rounded text-[11px] font-medium border border-teal-200">${l.nextDate}</span>` : '-'}
+                        </td>
+                        <td class="py-3 px-3 text-stone-500">${l.note || '-'}</td>
+                        <td class="py-3 px-2 text-center whitespace-nowrap">
+                            <button onclick="editLifeRecord('${l.id}')" title="編輯" class="text-stone-400 hover:text-teal-600 transition p-1 mr-1"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteLifeRecord('${l.id}')" title="刪除" class="text-stone-300 hover:text-red-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
-        // 4. 就醫日誌渲染 (卡片 & 條列)
+        // 4. 就醫日誌渲染
         function renderMedicalRecords() {
             const cat = getCurrentCat();
             const records = (cat.medicalRecords || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1543,7 +1587,7 @@
             `).join('');
         }
 
-        // 生活開銷帳本
+        // 5. 生活開銷帳本 (歸屬對象支援 Kinako / Sumi / 貓貓們)
         function setExpenseCatFilter(val) {
             currentExpenseCatFilter = val;
             document.querySelectorAll('#exp-cat-filter button').forEach(b => {
@@ -1570,16 +1614,25 @@
 
         function renderExpenses() {
             let allExpenses = [];
+            
+            // 個別貓咪的花費
             appData.cats.forEach(c => {
                 (c.expenses || []).forEach(e => {
                     allExpenses.push({ ...e, catId: c.id, catName: c.name });
                 });
             });
 
+            // 貓貓們（共用）花費
+            (appData.sharedExpenses || []).forEach(e => {
+                allExpenses.push({ ...e, catId: 'shared_cats', catName: '貓貓們' });
+            });
+
+            // 歸屬對象過濾
             if (currentExpenseCatFilter !== 'all') {
                 allExpenses = allExpenses.filter(e => e.catId === currentExpenseCatFilter);
             }
 
+            // 支出情境過濾
             if (currentExpenseTypeFilter === 'medical') {
                 allExpenses = allExpenses.filter(e => e.category === '醫療看診');
             } else if (currentExpenseTypeFilter === 'supplies') {
@@ -1620,7 +1673,7 @@
                     <div class="p-2.5 rounded-xl border border-stone-100 bg-stone-50/60 hover:bg-stone-50 transition flex items-center justify-between text-xs">
                         <div>
                             <div class="flex items-center gap-1.5">
-                                <span class="bg-brand-50 text-brand-700 px-1.5 py-0.2 rounded text-[10px] font-bold">${e.catName}</span>
+                                <span class="${e.catId === 'shared_cats' ? 'bg-emerald-100 text-emerald-800' : 'bg-brand-50 text-brand-700'} px-1.5 py-0.2 rounded text-[10px] font-bold">${e.catName}</span>
                                 <span class="text-stone-400 text-[11px] font-mono">${e.date}</span>
                                 <span class="bg-stone-200/60 text-stone-700 px-1.5 py-0.2 rounded text-[10px]">${e.category}</span>
                             </div>
@@ -1947,17 +2000,22 @@
             renderObservations();
         }
 
-        // 3. 生活
+        // 3. 生活護理 (Checkbox 多選)
         function openLifeModal() {
             document.getElementById('life-modal-title').innerHTML = '<span class="text-teal-600"><i class="fa-solid fa-scissors"></i></span> 記錄生活護理';
             document.getElementById('life-edit-id').value = '';
-            document.getElementById('life-category').value = '剪指甲';
             document.getElementById('life-item').value = '';
             document.getElementById('life-attitude').value = '⭐⭐⭐⭐⭐ 超配合天使';
             document.getElementById('life-next-date').value = '';
             document.getElementById('life-next-note').value = '';
             document.getElementById('life-note').value = '';
             document.getElementById('life-date').value = new Date().toISOString().split('T')[0];
+
+            document.querySelectorAll('input[name="life_categories"]').forEach(cb => cb.checked = false);
+            // 預設勾選剪指甲
+            const firstCb = document.querySelector('input[name="life_categories"][value="剪指甲"]');
+            if (firstCb) firstCb.checked = true;
+
             document.getElementById('life-modal').classList.remove('hidden');
         }
 
@@ -1969,12 +2027,17 @@
             document.getElementById('life-modal-title').innerHTML = '<span class="text-teal-600"><i class="fa-solid fa-pen-to-square"></i></span> 編輯生活日誌';
             document.getElementById('life-edit-id').value = l.id;
             document.getElementById('life-date').value = l.date;
-            document.getElementById('life-category').value = l.category;
             document.getElementById('life-item').value = l.item || '';
             document.getElementById('life-attitude').value = l.attitude || '⭐⭐⭐⭐ 乖乖完成';
             document.getElementById('life-next-date').value = l.nextDate || '';
             document.getElementById('life-next-note').value = l.nextNote || '';
             document.getElementById('life-note').value = l.note || '';
+
+            const catsArr = Array.isArray(l.categories) ? l.categories : (l.category ? [l.category] : []);
+            document.querySelectorAll('input[name="life_categories"]').forEach(cb => {
+                cb.checked = catsArr.includes(cb.value);
+            });
+
             document.getElementById('life-modal').classList.remove('hidden');
         }
 
@@ -1983,11 +2046,16 @@
             const cat = getCurrentCat();
             const editId = document.getElementById('life-edit-id').value;
 
+            const selectedCats = [];
+            document.querySelectorAll('input[name="life_categories"]:checked').forEach(cb => selectedCats.push(cb.value));
+            if (selectedCats.length === 0) selectedCats.push('日常護理');
+
             if (editId) {
                 const idx = cat.lifeRecords.findIndex(x => x.id === editId);
                 if (idx !== -1) {
                     cat.lifeRecords[idx].date = document.getElementById('life-date').value;
-                    cat.lifeRecords[idx].category = document.getElementById('life-category').value;
+                    cat.lifeRecords[idx].categories = selectedCats;
+                    cat.lifeRecords[idx].category = selectedCats.join('、');
                     cat.lifeRecords[idx].item = document.getElementById('life-item').value;
                     cat.lifeRecords[idx].attitude = document.getElementById('life-attitude').value;
                     cat.lifeRecords[idx].nextDate = document.getElementById('life-next-date').value;
@@ -1999,7 +2067,8 @@
                 cat.lifeRecords.push({
                     id: 'life_' + Date.now(),
                     date: document.getElementById('life-date').value,
-                    category: document.getElementById('life-category').value,
+                    categories: selectedCats,
+                    category: selectedCats.join('、'),
                     item: document.getElementById('life-item').value,
                     attitude: document.getElementById('life-attitude').value,
                     nextDate: document.getElementById('life-next-date').value,
@@ -2183,7 +2252,7 @@
             }
         }
 
-        // 開銷
+        // 開銷 (歸屬對象支援 Kinako / Sumi / 貓貓們)
         function openExpenseModal() {
             document.getElementById('exp-modal-title').innerHTML = '<span class="text-emerald-600"><i class="fa-solid fa-receipt"></i></span> 記一筆生活開銷';
             document.getElementById('exp-edit-id').value = '';
@@ -2196,9 +2265,13 @@
         }
 
         function editExpenseRecord(catId, expId) {
-            const cat = appData.cats.find(c => c.id === catId);
-            if (!cat) return;
-            const exp = (cat.expenses || []).find(e => e.id === expId);
+            let exp = null;
+            if (catId === 'shared_cats') {
+                exp = (appData.sharedExpenses || []).find(e => e.id === expId);
+            } else {
+                const cat = appData.cats.find(c => c.id === catId);
+                if (cat) exp = (cat.expenses || []).find(e => e.id === expId);
+            }
             if (!exp) return;
 
             document.getElementById('exp-modal-title').innerHTML = '<span class="text-emerald-600"><i class="fa-solid fa-pen-to-square"></i></span> 編輯開銷紀錄';
@@ -2216,34 +2289,29 @@
             const targetCatId = document.getElementById('exp-target-cat').value;
             const editId = document.getElementById('exp-edit-id').value;
 
+            // 若為編輯，先自各處移除舊記錄
             if (editId) {
-                let oldExp = null;
                 appData.cats.forEach(c => {
-                    const idx = (c.expenses || []).findIndex(x => x.id === editId);
-                    if (idx !== -1) {
-                        oldExp = c.expenses.splice(idx, 1)[0];
-                    }
+                    c.expenses = (c.expenses || []).filter(x => x.id !== editId);
                 });
+                appData.sharedExpenses = (appData.sharedExpenses || []).filter(x => x.id !== editId);
+            }
 
-                const targetCat = appData.cats.find(c => c.id === targetCatId) || getCurrentCat();
-                if (!targetCat.expenses) targetCat.expenses = [];
-                targetCat.expenses.push({
-                    id: editId,
-                    date: document.getElementById('exp-date').value,
-                    category: document.getElementById('exp-category').value,
-                    amount: Number(document.getElementById('exp-amount').value),
-                    note: document.getElementById('exp-note').value
-                });
+            const newExpObj = {
+                id: editId || ('e_' + Date.now()),
+                date: document.getElementById('exp-date').value,
+                category: document.getElementById('exp-category').value,
+                amount: Number(document.getElementById('exp-amount').value),
+                note: document.getElementById('exp-note').value
+            };
+
+            if (targetCatId === 'shared_cats') {
+                if (!appData.sharedExpenses) appData.sharedExpenses = [];
+                appData.sharedExpenses.push(newExpObj);
             } else {
                 const targetCat = appData.cats.find(c => c.id === targetCatId) || getCurrentCat();
                 if (!targetCat.expenses) targetCat.expenses = [];
-                targetCat.expenses.push({
-                    id: 'e_' + Date.now(),
-                    date: document.getElementById('exp-date').value,
-                    category: document.getElementById('exp-category').value,
-                    amount: Number(document.getElementById('exp-amount').value),
-                    note: document.getElementById('exp-note').value
-                });
+                targetCat.expenses.push(newExpObj);
             }
 
             saveData();
@@ -2253,12 +2321,14 @@
 
         function deleteExpenseRecord(catId, expId) {
             if (!confirm('確定刪除這筆花費？')) return;
-            const cat = appData.cats.find(c => c.id === catId);
-            if (cat) {
-                cat.expenses = cat.expenses.filter(e => e.id !== expId);
-                saveData();
-                renderExpenses();
+            if (catId === 'shared_cats') {
+                appData.sharedExpenses = (appData.sharedExpenses || []).filter(e => e.id !== expId);
+            } else {
+                const cat = appData.cats.find(c => c.id === catId);
+                if (cat) cat.expenses = (cat.expenses || []).filter(e => e.id !== expId);
             }
+            saveData();
+            renderExpenses();
         }
 
         // 貓咪檔案
@@ -2350,6 +2420,15 @@
                                 appData.cats.push(impCat);
                             }
                         });
+
+                        // 合併共用花費
+                        if (imported.sharedExpenses) {
+                            if (!appData.sharedExpenses) appData.sharedExpenses = [];
+                            const existSharedIds = new Set(appData.sharedExpenses.map(s => s.id));
+                            imported.sharedExpenses.forEach(s => {
+                                if (!existSharedIds.has(s.id)) appData.sharedExpenses.push(s);
+                            });
+                        }
                     } else {
                         appData = imported;
                     }
