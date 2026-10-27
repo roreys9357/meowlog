@@ -106,30 +106,96 @@
         <!-- 核心功能區塊：左右分欄 -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            <!-- 左側主欄 (8欄)：體重趨勢 -> 飲食日誌 -> 觀察日誌 -> 生活日誌 -> 就醫日誌 -->
+            <!-- 左側主欄 (8欄)：精巧體重與隨機相簿 -> 飲食日誌 -> 觀察日誌 -> 生活日誌 -> 就醫日誌 -->
             <div class="lg:col-span-8 space-y-6">
 
-                <!-- 體重變化趨勢卡片 -->
-                <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm">
-                    <div class="flex items-center justify-between mb-4">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center text-sm">
-                                <i class="fa-solid fa-weight-scale"></i>
+                <!-- 頂層並排：縮小版體重卡片 + 貓貓生活寫真隨機輪播相簿 -->
+                <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                    
+                    <!-- 1. 縮小精巧版體重管理卡 (占 5 欄) -->
+                    <div class="md:col-span-5 bg-cardbg rounded-3xl p-4 border border-stone-200/80 shadow-sm flex flex-col justify-between">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs">
+                                    <i class="fa-solid fa-weight-scale"></i>
+                                </div>
+                                <h3 class="text-sm font-bold text-stone-800">體重管理</h3>
                             </div>
-                            <h2 class="text-base font-bold text-stone-800">體重管理與趨勢</h2>
+                            <button onclick="openWeightModal()" class="text-[11px] font-semibold px-2.5 py-1 bg-brand-50 text-brand-700 hover:bg-brand-100 rounded-lg border border-brand-200 transition">
+                                <i class="fa-solid fa-sliders mr-0.5"></i> 記錄
+                            </button>
                         </div>
-                        <button onclick="openWeightModal()" class="text-xs font-semibold px-3 py-1.5 bg-brand-50 text-brand-700 hover:bg-brand-100 rounded-xl border border-brand-200 transition flex items-center gap-1">
-                            <i class="fa-solid fa-sliders"></i> 管理體重數據
-                        </button>
+
+                        <!-- 最新體重與波動數值 -->
+                        <div class="flex items-baseline justify-between px-1 my-1">
+                            <div>
+                                <span class="text-[10px] text-stone-400 block font-medium">最新測量</span>
+                                <div id="compact-weight-val" class="text-xl font-bold text-stone-800 tracking-tight">-- kg</div>
+                            </div>
+                            <div id="compact-weight-diff" class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-stone-100 text-stone-600">
+                                持平
+                            </div>
+                        </div>
+
+                        <!-- 精巧走勢迷你圖表 (高度縮小至 80px) -->
+                        <div class="relative h-20 w-full mt-1">
+                            <canvas id="weightChart"></canvas>
+                            <div id="weight-empty-tip" class="hidden absolute inset-0 flex items-center justify-center bg-white/90 rounded-xl text-stone-400 text-[11px]">
+                                尚無測量數據
+                            </div>
+                        </div>
                     </div>
 
-                    <div class="relative h-56 w-full">
-                        <canvas id="weightChart"></canvas>
-                        <div id="weight-empty-tip" class="hidden absolute inset-0 flex flex-col items-center justify-center bg-white/80 rounded-2xl text-stone-400 text-xs">
-                            <i class="fa-solid fa-scale-unbalanced-flip text-3xl mb-2 text-stone-300"></i>
-                            目前無體重紀錄，點擊右上角「管理體重數據」新增第一筆測量值！
+                    <!-- 2. 貓貓生活寫真隨機播放相簿 (占 7 欄) -->
+                    <div class="md:col-span-7 bg-cardbg rounded-3xl p-4 border border-stone-200/80 shadow-sm flex flex-col justify-between relative overflow-hidden">
+                        <div class="flex items-center justify-between mb-2">
+                            <div class="flex items-center gap-2">
+                                <div class="w-7 h-7 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center text-xs">
+                                    <i class="fa-solid fa-images"></i>
+                                </div>
+                                <h3 class="text-sm font-bold text-stone-800">貓貓生活寫真</h3>
+                                <button onclick="togglePhotoShuffle()" id="shuffle-indicator" title="點擊切換隨機/循序播放" class="text-[10px] bg-rose-50 text-rose-600 border border-rose-200 px-2 py-0.5 rounded-md font-semibold flex items-center gap-1">
+                                    <i class="fa-solid fa-shuffle"></i> 隨機播放中
+                                </button>
+                            </div>
+                            
+                            <div class="flex items-center gap-1.5">
+                                <button onclick="openGalleryUploadModal()" class="text-[11px] font-semibold px-2.5 py-1 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg transition flex items-center gap-1">
+                                    <i class="fa-solid fa-cloud-arrow-up text-rose-500"></i> 上傳相片
+                                </button>
+                                <button onclick="openGalleryManagerModal()" class="text-[11px] font-semibold px-2.5 py-1 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg transition flex items-center gap-1">
+                                    <i class="fa-solid fa-sliders"></i> 管理相簿
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- 寫真輪播視窗 (滑鼠移入時暫停播放) -->
+                        <div class="relative h-36 w-full rounded-2xl overflow-hidden group bg-stone-100" onmouseenter="pauseSlideshow()" onmouseleave="resumeSlideshow()">
+                            <img id="gallery-current-img" class="w-full h-full object-cover transition-all duration-700" src="" alt="貓咪生活照">
+                            
+                            <!-- 照片下方漸層資訊浮條 -->
+                            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent p-2.5 pt-6 text-white flex items-end justify-between">
+                                <div class="space-y-0.5 max-w-[80%] truncate">
+                                    <div class="flex items-center gap-1.5">
+                                        <span id="gallery-cat-tag" class="text-[9px] bg-brand-500 text-white font-bold px-1.5 py-0.2 rounded">全體</span>
+                                        <span id="gallery-date-tag" class="text-[10px] text-white/80 font-mono">2026/10</span>
+                                    </div>
+                                    <p id="gallery-caption" class="text-xs font-medium truncate">生活隨手拍～</p>
+                                </div>
+                                
+                                <span id="gallery-counter" class="text-[10px] font-mono bg-black/40 px-1.5 py-0.5 rounded text-white/80">1 / 1</span>
+                            </div>
+
+                            <!-- 上一張/下一張按鈕 (滑鼠移入浮現) -->
+                            <button onclick="prevPhoto()" class="absolute left-1.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition hover:bg-black/70 text-xs">
+                                <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                            </button>
+                            <button onclick="nextPhoto()" class="absolute right-1.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition hover:bg-black/70 text-xs">
+                                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            </button>
                         </div>
                     </div>
+
                 </div>
 
                 <!-- 1. 飲食日誌 (支援雙品項湯罐混搭、雙檢視切換) -->
@@ -412,9 +478,84 @@
 
     </main>
 
-    <!-- Modal 彈窗系列 -->
+    <!-- Modal 彈窗系列 (相簿上傳、相簿管理、飲食、觀察、生活、就醫、體重、開銷、貓咪) -->
 
-    <!-- 1. 飲食 Modal (包含主食品項 + 搭配湯罐補水品項) -->
+    <!-- A. 相簿上傳 Modal -->
+    <div id="gallery-upload-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-stone-100">
+                <h3 class="font-bold text-base text-stone-800 flex items-center gap-2">
+                    <span class="text-rose-500"><i class="fa-solid fa-camera"></i></span> 上傳貓貓生活照片
+                </h3>
+                <button onclick="closeModal('gallery-upload-modal')" class="text-stone-400 hover:text-stone-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            <form onsubmit="saveGalleryPhoto(event)" class="mt-4 space-y-3.5 text-xs">
+                <!-- 本機照片選取預覽 -->
+                <div class="space-y-2">
+                    <div id="photo-drop-zone" class="relative border-2 border-dashed border-stone-200 hover:border-brand-300 rounded-2xl p-4 text-center cursor-pointer transition bg-stone-50">
+                        <img id="photo-upload-preview" class="max-h-40 mx-auto rounded-xl object-contain hidden mb-2 shadow-xs" src="" alt="預覽照片">
+                        <div id="photo-upload-placeholder" class="py-4 space-y-1">
+                            <i class="fa-solid fa-cloud-arrow-up text-3xl text-stone-300"></i>
+                            <p class="font-bold text-stone-600">點擊挑選手機/電腦相片</p>
+                            <p class="text-[10px] text-stone-400">系統自動壓縮，高畫質且省空間</p>
+                        </div>
+                        <input type="file" id="gallery-file-input" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewGalleryFile(event)">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-stone-600 mb-1">主角對象 *</label>
+                        <select id="gallery-cat-target" class="w-full px-3 py-2 border rounded-xl bg-white outline-none font-medium">
+                            <option value="cat_kinako">Kinako</option>
+                            <option value="cat_sumi">Sumi</option>
+                            <option value="shared_cats">貓貓們 (合照/共用)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block font-semibold text-stone-600 mb-1">拍攝日期 *</label>
+                        <input type="date" id="gallery-date" required class="w-full px-3 py-2 border rounded-xl outline-none">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block font-semibold text-stone-600 mb-1">照片故事 / 心得說明</label>
+                    <input type="text" id="gallery-caption-input" placeholder="例如：曬太陽睡到翻肚肚、吃飽打哈欠" class="w-full px-3 py-2 border rounded-xl outline-none">
+                </div>
+
+                <div class="flex justify-end gap-2 pt-3">
+                    <button type="button" onclick="closeModal('gallery-upload-modal')" class="px-4 py-2 border rounded-xl text-stone-600">取消</button>
+                    <button type="submit" class="px-5 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold">加入相簿</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- B. 相簿管理清單 Modal -->
+    <div id="gallery-manager-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
+            <div class="flex items-center justify-between pb-3 border-b border-stone-100">
+                <h3 class="font-bold text-base text-stone-800 flex items-center gap-2">
+                    <span class="text-rose-500"><i class="fa-solid fa-images"></i></span> 貓貓相簿管理
+                </h3>
+                <button onclick="closeModal('gallery-manager-modal')" class="text-stone-400 hover:text-stone-600"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+            
+            <div class="mt-4 space-y-2">
+                <div class="flex items-center justify-between text-xs text-stone-500 px-1">
+                    <span>相片清單（可單張刪除）</span>
+                    <button onclick="openGalleryUploadModal()" class="text-rose-600 font-bold hover:underline">＋ 新增相片</button>
+                </div>
+                <div id="gallery-manager-list" class="space-y-2 max-h-72 overflow-y-auto hide-scrollbar pr-1 text-xs"></div>
+            </div>
+
+            <div class="flex justify-end pt-4">
+                <button type="button" onclick="closeModal('gallery-manager-modal')" class="px-4 py-2 border rounded-xl text-stone-600 text-xs">關閉</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 1. 飲食 Modal -->
     <div id="diet-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
@@ -445,7 +586,6 @@
                     </div>
                 </div>
 
-                <!-- 主要品項與克數 -->
                 <div class="grid grid-cols-3 gap-3">
                     <div class="col-span-2 relative">
                         <label class="block font-semibold text-stone-600 mb-1 flex items-center justify-between">
@@ -461,15 +601,14 @@
                     </div>
                 </div>
 
-                <!-- 搭配湯罐區塊 (專屬混搭補水設計) -->
                 <div class="p-3 bg-amber-50/50 rounded-2xl border border-amber-100 space-y-2">
                     <span class="block font-bold text-amber-900 text-[11px] flex items-center justify-between">
                         <span><i class="fa-solid fa-droplet mr-1 text-amber-600"></i> 搭配湯罐 / 補水品項 (選填)</span>
-                        <span class="text-[10px] text-amber-700 font-normal">Sumi 吃主食罐同時加湯罐可在此記錄</span>
+                        <span class="text-[10px] text-amber-700 font-normal">主食罐加湯罐可在此混搭記錄</span>
                     </span>
                     <div class="grid grid-cols-3 gap-3">
                         <div class="col-span-2 relative">
-                            <input type="text" id="diet-soup-item" placeholder="例如：汪喵星球幼母貓補水罐、CIAO金湯罐..." autocomplete="off" oninput="handleBrandAutocomplete(event, 'soup')" onkeydown="handleBrandKeydown(event, 'soup')" class="w-full px-3 py-2 border rounded-xl outline-none bg-white focus:ring-2 focus:ring-amber-200">
+                            <input type="text" id="diet-soup-item" placeholder="例如：汪喵純肉補水罐、怪獸部落..." autocomplete="off" oninput="handleBrandAutocomplete(event, 'soup')" onkeydown="handleBrandKeydown(event, 'soup')" class="w-full px-3 py-2 border rounded-xl outline-none bg-white focus:ring-2 focus:ring-amber-200">
                             <div id="brand-autocomplete-list-soup" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-stone-200 rounded-2xl shadow-xl z-50 max-h-48 overflow-y-auto hide-scrollbar p-1 text-xs"></div>
                         </div>
                         <div>
@@ -651,7 +790,6 @@
                     <input type="date" id="life-date" required class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-teal-200">
                 </div>
 
-                <!-- 護理項目多選按鈕區 -->
                 <div class="p-3.5 bg-teal-50/50 rounded-2xl border border-teal-100 space-y-2">
                     <label class="block font-bold text-teal-900 flex items-center justify-between">
                         <span><i class="fa-solid fa-check-double mr-1 text-teal-600"></i> 生活護理項目 (可多選) *</span>
@@ -840,7 +978,7 @@
         </div>
     </div>
 
-    <!-- 6. 開銷 Modal (歸屬對象支援 Kinako / Sumi / 貓貓們) -->
+    <!-- 6. 開銷 Modal -->
     <div id="expense-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
@@ -966,46 +1104,64 @@
             sumi: 'https://images.unsplash.com/photo-1543852786-1cf6624b9987?w=240&auto=format&fit=crop&q=80'
         };
 
-        // 知名主食與湯罐品牌資料庫 (內建自動聯想補全字典)
+        // 預設生活照相簿清單 (支援隨機播放)
+        const DEFAULT_GALLERY = [
+            {
+                id: 'p1',
+                url: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=800&auto=format&fit=crop&q=80',
+                target: 'cat_kinako',
+                date: '2026-10-15',
+                caption: 'Kinako 在窗邊曬太陽伸懶腰 ☀️'
+            },
+            {
+                id: 'p2',
+                url: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800&auto=format&fit=crop&q=80',
+                target: 'cat_kinako',
+                date: '2026-10-20',
+                caption: '圓滾滾的大眼睛盯著罐罐看！'
+            },
+            {
+                id: 'p3',
+                url: 'https://images.unsplash.com/photo-1543852786-1cf6624b9987?w=800&auto=format&fit=crop&q=80',
+                target: 'cat_sumi',
+                date: '2026-10-18',
+                caption: 'Sumi 的黑亮毛色與帥氣側臉 🐈‍⬛'
+            },
+            {
+                id: 'p4',
+                url: 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=800&auto=format&fit=crop&q=80',
+                target: 'shared_cats',
+                date: '2026-10-25',
+                caption: '兩隻一起在沙發打呼嚕的溫馨午後 ❤️'
+            }
+        ];
+
+        // 知名主食與湯罐品牌資料庫
         const BRAND_PRESET_DICTIONARY = [
-            // 主食罐與飼料
             { name: "Monge 瑪恩吉 兔肉主食罐", type: "主食罐頭" },
             { name: "Monge 瑪恩吉 鴨肉主食罐", type: "主食罐頭" },
             { name: "Monge 瑪恩吉 天然處方/特級成貓飼料", type: "乾飼料" },
             { name: "Royal Canin 法國皇家 K36 幼貓糧", type: "乾飼料" },
             { name: "Royal Canin 法國皇家 IN27 室內成貓糧", type: "乾飼料" },
-            { name: "Royal Canin 法國皇家 濕糧/主食肉汁包", type: "主食罐頭" },
             { name: "Hill's 希爾思 頂級成貓雞肉配方", type: "乾飼料" },
-            { name: "Hill's 希爾思 腸胃/皮膚呵護處方罐", type: "主食罐頭" },
             { name: "Wellness CORE 無穀經典高蛋白系列", type: "主食罐頭" },
-            { name: "Wellness 寵物健康 經典室內貓乾糧", type: "乾飼料" },
             { name: "K9 Natural 紐西蘭生肉凍乾 (牛肉鱈魚)", type: "鮮食凍乾" },
-            { name: "K9 Natural 紐西蘭無穀主食罐", type: "主食罐頭" },
             { name: "汪喵星球 頂級無膠純肉主食罐", type: "主食罐頭" },
-            { name: "汪喵星球 冷凍乾燥生肉糧", type: "鮮食凍乾" },
-            { name: "怪獸部落 98% 鮮肉主食糧", type: "乾飼料" },
-            { name: "怪獸部落 無膠寶寶/鮮肉主食罐", type: "主食罐頭" },
-            { name: "魔力喵 MAC's 德國精緻無穀主食罐", type: "主食罐頭" },
-            { name: "法米納 Farmina 天然頂級無穀成貓糧", type: "乾飼料" },
-            { name: "荒野饗宴 Taste of the Wild 洛磯山脈鹿肉鮭魚", type: "乾飼料" },
-            // 補水湯罐與人氣副食罐
             { name: "汪喵星球 純肉補水湯罐 (嫩雞蔓越莓)", type: "湯罐 / 補水湯罐" },
             { name: "汪喵星球 純肉補水湯罐 (鰹魚柴魚)", type: "湯罐 / 補水湯罐" },
+            { name: "怪獸部落 98% 鮮肉主食糧", type: "乾飼料" },
             { name: "怪獸部落 鮮肉補水湯罐 (鮮雞肉高湯)", type: "湯罐 / 補水湯罐" },
             { name: "怪獸部落 鮮肉補水湯罐 (鮭魚燉鯖魚)", type: "湯罐 / 補水湯罐" },
             { name: "CIAO 鰹魚/鮪魚旨定缶金湯罐", type: "湯罐 / 補水湯罐" },
-            { name: "CIAO 燒鰹魚純肉濃湯包", type: "湯罐 / 補水湯罐" },
             { name: "惜時 SEEDS 聖萊西愛貓天然食高湯罐", type: "湯罐 / 補水湯罐" },
-            { name: "惜時 SEEDS 特選純鮪魚大湯罐", type: "湯罐 / 補水湯罐" },
-            { name: "AIXIA 愛喜雅 每日黑缶高湯滋味", type: "湯罐 / 補水湯罐" },
-            { name: "AIXIA 愛喜雅 金罐高湯芳醇系列", type: "湯罐 / 補水湯罐" },
-            { name: "Tiki Cat 蒂基 美食家夏威夷補水高湯", type: "湯罐 / 補水湯罐" }
+            { name: "AIXIA 愛喜雅 每日黑缶高湯滋味", type: "湯罐 / 補水湯罐" }
         ];
 
         const DEFAULT_DATA = {
             activeCatId: 'cat_kinako',
             dismissedReminders: [],
             sharedExpenses: [],
+            gallery: DEFAULT_GALLERY,
             cats: [
                 {
                     id: 'cat_kinako',
@@ -1047,6 +1203,12 @@
         let expenseDoughnutInstance = null;
         let expenseBarInstance = null;
 
+        // 相簿輪播控制變數
+        let currentPhotoIndex = 0;
+        let isPhotoShuffle = true;
+        let slideshowTimer = null;
+        let tempGalleryUploadBase64 = '';
+
         const viewPreferences = {
             diet: localStorage.getItem('meowlog_view_diet') || 'card',
             obs: localStorage.getItem('meowlog_view_obs') || 'card',
@@ -1071,6 +1233,7 @@
                 appData = loadedData;
                 if (!appData.dismissedReminders) appData.dismissedReminders = [];
                 if (!appData.sharedExpenses) appData.sharedExpenses = [];
+                if (!appData.gallery || appData.gallery.length === 0) appData.gallery = JSON.parse(JSON.stringify(DEFAULT_GALLERY));
                 appData.cats.forEach(c => {
                     if (!c.photo) c.photo = c.id === 'cat_kinako' ? DEFAULT_AVATARS.kinako : DEFAULT_AVATARS.sumi;
                     if (!c.adoptDate) c.adoptDate = c.birthday || '';
@@ -1082,7 +1245,7 @@
             saveData();
 
             const today = new Date().toISOString().split('T')[0];
-            ['diet-date', 'obs-date', 'life-date', 'med-date', 'exp-date', 'new-w-date'].forEach(id => {
+            ['diet-date', 'obs-date', 'life-date', 'med-date', 'exp-date', 'new-w-date', 'gallery-date'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = today;
             });
@@ -1097,6 +1260,7 @@
             });
 
             renderAll();
+            startSlideshow();
         }
 
         function saveData() {
@@ -1145,6 +1309,7 @@
             renderCatProfile();
             renderReminders();
             renderWeightChart();
+            renderGalleryPhoto();
             
             ['diet', 'obs', 'life', 'med'].forEach(m => updateViewUI(m));
 
@@ -1289,14 +1454,20 @@
             renderReminders();
         }
 
+        // ================= 縮小版體重走勢圖渲染 =================
         function renderWeightChart() {
             const cat = getCurrentCat();
             const weights = (cat.weights || []).slice().sort((a,b) => new Date(a.date) - new Date(b.date));
             const emptyTip = document.getElementById('weight-empty-tip');
+            const valEl = document.getElementById('compact-weight-val');
+            const diffEl = document.getElementById('compact-weight-diff');
             const ctx = document.getElementById('weightChart').getContext('2d');
 
             if (weights.length === 0) {
                 emptyTip.classList.remove('hidden');
+                valEl.innerText = '-- kg';
+                diffEl.innerText = '尚無數據';
+                diffEl.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-md bg-stone-100 text-stone-500';
                 if (weightChartInstance) {
                     weightChartInstance.destroy();
                     weightChartInstance = null;
@@ -1306,6 +1477,27 @@
                 emptyTip.classList.add('hidden');
             }
 
+            const latest = weights[weights.length - 1].weight;
+            valEl.innerText = `${latest} kg`;
+
+            if (weights.length > 1) {
+                const prev = weights[weights.length - 2].weight;
+                const diff = (latest - prev).toFixed(2);
+                if (diff > 0) {
+                    diffEl.innerText = `+${diff} kg`;
+                    diffEl.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-md bg-rose-50 text-rose-600 border border-rose-200';
+                } else if (diff < 0) {
+                    diffEl.innerText = `${diff} kg`;
+                    diffEl.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-md bg-emerald-50 text-emerald-600 border border-emerald-200';
+                } else {
+                    diffEl.innerText = '持平';
+                    diffEl.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-md bg-stone-100 text-stone-600';
+                }
+            } else {
+                diffEl.innerText = '初次測量';
+                diffEl.className = 'text-[11px] font-semibold px-2 py-0.5 rounded-md bg-amber-50 text-amber-700';
+            }
+
             if (weightChartInstance) weightChartInstance.destroy();
 
             weightChartInstance = new Chart(ctx, {
@@ -1313,15 +1505,14 @@
                 data: {
                     labels: weights.map(w => w.date.slice(5)),
                     datasets: [{
-                        label: `${cat.name} 體重 (kg)`,
                         data: weights.map(w => w.weight),
                         borderColor: '#dc8448',
-                        backgroundColor: 'rgba(220, 132, 72, 0.12)',
+                        backgroundColor: 'rgba(220, 132, 72, 0.15)',
                         fill: true,
                         tension: 0.35,
                         pointBackgroundColor: '#cb6b32',
-                        pointRadius: 4.5,
-                        borderWidth: 2.5
+                        pointRadius: 3,
+                        borderWidth: 2
                     }]
                 },
                 options: {
@@ -1329,14 +1520,215 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { ticks: { callback: v => v + ' kg', font: { size: 10 } }, grid: { color: '#f1f1f1' } },
-                        x: { ticks: { font: { size: 10 } }, grid: { display: false } }
+                        y: { display: false },
+                        x: { display: false }
                     }
                 }
             });
         }
 
-        // 1. 飲食日誌渲染 (卡片與條列表格呈現雙品項)
+        // ================= 貓貓生活寫真 (隨機播放相簿) =================
+        function startSlideshow() {
+            if (slideshowTimer) clearInterval(slideshowTimer);
+            slideshowTimer = setInterval(() => {
+                nextPhoto();
+            }, 4500); // 每 4.5 秒自動輪播下一張
+        }
+
+        function pauseSlideshow() {
+            if (slideshowTimer) clearInterval(slideshowTimer);
+        }
+
+        function resumeSlideshow() {
+            startSlideshow();
+        }
+
+        function togglePhotoShuffle() {
+            isPhotoShuffle = !isPhotoShuffle;
+            const btn = document.getElementById('shuffle-indicator');
+            if (isPhotoShuffle) {
+                btn.innerHTML = '<i class="fa-solid fa-shuffle"></i> 隨機播放中';
+                btn.className = 'text-[10px] bg-rose-50 text-rose-600 border border-rose-200 px-2 py-0.5 rounded-md font-semibold flex items-center gap-1';
+            } else {
+                btn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> 循序播放中';
+                btn.className = 'text-[10px] bg-stone-100 text-stone-600 border border-stone-200 px-2 py-0.5 rounded-md font-semibold flex items-center gap-1';
+            }
+        }
+
+        function nextPhoto() {
+            const list = appData.gallery || [];
+            if (list.length <= 1) return;
+
+            if (isPhotoShuffle) {
+                let nextIdx = Math.floor(Math.random() * list.length);
+                if (nextIdx === currentPhotoIndex) nextIdx = (currentPhotoIndex + 1) % list.length;
+                currentPhotoIndex = nextIdx;
+            } else {
+                currentPhotoIndex = (currentPhotoIndex + 1) % list.length;
+            }
+            renderGalleryPhoto();
+        }
+
+        function prevPhoto() {
+            const list = appData.gallery || [];
+            if (list.length <= 1) return;
+            currentPhotoIndex = (currentPhotoIndex - 1 + list.length) % list.length;
+            renderGalleryPhoto();
+        }
+
+        function renderGalleryPhoto() {
+            const list = appData.gallery || [];
+            const imgEl = document.getElementById('gallery-current-img');
+            const catTag = document.getElementById('gallery-cat-tag');
+            const dateTag = document.getElementById('gallery-date-tag');
+            const captionEl = document.getElementById('gallery-caption');
+            const counterEl = document.getElementById('gallery-counter');
+
+            if (list.length === 0) {
+                imgEl.src = DEFAULT_AVATARS.kinako;
+                catTag.innerText = '尚無相片';
+                dateTag.innerText = '';
+                captionEl.innerText = '點擊右上角「上傳相片」豐富貓貓相簿吧！';
+                counterEl.innerText = '0 / 0';
+                return;
+            }
+
+            if (currentPhotoIndex >= list.length) currentPhotoIndex = 0;
+            const cur = list[currentPhotoIndex];
+
+            imgEl.style.opacity = '0.3';
+            setTimeout(() => {
+                imgEl.src = cur.url;
+                imgEl.style.opacity = '1';
+            }, 120);
+
+            let catName = '貓貓們';
+            if (cur.target === 'cat_kinako') catName = 'Kinako';
+            if (cur.target === 'cat_sumi') catName = 'Sumi';
+
+            catTag.innerText = catName;
+            dateTag.innerText = cur.date || '';
+            captionEl.innerText = cur.caption || '可愛日常記錄～';
+            counterEl.innerText = `${currentPhotoIndex + 1} / ${list.length}`;
+        }
+
+        // 上傳新照片到相簿
+        function openGalleryUploadModal() {
+            tempGalleryUploadBase64 = '';
+            document.getElementById('photo-upload-preview').src = '';
+            document.getElementById('photo-upload-preview').classList.add('hidden');
+            document.getElementById('photo-upload-placeholder').classList.remove('hidden');
+            document.getElementById('gallery-caption-input').value = '';
+            document.getElementById('gallery-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('gallery-upload-modal').classList.remove('hidden');
+        }
+
+        function previewGalleryFile(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            // 智慧微縮圖片以防 LocalStorage 容量超限
+            const reader = new FileReader();
+            reader.onload = function(evt) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const maxW = 900;
+                    let w = img.width;
+                    let h = img.height;
+                    if (w > maxW) {
+                        h = Math.round((h * maxW) / w);
+                        w = maxW;
+                    }
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    tempGalleryUploadBase64 = canvas.toDataURL('image/jpeg', 0.82);
+
+                    const prevEl = document.getElementById('photo-upload-preview');
+                    prevEl.src = tempGalleryUploadBase64;
+                    prevEl.classList.remove('hidden');
+                    document.getElementById('photo-upload-placeholder').classList.add('hidden');
+                };
+                img.src = evt.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function saveGalleryPhoto(e) {
+            e.preventDefault();
+            if (!tempGalleryUploadBase64) {
+                alert('請先選取一張相片！');
+                return;
+            }
+
+            if (!appData.gallery) appData.gallery = [];
+            const newPhoto = {
+                id: 'p_' + Date.now(),
+                url: tempGalleryUploadBase64,
+                target: document.getElementById('gallery-cat-target').value,
+                date: document.getElementById('gallery-date').value,
+                caption: document.getElementById('gallery-caption-input').value || '可愛生活寫真'
+            };
+
+            appData.gallery.unshift(newPhoto);
+            currentPhotoIndex = 0;
+            saveData();
+            closeModal('gallery-upload-modal');
+            renderGalleryPhoto();
+            alert('照片已成功加入貓貓寫真相簿！');
+        }
+
+        // 相簿管理彈窗
+        function openGalleryManagerModal() {
+            renderGalleryManagerList();
+            document.getElementById('gallery-manager-modal').classList.remove('hidden');
+        }
+
+        function renderGalleryManagerList() {
+            const listEl = document.getElementById('gallery-manager-list');
+            const gallery = appData.gallery || [];
+
+            if (gallery.length === 0) {
+                listEl.innerHTML = '<div class="text-stone-400 py-6 text-center">相簿內尚無相片</div>';
+                return;
+            }
+
+            listEl.innerHTML = gallery.map((g, idx) => {
+                let name = '貓貓們';
+                if (g.target === 'cat_kinako') name = 'Kinako';
+                if (g.target === 'cat_sumi') name = 'Sumi';
+
+                return `
+                    <div class="flex items-center justify-between p-2 rounded-xl bg-stone-50 border border-stone-200/60">
+                        <div class="flex items-center gap-3">
+                            <img src="${g.url}" class="w-12 h-12 rounded-lg object-cover border border-stone-200" alt="相片">
+                            <div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="bg-brand-100 text-brand-800 text-[10px] font-bold px-1.5 py-0.2 rounded">${name}</span>
+                                    <span class="text-stone-400 font-mono text-[11px]">${g.date}</span>
+                                </div>
+                                <p class="text-stone-700 font-medium truncate max-w-[180px] mt-0.5">${g.caption || '-'}</p>
+                            </div>
+                        </div>
+                        <button onclick="deleteGalleryPhoto('${g.id}')" title="刪除這張照片" class="text-stone-300 hover:text-red-500 p-2 transition">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function deleteGalleryPhoto(id) {
+            if (!confirm('確定刪除這張照片嗎？')) return;
+            appData.gallery = (appData.gallery || []).filter(g => g.id !== id);
+            saveData();
+            renderGalleryManagerList();
+            renderGalleryPhoto();
+        }
+
+        // ================= 1. 飲食日誌渲染 =================
         function renderDietRecords() {
             const cat = getCurrentCat();
             const records = (cat.dietRecords || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1355,7 +1747,6 @@
             }
             emptyTip.classList.add('hidden');
 
-            // 卡片模式
             cardBox.innerHTML = records.map(d => {
                 const totalGrams = (Number(d.amount) || 0) + (Number(d.soupAmount) || 0);
                 return `
@@ -1391,7 +1782,6 @@
                 `;
             }).join('');
 
-            // 條列表格模式
             tableRows.innerHTML = records.map(d => {
                 const totalGrams = (Number(d.amount) || 0) + (Number(d.soupAmount) || 0);
                 return `
@@ -1413,7 +1803,7 @@
             }).join('');
         }
 
-        // 2. 觀察日誌渲染
+        // ================= 2. 觀察日誌渲染 =================
         function renderObservations() {
             const cat = getCurrentCat();
             const list = (cat.observations || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1502,7 +1892,7 @@
             }).join('');
         }
 
-        // 3. 生活日誌渲染
+        // ================= 3. 生活日誌渲染 =================
         function renderLifeRecords() {
             const cat = getCurrentCat();
             const list = (cat.lifeRecords || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1574,7 +1964,7 @@
             }).join('');
         }
 
-        // 4. 就醫日誌渲染
+        // ================= 4. 就醫日誌渲染 =================
         function renderMedicalRecords() {
             const cat = getCurrentCat();
             const records = (cat.medicalRecords || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1644,7 +2034,7 @@
             `).join('');
         }
 
-        // 5. 生活開銷帳本 (歸屬支援 Kinako / Sumi / 貓貓們)
+        // ================= 5. 生活開銷帳本 =================
         function setExpenseCatFilter(val) {
             currentExpenseCatFilter = val;
             document.querySelectorAll('#exp-cat-filter button').forEach(b => {
@@ -1881,7 +2271,7 @@
             document.getElementById(id).classList.add('hidden');
         }
 
-        // 1. 飲食 (主食品項 + 湯罐品項)
+        // 1. 飲食
         function openDietModal() {
             document.getElementById('diet-modal-title').innerHTML = '<span class="text-brand-500"><i class="fa-solid fa-bowl-food"></i></span> 記錄飲食';
             document.getElementById('diet-edit-id').value = '';
@@ -2263,7 +2653,7 @@
             renderReminders();
         }
 
-        // 體重
+        // 5. 體重
         function openWeightModal() {
             const cat = getCurrentCat();
             renderWeightHistoryRows(cat);
@@ -2324,7 +2714,7 @@
             }
         }
 
-        // 開銷
+        // 6. 開銷
         function openExpenseModal() {
             document.getElementById('exp-modal-title').innerHTML = '<span class="text-emerald-600"><i class="fa-solid fa-receipt"></i></span> 記一筆生活開銷';
             document.getElementById('exp-edit-id').value = '';
@@ -2402,7 +2792,7 @@
             renderExpenses();
         }
 
-        // 貓咪檔案
+        // 7. 貓咪檔案
         function openCatEditModal() {
             const cat = getCurrentCat();
             tempAvatarBase64 = cat.photo || '';
@@ -2497,6 +2887,14 @@
                             const existSharedIds = new Set(appData.sharedExpenses.map(s => s.id));
                             imported.sharedExpenses.forEach(s => {
                                 if (!existSharedIds.has(s.id)) appData.sharedExpenses.push(s);
+                            });
+                        }
+
+                        if (imported.gallery) {
+                            if (!appData.gallery) appData.gallery = [];
+                            const existPIds = new Set(appData.gallery.map(p => p.id));
+                            imported.gallery.forEach(p => {
+                                if (!existPIds.has(p.id)) appData.gallery.push(p);
                             });
                         }
                     } else {
