@@ -15,6 +15,10 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
+    <!-- Firebase SDK (相容版) -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
     <script>
         tailwind.config = {
             theme: {
@@ -53,7 +57,6 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
-        /* 滑鼠拖曳手把樣式 */
         .resizer-handle {
             cursor: col-resize;
             user-select: none;
@@ -88,6 +91,12 @@
 
                 <div class="h-6 w-px bg-stone-200 mx-1 hidden sm:block"></div>
 
+                <!-- 雲端同步即時狀態徽章 -->
+                <div id="sync-status-badge" class="px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-stone-100 text-stone-500 border border-stone-200 flex items-center gap-1.5 shadow-2xs">
+                    <span class="w-2 h-2 rounded-full bg-amber-400 animate-pulse"></span>
+                    <span>雲端連線中...</span>
+                </div>
+
                 <div class="flex items-center gap-2">
                     <button onclick="exportData()" title="匯出 JSON 備份檔" class="px-3 py-1.5 bg-white border border-stone-200 hover:border-brand-300 hover:bg-brand-50 text-stone-600 hover:text-brand-700 rounded-xl text-xs font-medium transition flex items-center gap-1.5 shadow-2xs">
                         <i class="fa-solid fa-cloud-arrow-down text-brand-500"></i>
@@ -106,22 +115,17 @@
     <!-- 主體內容 -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex-1 w-full space-y-6">
 
-        <!-- 智慧回診 / 疫苗 / 生活提醒橫幅 -->
         <div id="reminder-banner-container"></div>
-
-        <!-- 貓咪基本資料卡 -->
         <section id="cat-profile-banner" class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm relative overflow-hidden"></section>
 
-        <!-- 核心功能區塊：左右分欄 -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            <!-- 左側主欄 (8欄)：可滑鼠左右拖曳縮放的 [體重管理 + 生活相簿] -> 飲食日誌 -> 觀察日誌 -> 生活日誌 -> 就醫日誌 -->
             <div class="lg:col-span-8 space-y-6">
 
-                <!-- 頂層支援滑鼠左右拖移縮放的彈性容器 (Flex Resizable Layout) -->
+                <!-- 頂層可滑鼠左右拖移縮放的彈性容器 -->
                 <div id="resizable-dashboard-row" class="flex flex-col md:flex-row gap-0 bg-transparent relative w-full items-stretch">
                     
-                    <!-- 1. 精巧版體重卡片 (預設 35% 寬度，可拖曳自訂) -->
+                    <!-- 1. 精巧版體重卡片 -->
                     <div id="weight-box" class="bg-cardbg rounded-3xl p-4 border border-stone-200/80 shadow-sm flex flex-col justify-between overflow-hidden" style="width: 35%; min-width: 220px;">
                         <div class="flex items-center justify-between mb-2">
                             <div class="flex items-center gap-2">
@@ -135,7 +139,6 @@
                             </button>
                         </div>
 
-                        <!-- 體重數字 -->
                         <div class="flex items-baseline justify-between px-1 my-2">
                             <div>
                                 <span class="text-[10px] text-stone-400 block font-medium">最新測量</span>
@@ -146,7 +149,6 @@
                             </div>
                         </div>
 
-                        <!-- 走勢圖表 -->
                         <div class="relative h-28 w-full mt-2">
                             <canvas id="weightChart"></canvas>
                             <div id="weight-empty-tip" class="hidden absolute inset-0 flex items-center justify-center bg-white/90 rounded-xl text-stone-400 text-[11px]">
@@ -155,12 +157,12 @@
                         </div>
                     </div>
 
-                    <!-- 滑鼠拖曳把手 (Splitter Resizer Bar) -->
+                    <!-- 滑鼠拖曳手把 -->
                     <div id="drag-resizer" class="resizer-handle hidden md:flex items-center justify-center w-3 mx-1 my-2 rounded-full bg-stone-200/80 hover:bg-brand-500 transition cursor-col-resize group z-10" title="按住左右拖曳可調整體重與相簿寬度">
                         <div class="w-1 h-8 rounded-full bg-stone-400 group-hover:bg-white"></div>
                     </div>
 
-                    <!-- 2. 大尺寸貓貓生活寫真隨機相簿 (可拖曳縮放，高度擴大至 300px) -->
+                    <!-- 2. 大尺寸貓貓生活寫真隨機相簿 -->
                     <div id="gallery-box" class="flex-1 bg-cardbg rounded-3xl p-4 border border-stone-200/80 shadow-sm flex flex-col justify-between overflow-hidden relative" style="min-width: 280px;">
                         <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                             <div class="flex items-center gap-2">
@@ -186,11 +188,9 @@
                             </div>
                         </div>
 
-                        <!-- 放大版相簿輪播畫面 (高度 300px，支援點擊全圖預覽) -->
                         <div class="relative h-[300px] w-full rounded-2xl overflow-hidden group bg-stone-900 cursor-zoom-in" onclick="openPhotoLightbox()" onmouseenter="pauseSlideshow()" onmouseleave="resumeSlideshow()" title="點一下看全螢幕大圖">
                             <img id="gallery-current-img" class="w-full h-full object-cover transition-all duration-700 group-hover:scale-102" src="" alt="貓咪生活照">
                             
-                            <!-- 底部漸層浮條 -->
                             <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-3.5 pt-8 text-white flex items-end justify-between pointer-events-none">
                                 <div class="space-y-1 max-w-[80%] truncate">
                                     <div class="flex items-center gap-2">
@@ -204,7 +204,6 @@
                                 <span id="gallery-counter" class="text-[11px] font-mono bg-black/50 px-2 py-1 rounded-lg text-white/90 backdrop-blur-xs border border-white/10">1 / 1</span>
                             </div>
 
-                            <!-- 上一張/下一張按鈕 -->
                             <button onclick="event.stopPropagation(); prevPhoto();" class="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition hover:bg-black/70 shadow-md">
                                 <i class="fa-solid fa-chevron-left text-xs"></i>
                             </button>
@@ -216,7 +215,7 @@
 
                 </div>
 
-                <!-- 1. 飲食日誌 (支援雙品項湯罐混搭、雙檢視切換) -->
+                <!-- 1. 飲食日誌 -->
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-4">
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-100 pb-4">
                         <div class="flex items-center gap-2">
@@ -268,7 +267,7 @@
                     </div>
                 </div>
 
-                <!-- 2. 觀察日誌 (雙檢視切換) -->
+                <!-- 2. 觀察日誌 -->
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-4">
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-100 pb-4">
                         <div class="flex items-center gap-2">
@@ -317,7 +316,7 @@
                     </div>
                 </div>
 
-                <!-- 3. 生活日誌 (雙檢視切換，項目多選) -->
+                <!-- 3. 生活日誌 -->
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-4">
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-100 pb-4">
                         <div class="flex items-center gap-2">
@@ -367,7 +366,7 @@
                     </div>
                 </div>
 
-                <!-- 4. 就醫日誌 (雙檢視切換) -->
+                <!-- 4. 就醫日誌 -->
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-4">
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-100 pb-4">
                         <div class="flex items-center gap-2">
@@ -420,7 +419,7 @@
 
             </div>
 
-            <!-- 右側欄：生活開銷帳本 (歸屬支援 Kinako / Sumi / 貓貓們) -->
+            <!-- 右側欄：生活開銷帳本 -->
             <div class="lg:col-span-4 space-y-6">
 
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-5">
@@ -436,7 +435,6 @@
                         </button>
                     </div>
 
-                    <!-- 快速篩選按鈕列 (全體 / Kinako / Sumi / 貓貓們) -->
                     <div class="space-y-2 bg-stone-50 p-3 rounded-2xl border border-stone-200/60 text-xs">
                         <div class="flex items-center justify-between">
                             <span class="text-stone-500 font-semibold text-[11px]">查看對象：</span>
@@ -457,7 +455,6 @@
                         </div>
                     </div>
 
-                    <!-- 雙統計卡片 -->
                     <div class="grid grid-cols-2 gap-3">
                         <div class="bg-gradient-to-br from-amber-50 to-orange-50/50 p-4 rounded-2xl border border-amber-100">
                             <span class="text-[11px] font-semibold text-amber-800/70">篩選本月花費</span>
@@ -526,7 +523,6 @@
             </div>
             <form onsubmit="saveBatchGalleryPhotos(event)" class="mt-4 space-y-3.5 text-xs">
                 
-                <!-- 多圖選取區塊 (支援 multiple 多選) -->
                 <div class="space-y-2">
                     <div id="photo-drop-zone" class="relative border-2 border-dashed border-stone-200 hover:border-brand-400 rounded-2xl p-4 text-center cursor-pointer transition bg-stone-50">
                         <div id="photo-upload-placeholder" class="py-4 space-y-1">
@@ -537,7 +533,6 @@
                         <input type="file" id="gallery-batch-input" accept="image/*" multiple required class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleBatchFileSelect(event)">
                     </div>
 
-                    <!-- 選取後的縮圖牆預覽 (可單張移除) -->
                     <div id="batch-preview-wrapper" class="hidden space-y-1.5">
                         <div class="flex items-center justify-between text-stone-500 font-semibold px-1">
                             <span id="batch-count-tip">已選取 0 張照片</span>
@@ -577,7 +572,7 @@
         </div>
     </div>
 
-    <!-- B. 相簿批量管理 Modal (支援全選、多選批量刪除) -->
+    <!-- B. 相簿批量管理 Modal -->
     <div id="gallery-manager-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
@@ -587,7 +582,6 @@
                 <button onclick="closeModal('gallery-manager-modal')" class="text-stone-400 hover:text-stone-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             
-            <!-- 批量操作控制列 -->
             <div class="mt-4 flex flex-wrap items-center justify-between gap-2 p-2.5 bg-stone-50 rounded-2xl border border-stone-200/60 text-xs">
                 <div class="flex items-center gap-3">
                     <label class="flex items-center gap-1.5 cursor-pointer font-bold text-stone-700">
@@ -606,7 +600,6 @@
                 </div>
             </div>
 
-            <!-- 相片清單卡片格 -->
             <div class="mt-3">
                 <div id="gallery-manager-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-80 overflow-y-auto hide-scrollbar pr-1 text-xs"></div>
             </div>
@@ -835,7 +828,7 @@
         </div>
     </div>
 
-    <!-- 3. 生活 Modal (護理項目改為 Checkbox 多選) -->
+    <!-- 3. 生活 Modal -->
     <div id="life-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
@@ -1159,6 +1152,27 @@
 
     <!-- JavaScript 核心程式碼 -->
     <script>
+        // ================= 您的專屬 Firebase 金鑰配置 =================
+        const firebaseConfig = {
+            apiKey: "AIzaSyAAISsQDlwW4G7UomWbRUeUCVvVlYoNmhE",
+            authDomain: "sk2-catlog.firebaseapp.com",
+            databaseURL: "https://sk2-catlog-default-rtdb.firebaseio.com",
+            projectId: "sk2-catlog",
+            storageBucket: "sk2-catlog.firebasestorage.app",
+            messagingSenderId: "930192477652",
+            appId: "1:930192477652:web:7f1f59aa83cbdf38fc5a41",
+            measurementId: "G-ER361LTZ7K"
+        };
+
+        // 初始化 Firebase
+        let firebaseDb = null;
+        try {
+            firebase.initializeApp(firebaseConfig);
+            firebaseDb = firebase.database();
+        } catch (err) {
+            console.error("Firebase 初始化失敗：", err);
+        }
+
         const PERMANENT_STORAGE_KEY = 'meowlog_permanent_data';
 
         const DEFAULT_AVATARS = {
@@ -1263,12 +1277,11 @@
         let expenseDoughnutInstance = null;
         let expenseBarInstance = null;
 
-        // 相簿輪播控制
         let currentPhotoIndex = 0;
         let isPhotoShuffle = true;
         let slideshowTimer = null;
-        let batchSelectedFilesBase64 = []; // 暫存批量多選相片
-        let managerSelectedPhotoIds = new Set(); // 批量刪除勾選集合
+        let batchSelectedFilesBase64 = [];
+        let managerSelectedPhotoIds = new Set();
 
         const viewPreferences = {
             diet: localStorage.getItem('meowlog_view_diet') || 'card',
@@ -1303,8 +1316,6 @@
                 });
             }
 
-            saveData();
-
             const today = new Date().toISOString().split('T')[0];
             ['diet-date', 'obs-date', 'life-date', 'med-date', 'exp-date', 'new-w-date', 'gallery-date'].forEach(id => {
                 const el = document.getElementById(id);
@@ -1320,19 +1331,76 @@
                 if (listSoup && !listSoup.contains(e.target) && e.target !== inputSoup) listSoup.classList.add('hidden');
             });
 
-            // 初始化滑鼠拖曳縮放區塊
             initResizableRow();
-
             renderAll();
             startSlideshow();
+
+            // 啟動 Firebase 雲端即時雙向同步
+            initFirebaseSync();
+        }
+
+        // ================= 雲端即時同步核心邏輯 =================
+        function updateSyncBadge(status, text) {
+            const badge = document.getElementById('sync-status-badge');
+            if (!badge) return;
+            if (status === 'connected') {
+                badge.className = "px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200 flex items-center gap-1.5 shadow-2xs";
+                badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-emerald-500"></span><span>雲端已連線 (即時同步)</span>';
+            } else if (status === 'syncing') {
+                badge.className = "px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-amber-50 text-amber-700 border border-amber-200 flex items-center gap-1.5 shadow-2xs";
+                badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span><span>雲端同步中...</span>';
+            } else {
+                badge.className = "px-2.5 py-1 rounded-xl text-[11px] font-semibold bg-stone-100 text-stone-500 border border-stone-200 flex items-center gap-1.5 shadow-2xs";
+                badge.innerHTML = '<span class="w-2 h-2 rounded-full bg-stone-400"></span><span>離線模式</span>';
+            }
+        }
+
+        let isIncomingCloudUpdate = false;
+
+        function initFirebaseSync() {
+            if (!firebaseDb) {
+                updateSyncBadge('offline');
+                return;
+            }
+
+            const dbRef = firebaseDb.ref('sk2_cats_data');
+
+            // 監聽雲端資料變動 (A電腦改完，B電腦立刻自動更新)
+            dbRef.on('value', (snapshot) => {
+                const cloudData = snapshot.val();
+                if (cloudData && cloudData.cats) {
+                    isIncomingCloudUpdate = true;
+                    appData = cloudData;
+                    // 本地備份快取
+                    localStorage.setItem(PERMANENT_STORAGE_KEY, JSON.stringify(appData));
+                    renderAll();
+                    updateSyncBadge('connected');
+                    isIncomingCloudUpdate = false;
+                } else {
+                    // 若雲端尚無資料，自動將當前本地資料同步上雲端
+                    saveData();
+                    updateSyncBadge('connected');
+                }
+            }, (error) => {
+                console.warn("雲端讀取規則受限或連線問題：", error);
+                updateSyncBadge('offline');
+            });
         }
 
         function saveData() {
+            // 儲存至本地快取
             localStorage.setItem(PERMANENT_STORAGE_KEY, JSON.stringify(appData));
-        }
 
-        function getCurrentCat() {
-            return appData.cats.find(c => c.id === appData.activeCatId) || appData.cats[0];
+            // 即時同步推送到 Firebase 雲端
+            if (firebaseDb && !isIncomingCloudUpdate) {
+                updateSyncBadge('syncing');
+                firebaseDb.ref('sk2_cats_data').set(appData).then(() => {
+                    updateSyncBadge('connected');
+                }).catch(err => {
+                    console.error("雲端同步失敗：", err);
+                    updateSyncBadge('offline');
+                });
+            }
         }
 
         // ================= 滑鼠拖曳縮放 Splitter 功能 =================
@@ -1342,7 +1410,6 @@
             const weightBox = document.getElementById('weight-box');
             if (!row || !resizer || !weightBox) return;
 
-            // 還原上次拖曳記憶的寬度比例
             const savedWeightWidth = localStorage.getItem('meowlog_weight_box_width');
             if (savedWeightWidth && window.innerWidth >= 768) {
                 weightBox.style.width = savedWeightWidth;
@@ -1363,7 +1430,6 @@
                 const offsetX = e.clientX - rowRect.left;
                 const totalWidth = rowRect.width;
 
-                // 限制體重區寬度比例在 20% 到 60% 之間
                 let percentage = (offsetX / totalWidth) * 100;
                 if (percentage < 20) percentage = 20;
                 if (percentage > 60) percentage = 60;
@@ -1372,7 +1438,6 @@
                 weightBox.style.width = newWidthStr;
                 localStorage.setItem('meowlog_weight_box_width', newWidthStr);
 
-                // 拖曳時即時重繪走勢圖以適應新寬度
                 if (weightChartInstance) {
                     weightChartInstance.resize();
                 }
@@ -1386,189 +1451,6 @@
                     document.body.style.userSelect = '';
                 }
             });
-        }
-
-        function switchView(module, mode) {
-            viewPreferences[module] = mode;
-            localStorage.setItem(`meowlog_view_${module}`, mode);
-            updateViewUI(module);
-            if (module === 'diet') renderDietRecords();
-            if (module === 'obs') renderObservations();
-            if (module === 'life') renderLifeRecords();
-            if (module === 'med') renderMedicalRecords();
-        }
-
-        function updateViewUI(module) {
-            const mode = viewPreferences[module];
-            const cardBtn = document.getElementById(`${module}-card-btn`);
-            const listBtn = document.getElementById(`${module}-list-btn`);
-            const cardBox = document.getElementById(module === 'med' ? 'medical-card-container' : `${module}-card-container`);
-            const listBox = document.getElementById(module === 'med' ? 'medical-list-container' : `${module}-list-container`);
-
-            const activeClass = "px-2.5 py-1 rounded-lg transition flex items-center gap-1 bg-white text-stone-800 shadow-2xs font-bold";
-            const inactiveClass = "px-2.5 py-1 rounded-lg transition flex items-center gap-1 text-stone-500 hover:text-stone-800 font-medium";
-
-            if (mode === 'card') {
-                if (cardBtn) cardBtn.className = activeClass;
-                if (listBtn) listBtn.className = inactiveClass;
-                if (cardBox) cardBox.classList.remove('hidden');
-                if (listBox) listBox.classList.add('hidden');
-            } else {
-                if (listBtn) listBtn.className = activeClass;
-                if (cardBtn) cardBtn.className = inactiveClass;
-                if (cardBox) cardBox.classList.add('hidden');
-                if (listBox) listBox.classList.remove('hidden');
-            }
-        }
-
-        function renderAll() {
-            renderCatTabs();
-            renderCatProfile();
-            renderReminders();
-            renderWeightChart();
-            renderGalleryPhoto();
-            
-            ['diet', 'obs', 'life', 'med'].forEach(m => updateViewUI(m));
-
-            renderDietRecords();
-            renderObservations();
-            renderLifeRecords();
-            renderMedicalRecords();
-            renderExpenses();
-        }
-
-        function renderCatTabs() {
-            const container = document.getElementById('cat-tabs-container');
-            container.innerHTML = appData.cats.map(cat => {
-                const isActive = cat.id === appData.activeCatId;
-                return `
-                    <button onclick="switchCat('${cat.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition ${
-                        isActive ? 'bg-brand-500 text-white shadow-xs' : 'text-stone-500 hover:text-stone-800'
-                    }">
-                        <img src="${cat.photo}" class="w-5 h-5 rounded-full object-cover border border-white/50" alt="${cat.name}">
-                        <span>${cat.name}</span>
-                    </button>
-                `;
-            }).join('');
-        }
-
-        function switchCat(id) {
-            appData.activeCatId = id;
-            saveData();
-            renderAll();
-        }
-
-        function renderCatProfile() {
-            const cat = getCurrentCat();
-            const weights = cat.weights || [];
-            const latestWeight = weights.length > 0 ? weights[weights.length - 1].weight + ' kg' : '待記錄 (0.00 kg)';
-
-            let ageStr = '未設定生日';
-            if (cat.birthday) {
-                const diffTime = Math.abs(new Date() - new Date(cat.birthday));
-                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                const years = Math.floor(diffDays / 365);
-                const months = Math.floor((diffDays % 365) / 30);
-                ageStr = `${years} 歲 ${months} 個月`;
-            }
-
-            let adoptStr = '';
-            if (cat.adoptDate) {
-                const diffAdopt = Math.abs(new Date() - new Date(cat.adoptDate));
-                const daysTogether = Math.floor(diffAdopt / (1000 * 60 * 60 * 24));
-                const yearsTogether = Math.floor(daysTogether / 365);
-                const monthsTogether = Math.floor((daysTogether % 365) / 30);
-                adoptStr = `回家 ${yearsTogether > 0 ? yearsTogether + '年' : ''}${monthsTogether}個月 (第 ${daysTogether} 天)`;
-            }
-
-            document.getElementById('cat-profile-banner').innerHTML = `
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
-                    <div class="flex items-center gap-5">
-                        <img src="${cat.photo}" class="w-20 h-20 rounded-2xl object-cover border-2 border-brand-200/80 shadow-md" alt="${cat.name}">
-                        <div>
-                            <div class="flex items-center gap-2">
-                                <h1 class="text-xl font-bold text-stone-800">${cat.name}</h1>
-                                <span class="text-xs bg-brand-50 text-brand-700 font-semibold px-2 py-0.5 rounded-full border border-brand-200">${cat.breed || '米克斯'}</span>
-                                <span class="text-xs bg-stone-100 text-stone-600 px-2 py-0.5 rounded-full">${cat.gender || '已結紮'}</span>
-                            </div>
-                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-xs text-stone-500">
-                                <span><i class="fa-solid fa-cake-candles text-brand-500 mr-1"></i>年齡：<strong class="text-stone-700">${ageStr}</strong></span>
-                                ${adoptStr ? `<span><i class="fa-solid fa-house-chimney-heart text-rose-500 mr-1"></i>${adoptStr}</span>` : ''}
-                                <span><i class="fa-solid fa-weight-scale text-amber-500 mr-1"></i>體重：<strong class="text-stone-700">${latestWeight}</strong></span>
-                                <span><i class="fa-solid fa-microchip text-brand-500 mr-1"></i>晶片：${cat.chip || '未植入'}</span>
-                            </div>
-                        </div>
-                    </div>
-                    <button onclick="openCatEditModal()" class="self-start sm:self-center px-4 py-2 bg-stone-100 hover:bg-brand-50 hover:text-brand-700 hover:border-brand-200 border border-stone-200 text-stone-700 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs">
-                        <i class="fa-solid fa-user-pen"></i> 編輯檔案與照片
-                    </button>
-                </div>
-            `;
-        }
-
-        function renderReminders() {
-            const cat = getCurrentCat();
-            const container = document.getElementById('reminder-banner-container');
-            const now = new Date();
-            const alerts = [];
-
-            (cat.medicalRecords || []).forEach(r => {
-                if (!r.nextDate) return;
-                if ((appData.dismissedReminders || []).includes(r.id)) return;
-                const isFulfilled = (cat.medicalRecords || []).some(other => other.id !== r.id && other.date >= r.nextDate);
-                if (isFulfilled) return;
-
-                const target = new Date(r.nextDate);
-                const diffDays = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
-                alerts.push({ id: r.id, type: '就醫', note: r.nextNote || '回診追蹤', date: r.nextDate, diffDays });
-            });
-
-            (cat.lifeRecords || []).forEach(l => {
-                if (!l.nextDate) return;
-                if ((appData.dismissedReminders || []).includes(l.id)) return;
-                const isFulfilled = (cat.lifeRecords || []).some(other => other.id !== l.id && other.date >= l.nextDate);
-                if (isFulfilled) return;
-
-                const target = new Date(l.nextDate);
-                const diffDays = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
-                alerts.push({ id: l.id, type: '生活', note: l.nextNote || '生活護理提醒', date: l.nextDate, diffDays });
-            });
-
-            if (alerts.length === 0) {
-                container.innerHTML = '';
-                return;
-            }
-
-            container.innerHTML = alerts.map(a => {
-                const isOverdue = a.diffDays < 0;
-                const isUrgent = a.diffDays >= 0 && a.diffDays <= 7;
-                const badgeClass = isOverdue ? 'bg-red-500 text-white' : isUrgent ? 'bg-amber-500 text-white' : 'bg-brand-100 text-brand-800';
-                const statusText = isOverdue ? `已逾期 ${Math.abs(a.diffDays)} 天` : a.diffDays === 0 ? '就是今天！' : `倒數 ${a.diffDays} 天`;
-
-                return `
-                    <div class="p-3 bg-amber-50/90 border border-amber-200/80 rounded-2xl flex items-center justify-between text-xs shadow-2xs">
-                        <div class="flex items-center gap-2 text-stone-700">
-                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs">
-                                <i class="fa-solid fa-bell"></i>
-                            </span>
-                            <span><strong>${cat.name}</strong> 提醒：[${a.type}] ${a.note}（預定：${a.date}）</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <span class="px-2.5 py-0.5 rounded-full font-bold text-[11px] ${badgeClass}">${statusText}</span>
-                            <button onclick="dismissReminder('${a.id}')" title="標記為已完成" class="text-stone-400 hover:text-emerald-600 px-2 py-0.5 border border-stone-200 rounded-lg bg-white text-[10px]">
-                                <i class="fa-solid fa-check"></i> 完成
-                            </button>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function dismissReminder(id) {
-            if (!appData.dismissedReminders) appData.dismissedReminders = [];
-            appData.dismissedReminders.push(id);
-            saveData();
-            renderReminders();
         }
 
         // ================= 縮小版體重走勢圖渲染 =================
@@ -1729,7 +1611,6 @@
             counterEl.innerText = `${currentPhotoIndex + 1} / ${list.length}`;
         }
 
-        // 點擊看高清大圖燈箱 (Lightbox)
         function openPhotoLightbox() {
             const list = appData.gallery || [];
             if (list.length === 0) return;
@@ -1750,7 +1631,6 @@
             document.getElementById('photo-lightbox').classList.add('hidden');
         }
 
-        // 鍵盤 ESC 關閉燈箱
         document.addEventListener('keydown', function(e) {
             if (e.key === 'Escape') closePhotoLightbox();
         });
@@ -1852,7 +1732,6 @@
             const date = document.getElementById('gallery-date').value;
             const caption = document.getElementById('gallery-caption-input').value || '可愛生活隨拍';
 
-            // 批量加入相簿庫
             batchSelectedFilesBase64.forEach((b, idx) => {
                 appData.gallery.unshift({
                     id: 'p_' + Date.now() + '_' + idx,
@@ -1867,7 +1746,7 @@
             saveData();
             closeModal('gallery-upload-modal');
             renderGalleryPhoto();
-            alert(`成功大量上傳 ${batchSelectedFilesBase64.length} 張相片至貓貓相簿！`);
+            alert(`成功大量上傳 ${batchSelectedFilesBase64.length} 張相片至貓貓相簿並同步到雲端！`);
             clearBatchSelected();
         }
 
@@ -1897,17 +1776,14 @@
 
                 return `
                     <div class="relative rounded-2xl border ${isChecked ? 'border-rose-400 ring-2 ring-rose-200' : 'border-stone-200/80'} bg-stone-50 p-2 flex flex-col justify-between group transition">
-                        <!-- 勾選框 -->
                         <div class="absolute top-3 left-3 z-10">
                             <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleSelectSinglePhoto('${g.id}', this.checked)" class="w-4 h-4 rounded text-rose-500 cursor-pointer shadow-xs">
                         </div>
                         
-                        <!-- 照片縮圖 (點擊可看大圖) -->
                         <div class="w-full aspect-square rounded-xl overflow-hidden bg-stone-200 cursor-pointer relative" onclick="previewImageDirect('${g.url}', '${name}', '${g.caption || ''}')">
                             <img src="${g.url}" class="w-full h-full object-cover">
                         </div>
 
-                        <!-- 簡介與個別刪除按鈕 -->
                         <div class="mt-2 flex items-center justify-between gap-1">
                             <div class="truncate">
                                 <span class="bg-brand-100 text-brand-800 text-[9px] font-bold px-1.5 py-0.2 rounded">${name}</span>
@@ -2459,7 +2335,7 @@
             });
         }
 
-        // ================= 智慧品牌搜尋 (主食 & 湯罐雙支援) =================
+        // ================= 智慧品牌搜尋 =================
         function getAllBrandCandidates() {
             const list = [...BRAND_PRESET_DICTIONARY];
             appData.cats.forEach(c => {
@@ -2526,12 +2402,11 @@
             }
         }
 
-        // ================= 操作與彈窗 =================
         function closeModal(id) {
             document.getElementById(id).classList.add('hidden');
         }
 
-        // 1. 飲食
+        // ================= 飲食、觀察、生活、就醫、體重、開銷、貓咪 動作邏輯 =================
         function openDietModal() {
             document.getElementById('diet-modal-title').innerHTML = '<span class="text-brand-500"><i class="fa-solid fa-bowl-food"></i></span> 記錄飲食';
             document.getElementById('diet-edit-id').value = '';
@@ -2617,7 +2492,6 @@
             renderDietRecords();
         }
 
-        // 2. 觀察
         function openObservationModal() {
             document.getElementById('obs-modal-title').innerHTML = '<span class="text-purple-600"><i class="fa-solid fa-magnifying-glass-plus"></i></span> 記錄觀察日誌';
             document.getElementById('obs-edit-id').value = '';
@@ -2723,7 +2597,6 @@
             renderObservations();
         }
 
-        // 3. 生活護理
         function openLifeModal() {
             document.getElementById('life-modal-title').innerHTML = '<span class="text-teal-600"><i class="fa-solid fa-scissors"></i></span> 記錄生活護理';
             document.getElementById('life-edit-id').value = '';
@@ -2814,7 +2687,6 @@
             renderReminders();
         }
 
-        // 4. 就醫
         function openMedicalModal() {
             document.getElementById('med-modal-title').innerHTML = '<span class="text-rose-500"><i class="fa-solid fa-stethoscope"></i></span> 新增就醫紀錄';
             document.getElementById('med-edit-id').value = '';
@@ -2913,7 +2785,6 @@
             renderReminders();
         }
 
-        // 5. 體重
         function openWeightModal() {
             const cat = getCurrentCat();
             renderWeightHistoryRows(cat);
@@ -2974,7 +2845,6 @@
             }
         }
 
-        // 6. 開銷
         function openExpenseModal() {
             document.getElementById('exp-modal-title').innerHTML = '<span class="text-emerald-600"><i class="fa-solid fa-receipt"></i></span> 記一筆生活開銷';
             document.getElementById('exp-edit-id').value = '';
@@ -3052,7 +2922,6 @@
             renderExpenses();
         }
 
-        // 7. 貓咪檔案
         function openCatEditModal() {
             const cat = getCurrentCat();
             tempAvatarBase64 = cat.photo || '';
@@ -3092,7 +2961,6 @@
             renderAll();
         }
 
-        // 備份匯出與匯入
         function exportData() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
             const dlAnchor = document.createElement('a');
@@ -3114,7 +2982,7 @@
                     const imported = JSON.parse(e.target.result);
                     if (!imported.cats) throw new Error("格式不正確");
 
-                    const doMerge = confirm("【智慧合併】\n點「確定」將合併這份紀錄（保留兩邊新增的項目）；\n點「取消」則完全覆蓋當前資料。");
+                    const doMerge = confirm("【智慧合併】\n點「確定」將合併這份紀錄；\n點「取消」則完全覆蓋當前資料。");
 
                     if (doMerge) {
                         imported.cats.forEach(impCat => {
@@ -3163,7 +3031,7 @@
 
                     saveData();
                     renderAll();
-                    alert("資料成功匯入！");
+                    alert("資料成功匯入並同步至雲端！");
                 } catch (err) {
                     alert("匯入失敗：檔案格式不正確。");
                 }
