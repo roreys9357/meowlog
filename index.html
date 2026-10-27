@@ -74,7 +74,6 @@
                 </div>
             </div>
 
-            <!-- 貓咪切換 Tab 與備份功能按鈕 -->
             <div class="flex items-center gap-3">
                 <div id="cat-tabs-container" class="flex p-1 bg-stone-100 rounded-2xl border border-stone-200/60 shadow-inner"></div>
 
@@ -130,7 +129,7 @@
                     </div>
                 </div>
 
-                <!-- 就醫日誌 (原就醫看診紀錄更名，支援編輯) -->
+                <!-- 就醫日誌 -->
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-4">
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-100 pb-4">
                         <div class="flex items-center gap-2">
@@ -204,7 +203,7 @@
                     </div>
                 </div>
 
-                <!-- 觀察日誌 (皮膚多部位多選 + 支援編輯) -->
+                <!-- 觀察日誌 -->
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-4">
                     <div class="flex items-center justify-between border-b border-stone-100 pb-4">
                         <div class="flex items-center gap-2">
@@ -228,7 +227,7 @@
 
             </div>
 
-            <!-- 右側欄：生活開銷帳本 (支援編輯) -->
+            <!-- 右側欄：生活開銷帳本 -->
             <div class="lg:col-span-4 space-y-6">
 
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-5">
@@ -276,7 +275,6 @@
                         </div>
                     </div>
 
-                    <!-- 圖表 1：支出類別佔比圓餅圖 -->
                     <div>
                         <span class="text-xs font-bold text-stone-600 block mb-2">類別支出比例</span>
                         <div class="relative h-44 w-full">
@@ -284,7 +282,6 @@
                         </div>
                     </div>
 
-                    <!-- 圖表 2：近半年花費長條圖 -->
                     <div class="pt-2 border-t border-stone-100">
                         <span class="text-xs font-bold text-stone-600 block mb-2">月度開銷趨勢</span>
                         <div class="relative h-36 w-full">
@@ -292,7 +289,6 @@
                         </div>
                     </div>
 
-                    <!-- 明細清單 -->
                     <div class="pt-2 border-t border-stone-100">
                         <span class="text-xs font-bold text-stone-600 block mb-2">明細清單</span>
                         <div id="expense-list-container" class="space-y-2 max-h-60 overflow-y-auto hide-scrollbar"></div>
@@ -306,9 +302,9 @@
 
     </main>
 
-    <!-- Modal 彈出視窗組件 (均具備新增與編輯狀態) -->
+    <!-- Modal 系列 -->
 
-    <!-- 1. 就醫 Modal (新增/編輯) -->
+    <!-- 就醫 Modal -->
     <div id="medical-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
@@ -370,7 +366,7 @@
         </div>
     </div>
 
-    <!-- 2. 體重管理 Modal -->
+    <!-- 體重 Modal -->
     <div id="weight-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
@@ -409,7 +405,7 @@
         </div>
     </div>
 
-    <!-- 3. 飲食紀錄 Modal (新增/編輯) -->
+    <!-- 飲食日誌 Modal (含品牌/品項智慧自動完成) -->
     <div id="diet-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
@@ -425,9 +421,16 @@
                         <label class="block font-semibold text-stone-600 mb-1">記錄日期 *</label>
                         <input type="date" id="diet-date" required class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-brand-200">
                     </div>
-                    <div>
-                        <label class="block font-semibold text-stone-600 mb-1">品項 / 品牌名稱 *</label>
-                        <input type="text" id="diet-item" placeholder="例如：Monge 瑪恩吉兔肉主食罐" required class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-brand-200">
+                    <!-- 智慧搜尋品項/品牌欄位 -->
+                    <div class="relative">
+                        <label class="block font-semibold text-stone-600 mb-1 flex items-center justify-between">
+                            <span>品項 / 品牌名稱 *</span>
+                            <span class="text-[10px] text-brand-600 font-normal"><i class="fa-solid fa-wand-magic-sparkles mr-0.5"></i>鍵入關鍵字智慧帶入</span>
+                        </label>
+                        <input type="text" id="diet-item" placeholder="例如輸入：瑪恩吉、皇家、汪喵..." autocomplete="off" required oninput="handleBrandAutocomplete(event)" onkeydown="handleBrandKeydown(event)" class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-brand-200">
+                        
+                        <!-- 智慧聯想下拉浮層 -->
+                        <div id="brand-autocomplete-list" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-stone-200 rounded-2xl shadow-xl z-50 max-h-48 overflow-y-auto hide-scrollbar p-1 text-xs"></div>
                     </div>
                 </div>
                 <div class="grid grid-cols-3 gap-3">
@@ -472,7 +475,7 @@
         </div>
     </div>
 
-    <!-- 4. 觀察日誌 Modal (支援皮膚多部位勾選 + 編輯) -->
+    <!-- 觀察日誌 Modal -->
     <div id="observation-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
@@ -498,14 +501,12 @@
                     </div>
                 </div>
 
-                <!-- 皮膚患部專用欄位 (支援多個部位同時勾選) -->
                 <div id="skin-fields-group" class="p-3.5 bg-purple-50/50 rounded-2xl border border-purple-100 space-y-3">
                     <div>
                         <label class="block font-bold text-purple-900 mb-1.5 flex items-center justify-between">
                             <span><i class="fa-solid fa-hand-dots mr-1 text-purple-600"></i> 好發/觀察部位 (可多選) *</span>
                             <span class="text-[10px] text-purple-500 font-normal">勾選多處免重複輸入</span>
                         </label>
-                        <!-- 多選 Checkbox 按鈕群 -->
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="obs-part-checkboxes">
                             <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-purple-100 hover:border-purple-300 cursor-pointer text-[11px] text-stone-700">
                                 <input type="checkbox" name="obs_parts" value="耳廓/耳後" class="rounded text-purple-600 focus:ring-purple-300">
@@ -562,7 +563,6 @@
                     </div>
                 </div>
 
-                <!-- 排便腸胃專用欄位 -->
                 <div id="poop-fields-group" class="p-3 bg-amber-50/50 rounded-2xl border border-amber-100 space-y-3 hidden">
                     <span class="block font-bold text-amber-900 text-[11px]"><i class="fa-solid fa-poop mr-1"></i> 排便與腸胃詳細</span>
                     <div class="grid grid-cols-2 gap-3">
@@ -601,7 +601,7 @@
         </div>
     </div>
 
-    <!-- 5. 花費 Modal (新增/編輯) -->
+    <!-- 花費 Modal -->
     <div id="expense-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
@@ -651,7 +651,7 @@
         </div>
     </div>
 
-    <!-- 6. 編輯貓咪 Modal -->
+    <!-- 編輯貓咪 Modal -->
     <div id="cat-edit-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
@@ -722,10 +722,39 @@
         const PERMANENT_STORAGE_KEY = 'meowlog_permanent_data';
         const VIEW_PREF_KEY = 'meowlog_med_view_style';
 
+        // 預設高品質照片
         const DEFAULT_AVATARS = {
             kinako: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=240&auto=format&fit=crop&q=80',
             sumi: 'https://images.unsplash.com/photo-1543852786-1cf6624b9987?w=240&auto=format&fit=crop&q=80'
         };
+
+        // 知名優質貓咪飲食品牌資料庫 (內建自動聯想補全字典)
+        const BRAND_PRESET_DICTIONARY = [
+            { name: "Monge 瑪恩吉 兔肉主食罐", type: "主食罐頭" },
+            { name: "Monge 瑪恩吉 鴨肉主食罐", type: "主食罐頭" },
+            { name: "Monge 瑪恩吉 天然處方/特級成貓飼料", type: "乾飼料" },
+            { name: "Royal Canin 法國皇家 K36 幼貓糧", type: "乾飼料" },
+            { name: "Royal Canin 法國皇家 IN27 室內成貓糧", type: "乾飼料" },
+            { name: "Royal Canin 法國皇家 濕糧/主食肉汁包", type: "主食罐頭" },
+            { name: "Hill's 希爾思 頂級成貓雞肉配方", type: "乾飼料" },
+            { name: "Hill's 希爾思 腸胃/皮膚呵護處方罐", type: "主食罐頭" },
+            { name: "Wellness CORE 無穀經典高蛋白系列", type: "主食罐頭" },
+            { name: "Wellness 寵物健康 經典室內貓乾糧", type: "乾飼料" },
+            { name: "K9 Natural 紐西蘭生肉凍乾 (牛肉鱈魚)", type: "鮮食凍乾" },
+            { name: "K9 Natural 紐西蘭無穀主食罐", type: "主食罐頭" },
+            { name: "汪喵星球 頂級無膠純肉主食罐", type: "主食罐頭" },
+            { name: "汪喵星球 冷凍乾燥生肉糧", type: "鮮食凍乾" },
+            { name: "汪喵星球 原肉無添加肉泥條", type: "零食肉泥" },
+            { name: "怪獸部落 98% 鮮肉主食糧", type: "乾飼料" },
+            { name: "怪獸部落 無膠寶寶/鮮肉主食罐", type: "主食罐頭" },
+            { name: "怪獸部落 100% 鮮肉肉泥", type: "零食肉泥" },
+            { name: "魔力喵 MAC's 德國精緻無穀主食罐", type: "主食罐頭" },
+            { name: "法米納 Farmina 天然頂級無穀成貓糧", type: "乾飼料" },
+            { name: "荒野饗宴 Taste of the Wild 洛磯山脈鹿肉鮭魚", type: "乾飼料" },
+            { name: "渴望 Orijen 原味鮮肉無穀全貓糧", type: "乾飼料" },
+            { name: "愛肯拿 ACANA 農場盛宴無穀貓糧", type: "乾飼料" },
+            { name: "CIAO 啾嚕液態肉泥條 (鮪魚/干貝)", type: "零食肉泥" }
+        ];
 
         const DEFAULT_DATA = {
             activeCatId: 'cat_kinako',
@@ -817,6 +846,15 @@
             ['med-date', 'diet-date', 'obs-date', 'exp-date', 'new-w-date'].forEach(id => {
                 const el = document.getElementById(id);
                 if (el) el.value = today;
+            });
+
+            // 監聽點擊外部以關閉自動完成建議浮層
+            document.addEventListener('click', function(e) {
+                const list = document.getElementById('brand-autocomplete-list');
+                const input = document.getElementById('diet-item');
+                if (list && !list.contains(e.target) && e.target !== input) {
+                    list.classList.add('hidden');
+                }
             });
 
             renderAll();
@@ -1040,7 +1078,6 @@
             }
         }
 
-        // 就醫日誌 (新增「編輯」按鈕)
         function renderMedicalRecords() {
             const cat = getCurrentCat();
             const records = (cat.medicalRecords || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1114,7 +1151,7 @@
             `).join('');
         }
 
-        // 飲食日誌 (新增「編輯」按鈕)
+        // 飲食日誌
         function renderDietRecords() {
             const cat = getCurrentCat();
             const records = (cat.dietRecords || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1151,7 +1188,7 @@
             `).join('');
         }
 
-        // 觀察日誌 (支援多部位標籤呈現 + 編輯按鈕)
+        // 觀察日誌
         function renderObservations() {
             const cat = getCurrentCat();
             const list = (cat.observations || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1169,7 +1206,6 @@
                 const isSkin = o.category === '皮膚狀況';
                 const tagColor = isSkin ? 'bg-purple-100 text-purple-700' : 'bg-amber-100 text-amber-800';
 
-                // 處理多部位顯示標籤
                 let partBadges = '';
                 if (isSkin) {
                     const partsArr = Array.isArray(o.parts) ? o.parts : (o.part ? [o.part] : []);
@@ -1211,7 +1247,7 @@
             }).join('');
         }
 
-        // 生活開銷帳本 (支援編輯)
+        // 生活開銷帳本
         function setExpenseCatFilter(val) {
             currentExpenseCatFilter = val;
             document.querySelectorAll('#exp-cat-filter button').forEach(b => {
@@ -1371,12 +1407,74 @@
             });
         }
 
+        // ================= 智慧品牌搜尋 (Autocomplete) 邏輯 =================
+        function getAllBrandCandidates() {
+            const list = [...BRAND_PRESET_DICTIONARY];
+            // 同時從兩隻貓已有的飲食紀錄中擷取自訂品項加入建議庫
+            appData.cats.forEach(c => {
+                (c.dietRecords || []).forEach(d => {
+                    if (d.item && !list.some(x => x.name.toLowerCase() === d.item.toLowerCase())) {
+                        list.push({ name: d.item, type: d.type || '主食罐頭' });
+                    }
+                });
+            });
+            return list;
+        }
+
+        function handleBrandAutocomplete(e) {
+            const query = e.target.value.trim().toLowerCase();
+            const listBox = document.getElementById('brand-autocomplete-list');
+
+            if (!query) {
+                listBox.classList.add('hidden');
+                return;
+            }
+
+            const candidates = getAllBrandCandidates();
+            const filtered = candidates.filter(item => {
+                return item.name.toLowerCase().includes(query);
+            });
+
+            if (filtered.length === 0) {
+                listBox.classList.add('hidden');
+                return;
+            }
+
+            listBox.innerHTML = filtered.slice(0, 8).map(item => `
+                <div onclick="selectBrandItem('${item.name.replace(/'/g, "\\'")}', '${item.type || '主食罐頭'}')" 
+                     class="p-2.5 hover:bg-brand-50 rounded-xl cursor-pointer transition flex items-center justify-between group">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-utensils text-brand-400 group-hover:text-brand-600"></i>
+                        <span class="font-medium text-stone-800">${item.name}</span>
+                    </div>
+                    <span class="text-[10px] bg-stone-100 text-stone-500 px-2 py-0.5 rounded-md group-hover:bg-brand-100 group-hover:text-brand-700">${item.type}</span>
+                </div>
+            `).join('');
+
+            listBox.classList.remove('hidden');
+        }
+
+        function handleBrandKeydown(e) {
+            const listBox = document.getElementById('brand-autocomplete-list');
+            if (e.key === 'Escape' && listBox) {
+                listBox.classList.add('hidden');
+            }
+        }
+
+        function selectBrandItem(name, type) {
+            document.getElementById('diet-item').value = name;
+            if (type) {
+                document.getElementById('diet-type').value = type;
+            }
+            document.getElementById('brand-autocomplete-list').classList.add('hidden');
+        }
+
         // ================= 操作與編輯邏輯 =================
         function closeModal(id) {
             document.getElementById(id).classList.add('hidden');
         }
 
-        // 就醫日誌：新增 & 編輯
+        // 就醫日誌
         function openMedicalModal() {
             document.getElementById('med-modal-title').innerHTML = '<span class="text-rose-500"><i class="fa-solid fa-stethoscope"></i></span> 新增就醫紀錄';
             document.getElementById('med-edit-id').value = '';
@@ -1409,7 +1507,7 @@
             document.getElementById('med-treatment').value = record.treatment || '';
             document.getElementById('med-next-date').value = record.nextDate || '';
             document.getElementById('med-next-note').value = record.nextNote || '';
-            document.getElementById('med-sync-container').classList.add('hidden'); // 編輯時避免重複連動花費
+            document.getElementById('med-sync-container').classList.add('hidden');
             document.getElementById('medical-modal').classList.remove('hidden');
         }
 
@@ -1420,7 +1518,6 @@
             const cost = Number(document.getElementById('med-cost').value || 0);
 
             if (editId) {
-                // 編輯更新
                 const idx = cat.medicalRecords.findIndex(r => r.id === editId);
                 if (idx !== -1) {
                     cat.medicalRecords[idx].date = document.getElementById('med-date').value;
@@ -1434,7 +1531,6 @@
                     cat.medicalRecords[idx].nextNote = document.getElementById('med-next-note').value;
                 }
             } else {
-                // 新增
                 const record = {
                     id: 'm_' + Date.now(),
                     date: document.getElementById('med-date').value,
@@ -1536,7 +1632,7 @@
             }
         }
 
-        // 飲食日誌：新增 & 編輯
+        // 飲食日誌
         function openDietModal() {
             document.getElementById('diet-modal-title').innerHTML = '<span class="text-brand-500"><i class="fa-solid fa-bowl-food"></i></span> 記錄飲食';
             document.getElementById('diet-edit-id').value = '';
@@ -1547,6 +1643,7 @@
             document.getElementById('diet-taste').value = '⭐⭐⭐⭐⭐';
             document.getElementById('diet-note').value = '';
             document.getElementById('diet-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('brand-autocomplete-list').classList.add('hidden');
             document.getElementById('diet-modal').classList.remove('hidden');
         }
 
@@ -1564,6 +1661,7 @@
             document.getElementById('diet-water').value = d.water || '';
             document.getElementById('diet-taste').value = d.taste;
             document.getElementById('diet-note').value = d.note || '';
+            document.getElementById('brand-autocomplete-list').classList.add('hidden');
             document.getElementById('diet-modal').classList.remove('hidden');
         }
 
@@ -1610,7 +1708,7 @@
             renderDietRecords();
         }
 
-        // 觀察日誌：新增 & 編輯 (多部位多選)
+        // 觀察日誌
         function openObservationModal() {
             document.getElementById('obs-modal-title').innerHTML = '<span class="text-purple-600"><i class="fa-solid fa-magnifying-glass-plus"></i></span> 記錄觀察日誌';
             document.getElementById('obs-edit-id').value = '';
@@ -1621,7 +1719,6 @@
             document.getElementById('obs-note').value = '';
             document.getElementById('obs-date').value = new Date().toISOString().split('T')[0];
 
-            // 清空所有多選部位 Checkbox
             document.querySelectorAll('input[name="obs_parts"]').forEach(cb => cb.checked = false);
             toggleObsFields();
             document.getElementById('observation-modal').classList.remove('hidden');
@@ -1641,7 +1738,6 @@
             document.getElementById('obs-vomit').value = o.vomit || '無嘔吐';
             document.getElementById('obs-note').value = o.note || '';
 
-            // 還原多部位勾選狀態
             const partsArr = Array.isArray(o.parts) ? o.parts : (o.part ? [o.part] : []);
             document.querySelectorAll('input[name="obs_parts"]').forEach(cb => {
                 cb.checked = partsArr.includes(cb.value);
@@ -1674,7 +1770,6 @@
             const editId = document.getElementById('obs-edit-id').value;
             const category = document.getElementById('obs-category').value;
 
-            // 收集多部位勾選值
             const selectedParts = [];
             if (category === '皮膚狀況') {
                 document.querySelectorAll('input[name="obs_parts"]:checked').forEach(cb => selectedParts.push(cb.value));
@@ -1719,7 +1814,7 @@
             renderObservations();
         }
 
-        // 花費帳本：新增 & 編輯
+        // 花費帳本
         function openExpenseModal() {
             document.getElementById('exp-modal-title').innerHTML = '<span class="text-emerald-600"><i class="fa-solid fa-receipt"></i></span> 記一筆生活開銷';
             document.getElementById('exp-edit-id').value = '';
@@ -1753,7 +1848,6 @@
             const editId = document.getElementById('exp-edit-id').value;
 
             if (editId) {
-                // 先在各貓中找到並移除舊紀錄（因可能更換了歸屬對象）
                 let oldExp = null;
                 appData.cats.forEach(c => {
                     const idx = (c.expenses || []).findIndex(x => x.id === editId);
@@ -1762,7 +1856,6 @@
                     }
                 });
 
-                // 加入到目標貓咪
                 const targetCat = appData.cats.find(c => c.id === targetCatId) || getCurrentCat();
                 if (!targetCat.expenses) targetCat.expenses = [];
                 targetCat.expenses.push({
