@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MeowLog 貓咪生活手帳 - 就醫・花費・飲食全方位管家</title>
+    <title>SK-II 貓咪生活手帳 - 就醫・花費・飲食・觀察全紀錄</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -66,10 +66,10 @@
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <span class="text-xl font-bold tracking-tight text-stone-800">MeowLog</span>
+                        <span class="text-xl font-extrabold tracking-tight text-stone-800">SK-II</span>
                         <span class="text-xs bg-brand-100 text-brand-700 font-semibold px-2 py-0.5 rounded-full border border-brand-200">貓咪生活手帳</span>
                     </div>
-                    <p class="text-[11px] text-stone-400">專屬 Kinako &amp; Sumi 的就醫・花費・飲食全紀錄</p>
+                    <p class="text-[11px] text-stone-400">專屬 Kinako &amp; Sumi 的就醫・花費・飲食・觀察全紀錄</p>
                 </div>
             </div>
 
@@ -211,25 +211,25 @@
                     </div>
                 </div>
 
-                <!-- 拆分模組 2：排便與腸胃觀察日誌 -->
+                <!-- 拆分模組 2：觀察日誌 -->
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-4">
                     <div class="flex items-center justify-between border-b border-stone-100 pb-4">
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 rounded-xl bg-amber-50 text-amber-700 flex items-center justify-center text-sm">
-                                <i class="fa-solid fa-poop"></i>
+                                <i class="fa-solid fa-clipboard-check"></i>
                             </div>
-                            <h2 class="text-base font-bold text-stone-800">排便與腸胃觀察日誌</h2>
+                            <h2 class="text-base font-bold text-stone-800">觀察日誌</h2>
                             <span id="poop-count-badge" class="text-xs bg-amber-50 text-amber-700 font-semibold px-2 py-0.5 rounded-full border border-amber-200/60">0 筆</span>
                         </div>
                         <button onclick="openPoopModal()" class="px-3.5 py-1.5 bg-amber-600 hover:bg-amber-700 text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-1">
-                            <i class="fa-solid fa-plus"></i> 記錄排便腸胃
+                            <i class="fa-solid fa-plus"></i> 記錄觀察
                         </button>
                     </div>
 
                     <div id="poop-list-container" class="space-y-3"></div>
                     <div id="poop-empty-tip" class="py-6 text-center text-stone-400 text-xs hidden">
                         <i class="fa-solid fa-heart-pulse text-2xl mb-1 text-stone-300"></i>
-                        <p>尚無排便觀察日誌，記錄今天的便便型態吧！</p>
+                        <p>尚無觀察日誌，記錄今天的排便與活力狀態吧！</p>
                     </div>
                 </div>
 
@@ -477,12 +477,12 @@
         </div>
     </div>
 
-    <!-- 獨立排便觀察 Modal -->
+    <!-- 獨立觀察日誌 Modal -->
     <div id="poop-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
                 <h3 class="font-bold text-base text-stone-800 flex items-center gap-2">
-                    <span class="text-amber-700"><i class="fa-solid fa-poop"></i></span> 記錄排便與腸胃日誌
+                    <span class="text-amber-700"><i class="fa-solid fa-clipboard-check"></i></span> 新增觀察日誌
                 </h3>
                 <button onclick="closeModal('poop-modal')" class="text-stone-400 hover:text-stone-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
@@ -526,13 +526,13 @@
                 </div>
 
                 <div>
-                    <label class="block font-semibold text-stone-600 mb-1">腸胃反應與細部備註</label>
-                    <input type="text" id="poop-note" placeholder="例如：顏色深褐色、無血絲黏液、肚子不脹" class="w-full px-3 py-2 border rounded-xl outline-none">
+                    <label class="block font-semibold text-stone-600 mb-1">身體觀察與細部備註</label>
+                    <input type="text" id="poop-note" placeholder="例如：顏色深褐正常、精神活力好、無血絲黏液" class="w-full px-3 py-2 border rounded-xl outline-none">
                 </div>
 
                 <div class="flex justify-end gap-2 pt-3">
                     <button type="button" onclick="closeModal('poop-modal')" class="px-4 py-2 border rounded-xl text-stone-600">取消</button>
-                    <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold">儲存排便觀察</button>
+                    <button type="submit" class="px-5 py-2 bg-amber-600 hover:bg-amber-700 text-white rounded-xl font-bold">儲存觀察</button>
                 </div>
             </form>
         </div>
@@ -1535,7 +1535,7 @@
         }
 
         function deletePoopRecord(id) {
-            if (!confirm('確定刪除這筆排便腸胃紀錄？')) return;
+            if (!confirm('確定刪除這筆觀察日誌？')) return;
             const cat = getCurrentCat();
             cat.poopRecords = cat.poopRecords.filter(p => p.id !== id);
             saveData();
