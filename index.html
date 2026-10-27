@@ -33,7 +33,6 @@
                             700: '#a75024',
                             800: '#874122',
                         },
-                        cream: '#fdfbf7',
                         cardbg: '#ffffff'
                     }
                 }
@@ -62,7 +61,7 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
             
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-500 to-amber-300 flex items-center justify-center text-white text-xl shadow-md shadow-brand-500/20">
+                <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-500 to-amber-300 flex items-center justify-center text-white text-lg shadow-md shadow-brand-500/20">
                     <i class="fa-solid fa-paw"></i>
                 </div>
                 <div>
@@ -70,7 +69,7 @@
                         <span class="text-xl font-bold tracking-tight text-stone-800">MeowLog</span>
                         <span class="text-xs bg-brand-100 text-brand-700 font-semibold px-2 py-0.5 rounded-full border border-brand-200">貓咪生活手帳</span>
                     </div>
-                    <p class="text-[11px] text-stone-400">專屬 Kinako & Sumi 的就醫・花費・飲食全紀錄</p>
+                    <p class="text-[11px] text-stone-400">專屬 Kinako &amp; Sumi 的就醫・花費・飲食全紀錄</p>
                 </div>
             </div>
 
@@ -102,6 +101,7 @@
 
         <div id="reminder-banner-container"></div>
 
+        <!-- 貓咪基本資料卡 (全新照片設計，移除怪異圖示) -->
         <section id="cat-profile-banner" class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm relative overflow-hidden">
             <!-- 動態注入貓咪資料 -->
         </section>
@@ -223,7 +223,7 @@
                             </div>
                             <h2 class="text-base font-bold text-stone-800">生活開銷帳本</h2>
                         </div>
-                        <button onclick="openExpenseModal()" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-1">
+                        <button onclick="openExpenseModal()" class="px-3.5 py-1.5 bg-emerald-600 hover:bg-emerald-700 text-white rounded-xl text-xs font-semibold shadow-sm transition flex items-center gap-1">
                             <i class="fa-solid fa-plus"></i> 記一筆
                         </button>
                     </div>
@@ -484,54 +484,69 @@
         </div>
     </div>
 
-    <!-- 編輯貓咪 Modal -->
+    <!-- 編輯貓咪 Modal (支援電腦上傳照片與即時預覽) -->
     <div id="cat-edit-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
                 <h3 class="font-bold text-base text-stone-800 flex items-center gap-2">
-                    <span class="text-brand-500"><i class="fa-solid fa-cat"></i></span> 編輯貓咪基本資料
+                    <span class="text-brand-500"><i class="fa-solid fa-camera"></i></span> 編輯貓咪檔案與照片
                 </h3>
                 <button onclick="closeModal('cat-edit-modal')" class="text-stone-400 hover:text-stone-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <form onsubmit="saveCatProfile(event)" class="mt-4 space-y-3.5 text-xs">
+            <form onsubmit="saveCatProfile(event)" class="mt-4 space-y-4 text-xs">
+                
+                <!-- 照片上傳區 -->
+                <div class="p-4 bg-brand-50/50 rounded-2xl border border-brand-100 flex items-center gap-4">
+                    <div class="relative w-16 h-16 rounded-2xl overflow-hidden border-2 border-brand-300 shadow-sm shrink-0 bg-stone-100">
+                        <img id="cat-preview-img" src="" alt="頭貼預覽" class="w-full h-full object-cover">
+                    </div>
+                    <div class="space-y-1.5 flex-1">
+                        <label class="block font-bold text-stone-700">貓咪相片</label>
+                        <div class="flex items-center gap-2">
+                            <label class="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-white rounded-xl text-xs font-semibold cursor-pointer shadow-2xs transition inline-flex items-center gap-1">
+                                <i class="fa-solid fa-upload"></i> 上傳本機照片
+                                <input type="file" id="cat-photo-file" accept="image/*" class="hidden" onchange="handleCatPhotoUpload(event)">
+                            </label>
+                        </div>
+                        <input type="text" id="cat-photo-url" oninput="updateCatPhotoPreview(this.value)" placeholder="或貼上照片網址 (https://...)" class="w-full px-2.5 py-1.5 border rounded-lg bg-white text-[11px] outline-none">
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block font-semibold text-stone-600 mb-1">名字 *</label>
-                        <input type="text" id="cat-name-input" required class="w-full px-3 py-2 border rounded-xl">
+                        <input type="text" id="cat-name-input" required class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-brand-200">
                     </div>
-                    <div>
-                        <label class="block font-semibold text-stone-600 mb-1">頭像 Emoji</label>
-                        <input type="text" id="cat-emoji-input" placeholder="🐱 或 🐈‍⬛" class="w-full px-3 py-2 border rounded-xl">
-                    </div>
-                </div>
-                <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block font-semibold text-stone-600 mb-1">品種</label>
-                        <input type="text" id="cat-breed-input" placeholder="例如：米克斯短毛" class="w-full px-3 py-2 border rounded-xl">
-                    </div>
-                    <div>
-                        <label class="block font-semibold text-stone-600 mb-1">性別狀態</label>
-                        <select id="cat-gender-input" class="w-full px-3 py-2 border rounded-xl bg-white">
-                            <option value="母貓 (已結紮)">母貓 (已結紮)</option>
-                            <option value="公貓 (已結紮)">公貓 (已結紮)</option>
-                            <option value="母貓 (未結紮)">母貓 (未結紮)</option>
-                            <option value="公貓 (未結紮)">公貓 (未結紮)</option>
-                        </select>
+                        <input type="text" id="cat-breed-input" placeholder="例如：米克斯 (墨黑短毛)" class="w-full px-3 py-2 border rounded-xl outline-none">
                     </div>
                 </div>
+
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-semibold text-stone-600 mb-1">生日 / 領養日</label>
-                        <input type="date" id="cat-birth-input" class="w-full px-3 py-2 border rounded-xl">
+                        <label class="block font-semibold text-stone-600 mb-1">性別狀態</label>
+                        <select id="cat-gender-input" class="w-full px-3 py-2 border rounded-xl bg-white outline-none">
+                            <option value="公貓 (已結紮)">公貓 (已結紮)</option>
+                            <option value="母貓 (已結紮)">母貓 (已結紮)</option>
+                            <option value="公貓 (未結紮)">公貓 (未結紮)</option>
+                            <option value="母貓 (未結紮)">母貓 (未結紮)</option>
+                        </select>
                     </div>
                     <div>
-                        <label class="block font-semibold text-stone-600 mb-1">晶片號碼</label>
-                        <input type="text" id="cat-chip-input" placeholder="15 碼晶片" class="w-full px-3 py-2 border rounded-xl">
+                        <label class="block font-semibold text-stone-600 mb-1">生日 / 領養日</label>
+                        <input type="date" id="cat-birth-input" class="w-full px-3 py-2 border rounded-xl outline-none">
                     </div>
                 </div>
+
+                <div>
+                    <label class="block font-semibold text-stone-600 mb-1">寵物晶片號碼</label>
+                    <input type="text" id="cat-chip-input" placeholder="15 碼晶片號碼" class="w-full px-3 py-2 border rounded-xl outline-none">
+                </div>
+
                 <div class="flex justify-end gap-2 pt-3">
                     <button type="button" onclick="closeModal('cat-edit-modal')" class="px-4 py-2 border rounded-xl text-stone-600">取消</button>
-                    <button type="submit" class="px-5 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-xl font-bold">儲存資料</button>
+                    <button type="submit" class="px-5 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-xl font-bold">儲存檔案</button>
                 </div>
             </form>
         </div>
@@ -539,9 +554,14 @@
 
     <!-- 核心邏輯 -->
     <script>
-        // 永久固定儲存鍵，以後永不更改
         const PERMANENT_STORAGE_KEY = 'meowlog_permanent_data';
         const VIEW_PREF_KEY = 'meowlog_med_view_style';
+
+        // 預設高質感照片 (Unsplash 穩定 CDN，依據貓咪毛色特徵)
+        const DEFAULT_PHOTOS = {
+            kinako: 'https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=300&q=80', // 黃豆粉橘白貓
+            sumi: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=300&q=80'    // 優雅黑貓
+        };
 
         const DEFAULT_DATA = {
             activeCatId: 'cat_kinako',
@@ -549,7 +569,7 @@
                 {
                     id: 'cat_kinako',
                     name: 'Kinako',
-                    emoji: '🐱',
+                    photo: DEFAULT_PHOTOS.kinako,
                     breed: '米克斯 (黃豆粉橘白)',
                     gender: '母貓 (已結紮)',
                     birthday: '2022-04-10',
@@ -562,7 +582,7 @@
                 {
                     id: 'cat_sumi',
                     name: 'Sumi',
-                    emoji: '🐈‍⬛',
+                    photo: DEFAULT_PHOTOS.sumi,
                     breed: '米克斯 (墨黑短毛)',
                     gender: '公貓 (已結紮)',
                     birthday: '2023-08-20',
@@ -581,17 +601,15 @@
         let expenseBarInstance = null;
         let currentMedView = localStorage.getItem(VIEW_PREF_KEY) || 'card';
 
-        // 啟動與舊資料自動救援邏輯
         function initApp() {
             let loadedData = null;
 
-            // 1. 先讀取永久倉庫
             const savedPermanent = localStorage.getItem(PERMANENT_STORAGE_KEY);
             if (savedPermanent) {
                 try { loadedData = JSON.parse(savedPermanent); } catch(e) {}
             }
 
-            // 2. 如果永久倉庫是空的，自動向舊版本尋找您剛才輸入的紀錄並救援遷移
+            // 自動救援舊版資料庫中的紀錄
             if (!loadedData) {
                 const legacyKeys = [
                     'meowlog_storage_kinako_sumi_v3',
@@ -615,19 +633,22 @@
                 }
             }
 
-            // 3. 若均無則使用乾淨預設值
             if (!loadedData || !loadedData.cats) {
                 appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
             } else {
                 appData = loadedData;
-                // 確保兩隻貓咪均存在
-                if (!appData.cats.find(c => c.id === 'cat_kinako')) appData.cats.unshift(DEFAULT_DATA.cats[0]);
-                if (!appData.cats.find(c => c.id === 'cat_sumi')) appData.cats.push(DEFAULT_DATA.cats[1]);
+                // 確保 Kinako 與 Sumi 存在且擁有漂亮的照片
+                const k = appData.cats.find(c => c.id === 'cat_kinako');
+                const s = appData.cats.find(c => c.id === 'cat_sumi');
+                if (!k) appData.cats.unshift(DEFAULT_DATA.cats[0]);
+                else if (!k.photo) k.photo = DEFAULT_PHOTOS.kinako;
+
+                if (!s) appData.cats.push(DEFAULT_DATA.cats[1]);
+                else if (!s.photo) s.photo = DEFAULT_PHOTOS.sumi;
             }
 
             saveData();
 
-            // 預設今天日期
             const today = new Date().toISOString().split('T')[0];
             ['med-date', 'diet-date', 'exp-date', 'new-w-date'].forEach(id => {
                 const el = document.getElementById(id);
@@ -682,15 +703,17 @@
             renderExpenses();
         }
 
+        // 頂部貓咪切換 Tab (左側有圓形小照片)
         function renderCatTabs() {
             const container = document.getElementById('cat-tabs-container');
             container.innerHTML = appData.cats.map(cat => {
                 const isActive = cat.id === appData.activeCatId;
+                const photoSrc = cat.photo || (cat.id === 'cat_sumi' ? DEFAULT_PHOTOS.sumi : DEFAULT_PHOTOS.kinako);
                 return `
-                    <button onclick="switchCat('${cat.id}')" class="px-3.5 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition ${
-                        isActive ? 'bg-brand-500 text-white shadow-xs' : 'text-stone-500 hover:text-stone-800'
+                    <button onclick="switchCat('${cat.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition ${
+                        isActive ? 'bg-brand-500 text-white shadow-xs' : 'text-stone-600 hover:text-stone-900'
                     }">
-                        <span>${cat.emoji || '🐱'}</span>
+                        <img src="${photoSrc}" alt="${cat.name}" class="w-4 h-4 rounded-full object-cover ring-1 ring-white/50">
                         <span>${cat.name}</span>
                     </button>
                 `;
@@ -703,10 +726,12 @@
             renderAll();
         }
 
+        // 貓咪檔案卡片 (乾淨高質感相片)
         function renderCatProfile() {
             const cat = getCurrentCat();
             const weights = cat.weights || [];
             const latestWeight = weights.length > 0 ? weights[weights.length - 1].weight + ' kg' : '待記錄 (0.00 kg)';
+            const photoSrc = cat.photo || (cat.id === 'cat_sumi' ? DEFAULT_PHOTOS.sumi : DEFAULT_PHOTOS.kinako);
 
             let ageStr = '未設定生日';
             if (cat.birthday) {
@@ -718,26 +743,26 @@
             }
 
             document.getElementById('cat-profile-banner').innerHTML = `
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
                     <div class="flex items-center gap-4">
-                        <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-brand-100 to-amber-50 border border-brand-200/80 flex items-center justify-center text-3xl shadow-inner">
-                            ${cat.emoji || '🐱'}
+                        <div class="relative w-18 h-18 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border-2 border-brand-200/90 shadow-md shrink-0 bg-stone-100">
+                            <img src="${photoSrc}" alt="${cat.name}" class="w-full h-full object-cover">
                         </div>
                         <div>
-                            <div class="flex items-center gap-2">
-                                <h1 class="text-xl font-bold text-stone-800">${cat.name}</h1>
-                                <span class="text-xs bg-brand-50 text-brand-700 font-semibold px-2 py-0.5 rounded-full border border-brand-200">${cat.breed || '米克斯'}</span>
-                                <span class="text-xs bg-stone-100 text-stone-600 px-2 py-0.5 rounded-full">${cat.gender || '已結紮'}</span>
+                            <div class="flex items-center gap-2 flex-wrap">
+                                <h1 class="text-xl sm:text-2xl font-bold text-stone-800 tracking-tight">${cat.name}</h1>
+                                <span class="text-xs bg-brand-50 text-brand-700 font-semibold px-2.5 py-0.5 rounded-full border border-brand-200">${cat.breed || '米克斯'}</span>
+                                <span class="text-xs bg-stone-100 text-stone-600 px-2.5 py-0.5 rounded-full border border-stone-200/60">${cat.gender || '已結紮'}</span>
                             </div>
-                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1 text-xs text-stone-500">
-                                <span><i class="fa-solid fa-cake-candles text-brand-500 mr-1"></i>${ageStr}</span>
-                                <span><i class="fa-solid fa-weight-scale text-brand-500 mr-1"></i>體重：<strong class="text-stone-700">${latestWeight}</strong></span>
-                                <span><i class="fa-solid fa-microchip text-brand-500 mr-1"></i>晶片：${cat.chip || '未植入'}</span>
+                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-2 text-xs text-stone-500">
+                                <span><i class="fa-solid fa-cake-candles text-brand-500 mr-1.5"></i>${ageStr}</span>
+                                <span><i class="fa-solid fa-weight-scale text-brand-500 mr-1.5"></i>體重：<strong class="text-stone-700">${latestWeight}</strong></span>
+                                <span><i class="fa-solid fa-microchip text-brand-500 mr-1.5"></i>晶片：${cat.chip || '未植入'}</span>
                             </div>
                         </div>
                     </div>
-                    <button onclick="openCatEditModal()" class="self-start sm:self-center px-3.5 py-1.5 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-xs font-semibold transition flex items-center gap-1.5">
-                        <i class="fa-solid fa-user-pen"></i> 編輯檔案
+                    <button onclick="openCatEditModal()" class="self-start sm:self-center px-4 py-2 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs">
+                        <i class="fa-solid fa-camera text-brand-600"></i> 更換照片與檔案
                     </button>
                 </div>
             `;
@@ -853,7 +878,7 @@
             }
             emptyTip.classList.add('hidden');
 
-            // 卡片模式
+            // 1. 卡片模式
             cardBox.innerHTML = records.map(r => `
                 <div class="p-4 rounded-2xl border border-rose-100 bg-rose-50/20 hover:bg-rose-50/40 transition text-xs space-y-2">
                     <div class="flex items-center justify-between">
@@ -880,7 +905,7 @@
                 </div>
             `).join('');
 
-            // 條列表格模式
+            // 2. 條列表格模式
             tableRows.innerHTML = records.map(r => `
                 <tr class="hover:bg-amber-50/30 transition">
                     <td class="py-3 px-3 whitespace-nowrap font-bold text-stone-800">${r.date}</td>
@@ -1230,32 +1255,84 @@
             renderExpenses();
         }
 
+        // ================= 貓咪檔案與照片上傳處理 =================
+        let tempPhotoData = '';
+
         function openCatEditModal() {
             const cat = getCurrentCat();
+            tempPhotoData = cat.photo || '';
             document.getElementById('cat-name-input').value = cat.name;
-            document.getElementById('cat-emoji-input').value = cat.emoji || '🐱';
             document.getElementById('cat-breed-input').value = cat.breed || '';
             document.getElementById('cat-gender-input').value = cat.gender || '母貓 (已結紮)';
             document.getElementById('cat-birth-input').value = cat.birthday || '';
             document.getElementById('cat-chip-input').value = cat.chip || '';
+            document.getElementById('cat-photo-url').value = cat.photo && cat.photo.startsWith('http') ? cat.photo : '';
+            
+            updateCatPhotoPreview(tempPhotoData || (cat.id === 'cat_sumi' ? DEFAULT_PHOTOS.sumi : DEFAULT_PHOTOS.kinako));
             document.getElementById('cat-edit-modal').classList.remove('hidden');
+        }
+
+        function updateCatPhotoPreview(src) {
+            const preview = document.getElementById('cat-preview-img');
+            preview.src = src;
+            tempPhotoData = src;
+        }
+
+        function handleCatPhotoUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            // 轉為 Base64 並壓縮在本地儲存
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.createElement('canvas');
+                    const maxDim = 320; // 縮圖尺寸兼顧畫質與儲存空間
+                    let w = img.width;
+                    let h = img.height;
+                    if (w > h) {
+                        if (w > maxDim) {
+                            h = Math.round((h * maxDim) / w);
+                            w = maxDim;
+                        }
+                    } else {
+                        if (h > maxDim) {
+                            w = Math.round((w * maxDim) / h);
+                            h = maxDim;
+                        }
+                    }
+                    canvas.width = w;
+                    canvas.height = h;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, w, h);
+                    const base64Url = canvas.toDataURL('image/jpeg', 0.85);
+                    updateCatPhotoPreview(base64Url);
+                    document.getElementById('cat-photo-url').value = '';
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
         }
 
         function saveCatProfile(e) {
             e.preventDefault();
             const cat = getCurrentCat();
             cat.name = document.getElementById('cat-name-input').value;
-            cat.emoji = document.getElementById('cat-emoji-input').value || '🐱';
             cat.breed = document.getElementById('cat-breed-input').value;
             cat.gender = document.getElementById('cat-gender-input').value;
             cat.birthday = document.getElementById('cat-birth-input').value;
             cat.chip = document.getElementById('cat-chip-input').value;
+            if (tempPhotoData) {
+                cat.photo = tempPhotoData;
+            }
+
             saveData();
             closeModal('cat-edit-modal');
             renderAll();
         }
 
-        // 匯出 / 匯入
+        // ================= 備份匯出與智慧合併匯入 =================
         function exportData() {
             const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(appData, null, 2));
             const dlAnchor = document.createElement('a');
@@ -1283,6 +1360,7 @@
                         imported.cats.forEach(impCat => {
                             const localCat = appData.cats.find(c => c.id === impCat.id);
                             if (localCat) {
+                                if (impCat.photo) localCat.photo = impCat.photo;
                                 const existW = new Set((localCat.weights || []).map(w => w.id || w.date));
                                 (impCat.weights || []).forEach(w => { if (!existW.has(w.id || w.date)) localCat.weights.push(w); });
 
