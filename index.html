@@ -53,6 +53,15 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        /* 滑鼠拖曳手把樣式 */
+        .resizer-handle {
+            cursor: col-resize;
+            user-select: none;
+            transition: background-color 0.2s;
+        }
+        .resizer-handle:hover, .resizer-handle.resizing {
+            background-color: #dc8448 !important;
+        }
     </style>
 </head>
 <body class="text-stone-700 min-h-screen flex flex-col font-sans pb-12">
@@ -106,14 +115,14 @@
         <!-- 核心功能區塊：左右分欄 -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            <!-- 左側主欄 (8欄)：精巧體重與隨機相簿 -> 飲食日誌 -> 觀察日誌 -> 生活日誌 -> 就醫日誌 -->
+            <!-- 左側主欄 (8欄)：可滑鼠左右拖曳縮放的 [體重管理 + 生活相簿] -> 飲食日誌 -> 觀察日誌 -> 生活日誌 -> 就醫日誌 -->
             <div class="lg:col-span-8 space-y-6">
 
-                <!-- 頂層並排：縮小版體重卡片 + 貓貓生活寫真隨機輪播相簿 -->
-                <div class="grid grid-cols-1 md:grid-cols-12 gap-4">
+                <!-- 頂層支援滑鼠左右拖移縮放的彈性容器 (Flex Resizable Layout) -->
+                <div id="resizable-dashboard-row" class="flex flex-col md:flex-row gap-0 bg-transparent relative w-full items-stretch">
                     
-                    <!-- 1. 縮小精巧版體重管理卡 (占 5 欄) -->
-                    <div class="md:col-span-5 bg-cardbg rounded-3xl p-4 border border-stone-200/80 shadow-sm flex flex-col justify-between">
+                    <!-- 1. 精巧版體重卡片 (預設 35% 寬度，可拖曳自訂) -->
+                    <div id="weight-box" class="bg-cardbg rounded-3xl p-4 border border-stone-200/80 shadow-sm flex flex-col justify-between overflow-hidden" style="width: 35%; min-width: 220px;">
                         <div class="flex items-center justify-between mb-2">
                             <div class="flex items-center gap-2">
                                 <div class="w-7 h-7 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center text-xs">
@@ -126,19 +135,19 @@
                             </button>
                         </div>
 
-                        <!-- 最新體重與波動數值 -->
-                        <div class="flex items-baseline justify-between px-1 my-1">
+                        <!-- 體重數字 -->
+                        <div class="flex items-baseline justify-between px-1 my-2">
                             <div>
                                 <span class="text-[10px] text-stone-400 block font-medium">最新測量</span>
-                                <div id="compact-weight-val" class="text-xl font-bold text-stone-800 tracking-tight">-- kg</div>
+                                <div id="compact-weight-val" class="text-2xl font-bold text-stone-800 tracking-tight">-- kg</div>
                             </div>
                             <div id="compact-weight-diff" class="text-[11px] font-semibold px-2 py-0.5 rounded-md bg-stone-100 text-stone-600">
                                 持平
                             </div>
                         </div>
 
-                        <!-- 精巧走勢迷你圖表 (高度縮小至 80px) -->
-                        <div class="relative h-20 w-full mt-1">
+                        <!-- 走勢圖表 -->
+                        <div class="relative h-28 w-full mt-2">
                             <canvas id="weightChart"></canvas>
                             <div id="weight-empty-tip" class="hidden absolute inset-0 flex items-center justify-center bg-white/90 rounded-xl text-stone-400 text-[11px]">
                                 尚無測量數據
@@ -146,52 +155,61 @@
                         </div>
                     </div>
 
-                    <!-- 2. 貓貓生活寫真隨機播放相簿 (占 7 欄) -->
-                    <div class="md:col-span-7 bg-cardbg rounded-3xl p-4 border border-stone-200/80 shadow-sm flex flex-col justify-between relative overflow-hidden">
-                        <div class="flex items-center justify-between mb-2">
+                    <!-- 滑鼠拖曳把手 (Splitter Resizer Bar) -->
+                    <div id="drag-resizer" class="resizer-handle hidden md:flex items-center justify-center w-3 mx-1 my-2 rounded-full bg-stone-200/80 hover:bg-brand-500 transition cursor-col-resize group z-10" title="按住左右拖曳可調整體重與相簿寬度">
+                        <div class="w-1 h-8 rounded-full bg-stone-400 group-hover:bg-white"></div>
+                    </div>
+
+                    <!-- 2. 大尺寸貓貓生活寫真隨機相簿 (可拖曳縮放，高度擴大至 300px) -->
+                    <div id="gallery-box" class="flex-1 bg-cardbg rounded-3xl p-4 border border-stone-200/80 shadow-sm flex flex-col justify-between overflow-hidden relative" style="min-width: 280px;">
+                        <div class="flex flex-wrap items-center justify-between gap-2 mb-3">
                             <div class="flex items-center gap-2">
-                                <div class="w-7 h-7 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center text-xs">
+                                <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center text-sm shadow-2xs">
                                     <i class="fa-solid fa-images"></i>
                                 </div>
-                                <h3 class="text-sm font-bold text-stone-800">貓貓生活寫真</h3>
-                                <button onclick="togglePhotoShuffle()" id="shuffle-indicator" title="點擊切換隨機/循序播放" class="text-[10px] bg-rose-50 text-rose-600 border border-rose-200 px-2 py-0.5 rounded-md font-semibold flex items-center gap-1">
-                                    <i class="fa-solid fa-shuffle"></i> 隨機播放中
-                                </button>
+                                <div>
+                                    <h3 class="text-sm font-bold text-stone-800">貓貓生活寫真</h3>
+                                    <span class="text-[10px] text-stone-400 font-normal">點擊照片可放大全螢幕檢視</span>
+                                </div>
                             </div>
                             
                             <div class="flex items-center gap-1.5">
-                                <button onclick="openGalleryUploadModal()" class="text-[11px] font-semibold px-2.5 py-1 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg transition flex items-center gap-1">
-                                    <i class="fa-solid fa-cloud-arrow-up text-rose-500"></i> 上傳相片
+                                <button onclick="togglePhotoShuffle()" id="shuffle-indicator" title="點擊切換隨機/循序播放" class="text-[10px] bg-rose-50 text-rose-600 border border-rose-200 px-2 py-1 rounded-lg font-semibold flex items-center gap-1 transition">
+                                    <i class="fa-solid fa-shuffle"></i> 隨機播放中
+                                </button>
+                                <button onclick="openGalleryUploadModal()" class="text-[11px] font-semibold px-2.5 py-1 bg-rose-500 hover:bg-rose-600 text-white rounded-lg transition flex items-center gap-1 shadow-2xs">
+                                    <i class="fa-solid fa-cloud-arrow-up"></i> 大量上傳
                                 </button>
                                 <button onclick="openGalleryManagerModal()" class="text-[11px] font-semibold px-2.5 py-1 bg-stone-100 hover:bg-stone-200 text-stone-700 rounded-lg transition flex items-center gap-1">
-                                    <i class="fa-solid fa-sliders"></i> 管理相簿
+                                    <i class="fa-solid fa-sliders"></i> 批量管理
                                 </button>
                             </div>
                         </div>
 
-                        <!-- 寫真輪播視窗 (滑鼠移入時暫停播放) -->
-                        <div class="relative h-36 w-full rounded-2xl overflow-hidden group bg-stone-100" onmouseenter="pauseSlideshow()" onmouseleave="resumeSlideshow()">
-                            <img id="gallery-current-img" class="w-full h-full object-cover transition-all duration-700" src="" alt="貓咪生活照">
+                        <!-- 放大版相簿輪播畫面 (高度 300px，支援點擊全圖預覽) -->
+                        <div class="relative h-[300px] w-full rounded-2xl overflow-hidden group bg-stone-900 cursor-zoom-in" onclick="openPhotoLightbox()" onmouseenter="pauseSlideshow()" onmouseleave="resumeSlideshow()" title="點一下看全螢幕大圖">
+                            <img id="gallery-current-img" class="w-full h-full object-cover transition-all duration-700 group-hover:scale-102" src="" alt="貓咪生活照">
                             
-                            <!-- 照片下方漸層資訊浮條 -->
-                            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/75 via-black/35 to-transparent p-2.5 pt-6 text-white flex items-end justify-between">
-                                <div class="space-y-0.5 max-w-[80%] truncate">
-                                    <div class="flex items-center gap-1.5">
-                                        <span id="gallery-cat-tag" class="text-[9px] bg-brand-500 text-white font-bold px-1.5 py-0.2 rounded">全體</span>
-                                        <span id="gallery-date-tag" class="text-[10px] text-white/80 font-mono">2026/10</span>
+                            <!-- 底部漸層浮條 -->
+                            <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/40 to-transparent p-3.5 pt-8 text-white flex items-end justify-between pointer-events-none">
+                                <div class="space-y-1 max-w-[80%] truncate">
+                                    <div class="flex items-center gap-2">
+                                        <span id="gallery-cat-tag" class="text-[10px] bg-brand-500 text-white font-bold px-2 py-0.5 rounded-md">全體</span>
+                                        <span id="gallery-date-tag" class="text-[11px] text-white/80 font-mono">2026/10</span>
+                                        <span class="text-[10px] bg-white/20 px-2 py-0.5 rounded text-white/90 backdrop-blur-xs"><i class="fa-solid fa-expand mr-1"></i>點圖放大</span>
                                     </div>
-                                    <p id="gallery-caption" class="text-xs font-medium truncate">生活隨手拍～</p>
+                                    <p id="gallery-caption" class="text-sm font-semibold truncate tracking-wide">生活隨手拍～</p>
                                 </div>
                                 
-                                <span id="gallery-counter" class="text-[10px] font-mono bg-black/40 px-1.5 py-0.5 rounded text-white/80">1 / 1</span>
+                                <span id="gallery-counter" class="text-[11px] font-mono bg-black/50 px-2 py-1 rounded-lg text-white/90 backdrop-blur-xs border border-white/10">1 / 1</span>
                             </div>
 
-                            <!-- 上一張/下一張按鈕 (滑鼠移入浮現) -->
-                            <button onclick="prevPhoto()" class="absolute left-1.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition hover:bg-black/70 text-xs">
-                                <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                            <!-- 上一張/下一張按鈕 -->
+                            <button onclick="event.stopPropagation(); prevPhoto();" class="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition hover:bg-black/70 shadow-md">
+                                <i class="fa-solid fa-chevron-left text-xs"></i>
                             </button>
-                            <button onclick="nextPhoto()" class="absolute right-1.5 top-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition hover:bg-black/70 text-xs">
-                                <i class="fa-solid fa-chevron-right text-[10px]"></i>
+                            <button onclick="event.stopPropagation(); nextPhoto();" class="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full bg-black/40 text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition hover:bg-black/70 shadow-md">
+                                <i class="fa-solid fa-chevron-right text-xs"></i>
                             </button>
                         </div>
                     </div>
@@ -478,34 +496,60 @@
 
     </main>
 
-    <!-- Modal 彈窗系列 (相簿上傳、相簿管理、飲食、觀察、生活、就醫、體重、開銷、貓咪) -->
+    <!-- 全螢幕看大圖燈箱 (Photo Lightbox) -->
+    <div id="photo-lightbox" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex flex-col items-center justify-center p-4" onclick="closePhotoLightbox()">
+        <button onclick="closePhotoLightbox()" class="absolute top-5 right-5 w-10 h-10 rounded-full bg-white/20 text-white flex items-center justify-center hover:bg-white/40 transition">
+            <i class="fa-solid fa-xmark text-lg"></i>
+        </button>
+        <div class="relative max-w-4xl max-h-[85vh] flex flex-col items-center" onclick="event.stopPropagation()">
+            <img id="lightbox-img" class="max-w-full max-h-[75vh] object-contain rounded-2xl shadow-2xl" src="" alt="大圖">
+            <div class="mt-4 text-center text-white space-y-1">
+                <div class="flex items-center justify-center gap-2">
+                    <span id="lightbox-cat-tag" class="text-xs bg-brand-500 font-bold px-2 py-0.5 rounded">全體</span>
+                    <span id="lightbox-date" class="text-xs text-white/80 font-mono">2026/10</span>
+                </div>
+                <p id="lightbox-caption" class="text-sm font-medium">照片詳細心得說明</p>
+            </div>
+        </div>
+    </div>
 
-    <!-- A. 相簿上傳 Modal -->
+    <!-- Modal 彈窗系列 (大量相片上傳、相簿批量管理、飲食、觀察、生活、就醫、體重、開銷、貓咪) -->
+
+    <!-- A. 大量/多張相簿上傳 Modal -->
     <div id="gallery-upload-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
                 <h3 class="font-bold text-base text-stone-800 flex items-center gap-2">
-                    <span class="text-rose-500"><i class="fa-solid fa-camera"></i></span> 上傳貓貓生活照片
+                    <span class="text-rose-500"><i class="fa-solid fa-camera"></i></span> 大量上傳貓貓生活照
                 </h3>
                 <button onclick="closeModal('gallery-upload-modal')" class="text-stone-400 hover:text-stone-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
-            <form onsubmit="saveGalleryPhoto(event)" class="mt-4 space-y-3.5 text-xs">
-                <!-- 本機照片選取預覽 -->
+            <form onsubmit="saveBatchGalleryPhotos(event)" class="mt-4 space-y-3.5 text-xs">
+                
+                <!-- 多圖選取區塊 (支援 multiple 多選) -->
                 <div class="space-y-2">
-                    <div id="photo-drop-zone" class="relative border-2 border-dashed border-stone-200 hover:border-brand-300 rounded-2xl p-4 text-center cursor-pointer transition bg-stone-50">
-                        <img id="photo-upload-preview" class="max-h-40 mx-auto rounded-xl object-contain hidden mb-2 shadow-xs" src="" alt="預覽照片">
+                    <div id="photo-drop-zone" class="relative border-2 border-dashed border-stone-200 hover:border-brand-400 rounded-2xl p-4 text-center cursor-pointer transition bg-stone-50">
                         <div id="photo-upload-placeholder" class="py-4 space-y-1">
-                            <i class="fa-solid fa-cloud-arrow-up text-3xl text-stone-300"></i>
-                            <p class="font-bold text-stone-600">點擊挑選手機/電腦相片</p>
-                            <p class="text-[10px] text-stone-400">系統自動壓縮，高畫質且省空間</p>
+                            <i class="fa-solid fa-images text-3xl text-stone-300"></i>
+                            <p class="font-bold text-stone-600">點擊選取多張相片 (可按住 Ctrl/Shift 複選)</p>
+                            <p class="text-[10px] text-stone-400">支援手機多選、電腦批量選取，自動高畫質壓縮</p>
                         </div>
-                        <input type="file" id="gallery-file-input" accept="image/*" required class="absolute inset-0 opacity-0 cursor-pointer" onchange="previewGalleryFile(event)">
+                        <input type="file" id="gallery-batch-input" accept="image/*" multiple required class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleBatchFileSelect(event)">
+                    </div>
+
+                    <!-- 選取後的縮圖牆預覽 (可單張移除) -->
+                    <div id="batch-preview-wrapper" class="hidden space-y-1.5">
+                        <div class="flex items-center justify-between text-stone-500 font-semibold px-1">
+                            <span id="batch-count-tip">已選取 0 張照片</span>
+                            <button type="button" onclick="clearBatchSelected()" class="text-rose-500 hover:underline">全部清空重新選取</button>
+                        </div>
+                        <div id="batch-preview-grid" class="grid grid-cols-4 sm:grid-cols-5 gap-2 max-h-36 overflow-y-auto hide-scrollbar p-1 bg-stone-50 rounded-2xl border border-stone-200/60"></div>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-3">
                     <div>
-                        <label class="block font-semibold text-stone-600 mb-1">主角對象 *</label>
+                        <label class="block font-semibold text-stone-600 mb-1">主角對象 (批次套用) *</label>
                         <select id="gallery-cat-target" class="w-full px-3 py-2 border rounded-xl bg-white outline-none font-medium">
                             <option value="cat_kinako">Kinako</option>
                             <option value="cat_sumi">Sumi</option>
@@ -513,40 +557,58 @@
                         </select>
                     </div>
                     <div>
-                        <label class="block font-semibold text-stone-600 mb-1">拍攝日期 *</label>
+                        <label class="block font-semibold text-stone-600 mb-1">拍攝日期 (批次套用) *</label>
                         <input type="date" id="gallery-date" required class="w-full px-3 py-2 border rounded-xl outline-none">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block font-semibold text-stone-600 mb-1">照片故事 / 心得說明</label>
-                    <input type="text" id="gallery-caption-input" placeholder="例如：曬太陽睡到翻肚肚、吃飽打哈欠" class="w-full px-3 py-2 border rounded-xl outline-none">
+                    <label class="block font-semibold text-stone-600 mb-1">照片故事 / 心得說明 (選填)</label>
+                    <input type="text" id="gallery-caption-input" placeholder="例如：可愛日常、睡午覺翻肚肚" class="w-full px-3 py-2 border rounded-xl outline-none">
                 </div>
 
                 <div class="flex justify-end gap-2 pt-3">
                     <button type="button" onclick="closeModal('gallery-upload-modal')" class="px-4 py-2 border rounded-xl text-stone-600">取消</button>
-                    <button type="submit" class="px-5 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold">加入相簿</button>
+                    <button type="submit" id="btn-submit-batch-upload" class="px-5 py-2 bg-rose-500 hover:bg-rose-600 text-white rounded-xl font-bold transition">
+                        確認大量上傳
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
-    <!-- B. 相簿管理清單 Modal -->
+    <!-- B. 相簿批量管理 Modal (支援全選、多選批量刪除) -->
     <div id="gallery-manager-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
-        <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
+        <div class="bg-white rounded-3xl max-w-xl w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
                 <h3 class="font-bold text-base text-stone-800 flex items-center gap-2">
-                    <span class="text-rose-500"><i class="fa-solid fa-images"></i></span> 貓貓相簿管理
+                    <span class="text-rose-500"><i class="fa-solid fa-images"></i></span> 貓貓相簿批量管理
                 </h3>
                 <button onclick="closeModal('gallery-manager-modal')" class="text-stone-400 hover:text-stone-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             
-            <div class="mt-4 space-y-2">
-                <div class="flex items-center justify-between text-xs text-stone-500 px-1">
-                    <span>相片清單（可單張刪除）</span>
-                    <button onclick="openGalleryUploadModal()" class="text-rose-600 font-bold hover:underline">＋ 新增相片</button>
+            <!-- 批量操作控制列 -->
+            <div class="mt-4 flex flex-wrap items-center justify-between gap-2 p-2.5 bg-stone-50 rounded-2xl border border-stone-200/60 text-xs">
+                <div class="flex items-center gap-3">
+                    <label class="flex items-center gap-1.5 cursor-pointer font-bold text-stone-700">
+                        <input type="checkbox" id="gallery-select-all-cb" onchange="toggleSelectAllGallery(this.checked)" class="rounded text-rose-500">
+                        <span>全選相片</span>
+                    </label>
+                    <span id="gallery-selected-count" class="text-stone-400">已選取 0 張</span>
                 </div>
-                <div id="gallery-manager-list" class="space-y-2 max-h-72 overflow-y-auto hide-scrollbar pr-1 text-xs"></div>
+                <div class="flex items-center gap-2">
+                    <button onclick="batchDeleteSelectedPhotos()" id="btn-batch-delete-photos" class="px-3 py-1 bg-red-50 hover:bg-red-100 text-red-600 font-bold rounded-lg border border-red-200 transition opacity-50 cursor-not-allowed flex items-center gap-1" disabled>
+                        <i class="fa-solid fa-trash-can"></i> 批量刪除已選
+                    </button>
+                    <button onclick="openGalleryUploadModal()" class="px-3 py-1 bg-rose-500 hover:bg-rose-600 text-white font-bold rounded-lg transition flex items-center gap-1">
+                        <i class="fa-solid fa-plus"></i> 上傳相片
+                    </button>
+                </div>
+            </div>
+
+            <!-- 相片清單卡片格 -->
+            <div class="mt-3">
+                <div id="gallery-manager-grid" class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 max-h-80 overflow-y-auto hide-scrollbar pr-1 text-xs"></div>
             </div>
 
             <div class="flex justify-end pt-4">
@@ -1104,39 +1166,37 @@
             sumi: 'https://images.unsplash.com/photo-1543852786-1cf6624b9987?w=240&auto=format&fit=crop&q=80'
         };
 
-        // 預設生活照相簿清單 (支援隨機播放)
         const DEFAULT_GALLERY = [
             {
                 id: 'p1',
-                url: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=800&auto=format&fit=crop&q=80',
+                url: 'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?w=900&auto=format&fit=crop&q=80',
                 target: 'cat_kinako',
                 date: '2026-10-15',
                 caption: 'Kinako 在窗邊曬太陽伸懶腰 ☀️'
             },
             {
                 id: 'p2',
-                url: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=800&auto=format&fit=crop&q=80',
+                url: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=900&auto=format&fit=crop&q=80',
                 target: 'cat_kinako',
                 date: '2026-10-20',
                 caption: '圓滾滾的大眼睛盯著罐罐看！'
             },
             {
                 id: 'p3',
-                url: 'https://images.unsplash.com/photo-1543852786-1cf6624b9987?w=800&auto=format&fit=crop&q=80',
+                url: 'https://images.unsplash.com/photo-1543852786-1cf6624b9987?w=900&auto=format&fit=crop&q=80',
                 target: 'cat_sumi',
                 date: '2026-10-18',
                 caption: 'Sumi 的黑亮毛色與帥氣側臉 🐈‍⬛'
             },
             {
                 id: 'p4',
-                url: 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=800&auto=format&fit=crop&q=80',
+                url: 'https://images.unsplash.com/photo-1518791841217-8f162f1e1131?w=900&auto=format&fit=crop&q=80',
                 target: 'shared_cats',
                 date: '2026-10-25',
                 caption: '兩隻一起在沙發打呼嚕的溫馨午後 ❤️'
             }
         ];
 
-        // 知名主食與湯罐品牌資料庫
         const BRAND_PRESET_DICTIONARY = [
             { name: "Monge 瑪恩吉 兔肉主食罐", type: "主食罐頭" },
             { name: "Monge 瑪恩吉 鴨肉主食罐", type: "主食罐頭" },
@@ -1203,11 +1263,12 @@
         let expenseDoughnutInstance = null;
         let expenseBarInstance = null;
 
-        // 相簿輪播控制變數
+        // 相簿輪播控制
         let currentPhotoIndex = 0;
         let isPhotoShuffle = true;
         let slideshowTimer = null;
-        let tempGalleryUploadBase64 = '';
+        let batchSelectedFilesBase64 = []; // 暫存批量多選相片
+        let managerSelectedPhotoIds = new Set(); // 批量刪除勾選集合
 
         const viewPreferences = {
             diet: localStorage.getItem('meowlog_view_diet') || 'card',
@@ -1259,6 +1320,9 @@
                 if (listSoup && !listSoup.contains(e.target) && e.target !== inputSoup) listSoup.classList.add('hidden');
             });
 
+            // 初始化滑鼠拖曳縮放區塊
+            initResizableRow();
+
             renderAll();
             startSlideshow();
         }
@@ -1269,6 +1333,59 @@
 
         function getCurrentCat() {
             return appData.cats.find(c => c.id === appData.activeCatId) || appData.cats[0];
+        }
+
+        // ================= 滑鼠拖曳縮放 Splitter 功能 =================
+        function initResizableRow() {
+            const row = document.getElementById('resizable-dashboard-row');
+            const resizer = document.getElementById('drag-resizer');
+            const weightBox = document.getElementById('weight-box');
+            if (!row || !resizer || !weightBox) return;
+
+            // 還原上次拖曳記憶的寬度比例
+            const savedWeightWidth = localStorage.getItem('meowlog_weight_box_width');
+            if (savedWeightWidth && window.innerWidth >= 768) {
+                weightBox.style.width = savedWeightWidth;
+            }
+
+            let isDragging = false;
+
+            resizer.addEventListener('mousedown', function(e) {
+                isDragging = true;
+                resizer.classList.add('resizing');
+                document.body.style.cursor = 'col-resize';
+                document.body.style.userSelect = 'none';
+            });
+
+            document.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                const rowRect = row.getBoundingClientRect();
+                const offsetX = e.clientX - rowRect.left;
+                const totalWidth = rowRect.width;
+
+                // 限制體重區寬度比例在 20% 到 60% 之間
+                let percentage = (offsetX / totalWidth) * 100;
+                if (percentage < 20) percentage = 20;
+                if (percentage > 60) percentage = 60;
+
+                const newWidthStr = percentage.toFixed(1) + '%';
+                weightBox.style.width = newWidthStr;
+                localStorage.setItem('meowlog_weight_box_width', newWidthStr);
+
+                // 拖曳時即時重繪走勢圖以適應新寬度
+                if (weightChartInstance) {
+                    weightChartInstance.resize();
+                }
+            });
+
+            document.addEventListener('mouseup', function() {
+                if (isDragging) {
+                    isDragging = false;
+                    resizer.classList.remove('resizing');
+                    document.body.style.cursor = '';
+                    document.body.style.userSelect = '';
+                }
+            });
         }
 
         function switchView(module, mode) {
@@ -1511,7 +1628,7 @@
                         fill: true,
                         tension: 0.35,
                         pointBackgroundColor: '#cb6b32',
-                        pointRadius: 3,
+                        pointRadius: 3.5,
                         borderWidth: 2
                     }]
                 },
@@ -1527,12 +1644,12 @@
             });
         }
 
-        // ================= 貓貓生活寫真 (隨機播放相簿) =================
+        // ================= 貓貓生活寫真 (大圖隨機輪播 + 燈箱檢視) =================
         function startSlideshow() {
             if (slideshowTimer) clearInterval(slideshowTimer);
             slideshowTimer = setInterval(() => {
                 nextPhoto();
-            }, 4500); // 每 4.5 秒自動輪播下一張
+            }, 5000);
         }
 
         function pauseSlideshow() {
@@ -1548,10 +1665,10 @@
             const btn = document.getElementById('shuffle-indicator');
             if (isPhotoShuffle) {
                 btn.innerHTML = '<i class="fa-solid fa-shuffle"></i> 隨機播放中';
-                btn.className = 'text-[10px] bg-rose-50 text-rose-600 border border-rose-200 px-2 py-0.5 rounded-md font-semibold flex items-center gap-1';
+                btn.className = 'text-[10px] bg-rose-50 text-rose-600 border border-rose-200 px-2 py-1 rounded-lg font-semibold flex items-center gap-1 transition';
             } else {
                 btn.innerHTML = '<i class="fa-solid fa-arrow-right"></i> 循序播放中';
-                btn.className = 'text-[10px] bg-stone-100 text-stone-600 border border-stone-200 px-2 py-0.5 rounded-md font-semibold flex items-center gap-1';
+                btn.className = 'text-[10px] bg-stone-100 text-stone-600 border border-stone-200 px-2 py-1 rounded-lg font-semibold flex items-center gap-1 transition';
             }
         }
 
@@ -1588,7 +1705,7 @@
                 imgEl.src = DEFAULT_AVATARS.kinako;
                 catTag.innerText = '尚無相片';
                 dateTag.innerText = '';
-                captionEl.innerText = '點擊右上角「上傳相片」豐富貓貓相簿吧！';
+                captionEl.innerText = '點擊右上角「大量上傳」豐富貓貓相簿吧！';
                 counterEl.innerText = '0 / 0';
                 return;
             }
@@ -1596,11 +1713,11 @@
             if (currentPhotoIndex >= list.length) currentPhotoIndex = 0;
             const cur = list[currentPhotoIndex];
 
-            imgEl.style.opacity = '0.3';
+            imgEl.style.opacity = '0.4';
             setTimeout(() => {
                 imgEl.src = cur.url;
                 imgEl.style.opacity = '1';
-            }, 120);
+            }, 100);
 
             let catName = '貓貓們';
             if (cur.target === 'cat_kinako') catName = 'Kinako';
@@ -1608,124 +1725,267 @@
 
             catTag.innerText = catName;
             dateTag.innerText = cur.date || '';
-            captionEl.innerText = cur.caption || '可愛日常記錄～';
+            captionEl.innerText = cur.caption || '生活隨手拍～';
             counterEl.innerText = `${currentPhotoIndex + 1} / ${list.length}`;
         }
 
-        // 上傳新照片到相簿
+        // 點擊看高清大圖燈箱 (Lightbox)
+        function openPhotoLightbox() {
+            const list = appData.gallery || [];
+            if (list.length === 0) return;
+            const cur = list[currentPhotoIndex];
+
+            document.getElementById('lightbox-img').src = cur.url;
+            let catName = '貓貓們';
+            if (cur.target === 'cat_kinako') catName = 'Kinako';
+            if (cur.target === 'cat_sumi') catName = 'Sumi';
+
+            document.getElementById('lightbox-cat-tag').innerText = catName;
+            document.getElementById('lightbox-date').innerText = cur.date || '';
+            document.getElementById('lightbox-caption').innerText = cur.caption || '可愛生活寫真～';
+            document.getElementById('photo-lightbox').classList.remove('hidden');
+        }
+
+        function closePhotoLightbox() {
+            document.getElementById('photo-lightbox').classList.add('hidden');
+        }
+
+        // 鍵盤 ESC 關閉燈箱
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'Escape') closePhotoLightbox();
+        });
+
+        // ================= 大量相片上傳處理 (Multi-upload) =================
         function openGalleryUploadModal() {
-            tempGalleryUploadBase64 = '';
-            document.getElementById('photo-upload-preview').src = '';
-            document.getElementById('photo-upload-preview').classList.add('hidden');
-            document.getElementById('photo-upload-placeholder').classList.remove('hidden');
+            clearBatchSelected();
             document.getElementById('gallery-caption-input').value = '';
             document.getElementById('gallery-date').value = new Date().toISOString().split('T')[0];
             document.getElementById('gallery-upload-modal').classList.remove('hidden');
         }
 
-        function previewGalleryFile(e) {
-            const file = e.target.files[0];
-            if (!file) return;
+        function handleBatchFileSelect(e) {
+            const files = Array.from(e.target.files);
+            if (!files || files.length === 0) return;
 
-            // 智慧微縮圖片以防 LocalStorage 容量超限
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const img = new Image();
-                img.onload = function() {
-                    const canvas = document.createElement('canvas');
-                    const maxW = 900;
-                    let w = img.width;
-                    let h = img.height;
-                    if (w > maxW) {
-                        h = Math.round((h * maxW) / w);
-                        w = maxW;
-                    }
-                    canvas.width = w;
-                    canvas.height = h;
-                    const ctx = canvas.getContext('2d');
-                    ctx.drawImage(img, 0, 0, w, h);
-                    tempGalleryUploadBase64 = canvas.toDataURL('image/jpeg', 0.82);
+            const grid = document.getElementById('batch-preview-grid');
+            const wrapper = document.getElementById('batch-preview-wrapper');
+            const tip = document.getElementById('batch-count-tip');
 
-                    const prevEl = document.getElementById('photo-upload-preview');
-                    prevEl.src = tempGalleryUploadBase64;
-                    prevEl.classList.remove('hidden');
-                    document.getElementById('photo-upload-placeholder').classList.add('hidden');
+            wrapper.classList.remove('hidden');
+
+            let processedCount = 0;
+            files.forEach(file => {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    const img = new Image();
+                    img.onload = function() {
+                        const canvas = document.createElement('canvas');
+                        const maxW = 1000;
+                        let w = img.width;
+                        let h = img.height;
+                        if (w > maxW) {
+                            h = Math.round((h * maxW) / w);
+                            w = maxW;
+                        }
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, w, h);
+                        const base64 = canvas.toDataURL('image/jpeg', 0.83);
+
+                        batchSelectedFilesBase64.push({
+                            tempId: 'b_' + Math.random(),
+                            url: base64
+                        });
+
+                        processedCount++;
+                        if (processedCount === files.length) {
+                            renderBatchPreviewGrid();
+                        }
+                    };
+                    img.src = evt.target.result;
                 };
-                img.src = evt.target.result;
-            };
-            reader.readAsDataURL(file);
+                reader.readAsDataURL(file);
+            });
         }
 
-        function saveGalleryPhoto(e) {
+        function renderBatchPreviewGrid() {
+            const grid = document.getElementById('batch-preview-grid');
+            const tip = document.getElementById('batch-count-tip');
+            tip.innerText = `已選取 ${batchSelectedFilesBase64.length} 張照片`;
+
+            grid.innerHTML = batchSelectedFilesBase64.map((item, idx) => `
+                <div class="relative group rounded-xl overflow-hidden border border-stone-200 aspect-square bg-stone-100">
+                    <img src="${item.url}" class="w-full h-full object-cover">
+                    <button type="button" onclick="removeSingleBatchItem('${item.tempId}')" class="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500/80 hover:bg-red-600 text-white flex items-center justify-center text-[10px] shadow-sm">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function removeSingleBatchItem(tempId) {
+            batchSelectedFilesBase64 = batchSelectedFilesBase64.filter(i => i.tempId !== tempId);
+            if (batchSelectedFilesBase64.length === 0) {
+                clearBatchSelected();
+            } else {
+                renderBatchPreviewGrid();
+            }
+        }
+
+        function clearBatchSelected() {
+            batchSelectedFilesBase64 = [];
+            document.getElementById('gallery-batch-input').value = '';
+            document.getElementById('batch-preview-wrapper').classList.add('hidden');
+            document.getElementById('batch-preview-grid').innerHTML = '';
+        }
+
+        function saveBatchGalleryPhotos(e) {
             e.preventDefault();
-            if (!tempGalleryUploadBase64) {
-                alert('請先選取一張相片！');
+            if (batchSelectedFilesBase64.length === 0) {
+                alert('請至少選取一張照片！');
                 return;
             }
 
             if (!appData.gallery) appData.gallery = [];
-            const newPhoto = {
-                id: 'p_' + Date.now(),
-                url: tempGalleryUploadBase64,
-                target: document.getElementById('gallery-cat-target').value,
-                date: document.getElementById('gallery-date').value,
-                caption: document.getElementById('gallery-caption-input').value || '可愛生活寫真'
-            };
+            const target = document.getElementById('gallery-cat-target').value;
+            const date = document.getElementById('gallery-date').value;
+            const caption = document.getElementById('gallery-caption-input').value || '可愛生活隨拍';
 
-            appData.gallery.unshift(newPhoto);
+            // 批量加入相簿庫
+            batchSelectedFilesBase64.forEach((b, idx) => {
+                appData.gallery.unshift({
+                    id: 'p_' + Date.now() + '_' + idx,
+                    url: b.url,
+                    target: target,
+                    date: date,
+                    caption: caption
+                });
+            });
+
             currentPhotoIndex = 0;
             saveData();
             closeModal('gallery-upload-modal');
             renderGalleryPhoto();
-            alert('照片已成功加入貓貓寫真相簿！');
+            alert(`成功大量上傳 ${batchSelectedFilesBase64.length} 張相片至貓貓相簿！`);
+            clearBatchSelected();
         }
 
-        // 相簿管理彈窗
+        // ================= 相簿批量管理與刪除 (Batch Manage) =================
         function openGalleryManagerModal() {
-            renderGalleryManagerList();
+            managerSelectedPhotoIds.clear();
+            renderGalleryManagerGrid();
+            updateBatchDeleteBtnUI();
             document.getElementById('gallery-manager-modal').classList.remove('hidden');
         }
 
-        function renderGalleryManagerList() {
-            const listEl = document.getElementById('gallery-manager-list');
+        function renderGalleryManagerGrid() {
+            const grid = document.getElementById('gallery-manager-grid');
             const gallery = appData.gallery || [];
+            document.getElementById('gallery-select-all-cb').checked = false;
 
             if (gallery.length === 0) {
-                listEl.innerHTML = '<div class="text-stone-400 py-6 text-center">相簿內尚無相片</div>';
+                grid.innerHTML = '<div class="col-span-full text-stone-400 py-8 text-center text-xs">相簿內尚無相片</div>';
                 return;
             }
 
-            listEl.innerHTML = gallery.map((g, idx) => {
+            grid.innerHTML = gallery.map((g) => {
                 let name = '貓貓們';
                 if (g.target === 'cat_kinako') name = 'Kinako';
                 if (g.target === 'cat_sumi') name = 'Sumi';
+                const isChecked = managerSelectedPhotoIds.has(g.id);
 
                 return `
-                    <div class="flex items-center justify-between p-2 rounded-xl bg-stone-50 border border-stone-200/60">
-                        <div class="flex items-center gap-3">
-                            <img src="${g.url}" class="w-12 h-12 rounded-lg object-cover border border-stone-200" alt="相片">
-                            <div>
-                                <div class="flex items-center gap-1.5">
-                                    <span class="bg-brand-100 text-brand-800 text-[10px] font-bold px-1.5 py-0.2 rounded">${name}</span>
-                                    <span class="text-stone-400 font-mono text-[11px]">${g.date}</span>
-                                </div>
-                                <p class="text-stone-700 font-medium truncate max-w-[180px] mt-0.5">${g.caption || '-'}</p>
-                            </div>
+                    <div class="relative rounded-2xl border ${isChecked ? 'border-rose-400 ring-2 ring-rose-200' : 'border-stone-200/80'} bg-stone-50 p-2 flex flex-col justify-between group transition">
+                        <!-- 勾選框 -->
+                        <div class="absolute top-3 left-3 z-10">
+                            <input type="checkbox" ${isChecked ? 'checked' : ''} onchange="toggleSelectSinglePhoto('${g.id}', this.checked)" class="w-4 h-4 rounded text-rose-500 cursor-pointer shadow-xs">
                         </div>
-                        <button onclick="deleteGalleryPhoto('${g.id}')" title="刪除這張照片" class="text-stone-300 hover:text-red-500 p-2 transition">
-                            <i class="fa-solid fa-trash-can"></i>
-                        </button>
+                        
+                        <!-- 照片縮圖 (點擊可看大圖) -->
+                        <div class="w-full aspect-square rounded-xl overflow-hidden bg-stone-200 cursor-pointer relative" onclick="previewImageDirect('${g.url}', '${name}', '${g.caption || ''}')">
+                            <img src="${g.url}" class="w-full h-full object-cover">
+                        </div>
+
+                        <!-- 簡介與個別刪除按鈕 -->
+                        <div class="mt-2 flex items-center justify-between gap-1">
+                            <div class="truncate">
+                                <span class="bg-brand-100 text-brand-800 text-[9px] font-bold px-1.5 py-0.2 rounded">${name}</span>
+                                <p class="text-stone-700 font-medium truncate text-[11px] mt-0.5">${g.caption || '-'}</p>
+                            </div>
+                            <button type="button" onclick="deleteSingleGalleryPhoto('${g.id}')" title="單張刪除" class="text-stone-300 hover:text-red-500 p-1 transition">
+                                <i class="fa-solid fa-trash-can text-xs"></i>
+                            </button>
+                        </div>
                     </div>
                 `;
             }).join('');
         }
 
-        function deleteGalleryPhoto(id) {
+        function toggleSelectSinglePhoto(id, checked) {
+            if (checked) {
+                managerSelectedPhotoIds.add(id);
+            } else {
+                managerSelectedPhotoIds.delete(id);
+            }
+            updateBatchDeleteBtnUI();
+        }
+
+        function toggleSelectAllGallery(checked) {
+            const gallery = appData.gallery || [];
+            if (checked) {
+                gallery.forEach(g => managerSelectedPhotoIds.add(g.id));
+            } else {
+                managerSelectedPhotoIds.clear();
+            }
+            renderGalleryManagerGrid();
+            updateBatchDeleteBtnUI();
+        }
+
+        function updateBatchDeleteBtnUI() {
+            const btn = document.getElementById('btn-batch-delete-photos');
+            const countEl = document.getElementById('gallery-selected-count');
+            const count = managerSelectedPhotoIds.size;
+            countEl.innerText = `已選取 ${count} 張`;
+
+            if (count > 0) {
+                btn.removeAttribute('disabled');
+                btn.className = 'px-3 py-1 bg-red-600 hover:bg-red-700 text-white font-bold rounded-lg transition shadow-xs flex items-center gap-1 cursor-pointer';
+            } else {
+                btn.setAttribute('disabled', 'true');
+                btn.className = 'px-3 py-1 bg-red-50 text-red-400 font-bold rounded-lg border border-red-200 opacity-50 cursor-not-allowed flex items-center gap-1';
+            }
+        }
+
+        function batchDeleteSelectedPhotos() {
+            const count = managerSelectedPhotoIds.size;
+            if (count === 0) return;
+            if (!confirm(`確定要一次刪除所選取的 ${count} 張照片嗎？刪除後無法復原。`)) return;
+
+            appData.gallery = (appData.gallery || []).filter(g => !managerSelectedPhotoIds.has(g.id));
+            managerSelectedPhotoIds.clear();
+            saveData();
+            renderGalleryManagerGrid();
+            updateBatchDeleteBtnUI();
+            renderGalleryPhoto();
+        }
+
+        function deleteSingleGalleryPhoto(id) {
             if (!confirm('確定刪除這張照片嗎？')) return;
             appData.gallery = (appData.gallery || []).filter(g => g.id !== id);
+            managerSelectedPhotoIds.delete(id);
             saveData();
-            renderGalleryManagerList();
+            renderGalleryManagerGrid();
+            updateBatchDeleteBtnUI();
             renderGalleryPhoto();
+        }
+
+        function previewImageDirect(url, cat, caption) {
+            document.getElementById('lightbox-img').src = url;
+            document.getElementById('lightbox-cat-tag').innerText = cat;
+            document.getElementById('lightbox-date').innerText = '';
+            document.getElementById('lightbox-caption').innerText = caption;
+            document.getElementById('photo-lightbox').classList.remove('hidden');
         }
 
         // ================= 1. 飲食日誌渲染 =================
