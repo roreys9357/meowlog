@@ -61,7 +61,6 @@
     <header class="bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-brand-100 shadow-sm transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
             
-            <!-- Logo 與標題 -->
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-500 to-amber-300 flex items-center justify-center text-white text-xl shadow-md shadow-brand-500/20">
                     <i class="fa-solid fa-paw"></i>
@@ -77,14 +76,12 @@
 
             <!-- 貓咪切換 Tab 與備份功能按鈕 -->
             <div class="flex items-center gap-3">
-                <!-- 貓咪切換選單 -->
                 <div id="cat-tabs-container" class="flex p-1 bg-stone-100 rounded-2xl border border-stone-200/60 shadow-inner">
                     <!-- 動態載入貓咪 Tab -->
                 </div>
 
                 <div class="h-6 w-px bg-stone-200 mx-1 hidden sm:block"></div>
 
-                <!-- 備份/資料管理 -->
                 <div class="flex items-center gap-2">
                     <button onclick="exportData()" title="匯出 JSON 備份檔" class="px-3 py-1.5 bg-white border border-stone-200 hover:border-brand-300 hover:bg-brand-50 text-stone-600 hover:text-brand-700 rounded-xl text-xs font-medium transition flex items-center gap-1.5 shadow-2xs">
                         <i class="fa-solid fa-cloud-arrow-down text-brand-500"></i>
@@ -103,21 +100,18 @@
     <!-- 主體內容 -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex-1 w-full space-y-6">
 
-        <!-- 智慧回診 / 疫苗到期警示 (自動掃描) -->
         <div id="reminder-banner-container"></div>
 
-        <!-- 貓咪基本資料卡 -->
         <section id="cat-profile-banner" class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm relative overflow-hidden">
             <!-- 動態注入貓咪資料 -->
         </section>
 
-        <!-- 核心功能區塊：左右分欄 -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            <!-- 左側主欄 (8欄)：體重趨勢、就醫紀錄、飲食排便 -->
+            <!-- 左側主欄：體重趨勢、就醫紀錄、飲食排便 -->
             <div class="lg:col-span-8 space-y-6">
 
-                <!-- 體重變化趨勢卡片 -->
+                <!-- 體重趨勢卡片 -->
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm">
                     <div class="flex items-center justify-between mb-4">
                         <div class="flex items-center gap-2">
@@ -140,7 +134,7 @@
                     </div>
                 </div>
 
-                <!-- 就醫看診歷程 (含卡片與條列雙模式切換) -->
+                <!-- 就醫紀錄 (支援卡片與條列雙模式切換) -->
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-4">
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-100 pb-4">
                         <div class="flex items-center gap-2">
@@ -152,7 +146,6 @@
                         </div>
 
                         <div class="flex items-center gap-2">
-                            <!-- 模式切換按鈕 -->
                             <div class="bg-stone-100 p-1 rounded-xl flex items-center text-xs font-semibold border border-stone-200/60">
                                 <button id="view-card-btn" onclick="switchMedicalView('card')" class="px-2.5 py-1 rounded-lg transition flex items-center gap-1">
                                     <i class="fa-solid fa-grip-vertical"></i> 卡片
@@ -168,10 +161,10 @@
                         </div>
                     </div>
 
-                    <!-- 1. 卡片檢視容器 -->
+                    <!-- 卡片模式 -->
                     <div id="medical-card-container" class="space-y-3"></div>
 
-                    <!-- 2. 條列檢視容器 (表格) -->
+                    <!-- 條列模式 -->
                     <div id="medical-list-container" class="overflow-x-auto hide-scrollbar hidden border border-stone-100 rounded-2xl">
                         <table class="w-full text-left text-xs border-collapse">
                             <thead>
@@ -190,7 +183,6 @@
                         </table>
                     </div>
 
-                    <!-- 空狀態提示 -->
                     <div id="medical-empty-tip" class="py-8 text-center text-stone-400 text-xs hidden">
                         <i class="fa-solid fa-notes-medical text-3xl mb-2 text-stone-200"></i>
                         <p>尚無看診紀錄，毛孩健健康康！</p>
@@ -220,10 +212,9 @@
 
             </div>
 
-            <!-- 右側欄 (4欄)：花費統計雙圖表與支出明細 -->
+            <!-- 右側欄：花費統計與明細 -->
             <div class="lg:col-span-4 space-y-6">
 
-                <!-- 貓咪帳本卡片 -->
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-5">
                     <div class="flex items-center justify-between border-b border-stone-100 pb-4">
                         <div class="flex items-center gap-2">
@@ -237,7 +228,6 @@
                         </button>
                     </div>
 
-                    <!-- 雙統計卡片 -->
                     <div class="grid grid-cols-2 gap-3">
                         <div class="bg-gradient-to-br from-amber-50 to-orange-50/50 p-4 rounded-2xl border border-amber-100">
                             <span class="text-[11px] font-semibold text-amber-800/70">本月花費</span>
@@ -249,7 +239,6 @@
                         </div>
                     </div>
 
-                    <!-- 圖表 1：支出類別佔比圓餅圖 -->
                     <div>
                         <span class="text-xs font-bold text-stone-600 block mb-2">類別支出比例</span>
                         <div class="relative h-44 w-full">
@@ -257,7 +246,6 @@
                         </div>
                     </div>
 
-                    <!-- 圖表 2：近半年花費長條圖 -->
                     <div class="pt-2 border-t border-stone-100">
                         <span class="text-xs font-bold text-stone-600 block mb-2">月度開銷趨勢</span>
                         <div class="relative h-36 w-full">
@@ -265,7 +253,6 @@
                         </div>
                     </div>
 
-                    <!-- 近期開銷列表 -->
                     <div class="pt-2 border-t border-stone-100">
                         <span class="text-xs font-bold text-stone-600 block mb-2">近期花費紀錄</span>
                         <div id="expense-list-container" class="space-y-2 max-h-60 overflow-y-auto hide-scrollbar"></div>
@@ -279,7 +266,7 @@
 
     </main>
 
-    <!-- Modal 彈出視窗組件 -->
+    <!-- 彈跳視窗系列 -->
 
     <!-- 就醫 Modal -->
     <div id="medical-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
@@ -298,7 +285,7 @@
                     </div>
                     <div>
                         <label class="block font-semibold text-stone-600 mb-1">動物醫院 / 診所 *</label>
-                        <input type="text" id="med-clinic" placeholder="例如：安安動物醫院" required class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-rose-200">
+                        <input type="text" id="med-clinic" placeholder="例如：安心動物醫院" required class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-rose-200">
                     </div>
                 </div>
                 <div class="grid grid-cols-2 gap-3">
@@ -342,7 +329,7 @@
         </div>
     </div>
 
-    <!-- 體重管理 Modal -->
+    <!-- 體重 Modal -->
     <div id="weight-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
@@ -445,7 +432,7 @@
                 </div>
                 <div>
                     <label class="block font-semibold text-stone-600 mb-1">身體反應與備註</label>
-                    <input type="text" id="diet-note" placeholder="例如：精神佳、稍微急食後吐了一口毛球" class="w-full px-3 py-2 border rounded-xl outline-none">
+                    <input type="text" id="diet-note" placeholder="例如：精神佳、食慾好" class="w-full px-3 py-2 border rounded-xl outline-none">
                 </div>
                 <div class="flex justify-end gap-2 pt-3">
                     <button type="button" onclick="closeModal('diet-modal')" class="px-4 py-2 border rounded-xl text-stone-600">取消</button>
@@ -487,7 +474,7 @@
                 </div>
                 <div>
                     <label class="block font-semibold text-stone-600 mb-1">項目與品項名稱 *</label>
-                    <input type="text" id="exp-note" placeholder="例如：補貨豆腐砂 3 包" required class="w-full px-3 py-2 border rounded-xl outline-none">
+                    <input type="text" id="exp-note" placeholder="例如：補貨貓砂" required class="w-full px-3 py-2 border rounded-xl outline-none">
                 </div>
                 <div class="flex justify-end gap-2 pt-3">
                     <button type="button" onclick="closeModal('expense-modal')" class="px-4 py-2 border rounded-xl text-stone-600">取消</button>
@@ -550,12 +537,12 @@
         </div>
     </div>
 
-    <!-- 核心 JavaScript -->
+    <!-- 核心邏輯 -->
     <script>
-        const STORAGE_KEY = 'meowlog_storage_kinako_sumi_v3';
+        // 永久固定儲存鍵，以後永不更改
+        const PERMANENT_STORAGE_KEY = 'meowlog_permanent_data';
         const VIEW_PREF_KEY = 'meowlog_med_view_style';
 
-        // 預設資料：純淨體重待填 + Kinako & Sumi 專屬檔案
         const DEFAULT_DATA = {
             activeCatId: 'cat_kinako',
             cats: [
@@ -567,38 +554,10 @@
                     gender: '母貓 (已結紮)',
                     birthday: '2022-04-10',
                     chip: '900139000123456',
-                    weights: [], // 乾淨無預設
-                    medicalRecords: [
-                        {
-                            id: 'm_k1',
-                            date: '2026-03-15',
-                            clinic: '安心動物醫院',
-                            doctor: '陳醫師',
-                            symptom: '定期年度健檢、貓三合一核心疫苗追加',
-                            diagnosis: '健康良好，心肺聽診口腔正常',
-                            treatment: '施打貓三合一疫苗、體內外驅蟲滴劑',
-                            cost: 1800,
-                            nextDate: '2027-03-15',
-                            nextNote: '年度核心疫苗追蹤'
-                        }
-                    ],
-                    dietRecords: [
-                        {
-                            id: 'd_k1',
-                            date: '2026-04-01',
-                            item: 'Monge 瑪恩吉兔肉主食罐',
-                            type: '主食罐頭',
-                            amount: 85,
-                            water: 110,
-                            taste: '⭐⭐⭐⭐⭐',
-                            poop: '漂亮條狀 (健康)',
-                            note: '食慾極佳，水分補充充足'
-                        }
-                    ],
-                    expenses: [
-                        { id: 'e_k1', date: '2026-03-15', category: '醫療看診', amount: 1800, note: '安心動物醫院 - 年度健檢與疫苗' },
-                        { id: 'e_k2', date: '2026-04-02', category: '主食罐頭/飼料', amount: 1650, note: '補貨瑪恩吉兔肉主食罐一箱' }
-                    ]
+                    weights: [],
+                    medicalRecords: [],
+                    dietRecords: [],
+                    expenses: []
                 },
                 {
                     id: 'cat_sumi',
@@ -608,38 +567,10 @@
                     gender: '公貓 (已結紮)',
                     birthday: '2023-08-20',
                     chip: '900139000654321',
-                    weights: [], // 乾淨無預設
-                    medicalRecords: [
-                        {
-                            id: 'm_s1',
-                            date: '2026-04-10',
-                            clinic: '伴侶專科動物醫院',
-                            doctor: '林醫師',
-                            symptom: '耳後及後頸局部脫毛、有微小皮屑搔抓',
-                            diagnosis: '顯微鏡鏡檢真菌感染（貓癬復發）',
-                            treatment: '每日患部抗黴菌外用噴劑 2 次、每週藥浴、環境除濕維持 50%',
-                            cost: 1500,
-                            nextDate: '2026-05-10',
-                            nextNote: '回診複檢真菌培養結果'
-                        }
-                    ],
-                    dietRecords: [
-                        {
-                            id: 'd_s1',
-                            date: '2026-04-12',
-                            item: '低敏高蛋白魚肉配方',
-                            type: '主食罐頭',
-                            amount: 80,
-                            water: 95,
-                            taste: '⭐⭐⭐⭐',
-                            poop: '漂亮條狀 (健康)',
-                            note: '戴頭套用餐需稍微墊高碗架'
-                        }
-                    ],
-                    expenses: [
-                        { id: 'e_s1', date: '2026-04-10', category: '醫療看診', amount: 1500, note: '皮膚科就診、顯微鏡鏡檢與抗黴噴劑' },
-                        { id: 'e_s2', date: '2026-04-11', category: '生活用品/玩具', amount: 450, note: '透氣防舔咬伊莉莎白圈' }
-                    ]
+                    weights: [],
+                    medicalRecords: [],
+                    dietRecords: [],
+                    expenses: []
                 }
             ]
         };
@@ -650,20 +581,53 @@
         let expenseBarInstance = null;
         let currentMedView = localStorage.getItem(VIEW_PREF_KEY) || 'card';
 
-        // 初始化
+        // 啟動與舊資料自動救援邏輯
         function initApp() {
-            const saved = localStorage.getItem(STORAGE_KEY);
-            if (saved) {
-                try {
-                    appData = JSON.parse(saved);
-                } catch(e) {
-                    appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
-                }
-            } else {
-                appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
-                saveData();
+            let loadedData = null;
+
+            // 1. 先讀取永久倉庫
+            const savedPermanent = localStorage.getItem(PERMANENT_STORAGE_KEY);
+            if (savedPermanent) {
+                try { loadedData = JSON.parse(savedPermanent); } catch(e) {}
             }
 
+            // 2. 如果永久倉庫是空的，自動向舊版本尋找您剛才輸入的紀錄並救援遷移
+            if (!loadedData) {
+                const legacyKeys = [
+                    'meowlog_storage_kinako_sumi_v3',
+                    'meowlog_storage_kinako_sumi_v2',
+                    'meowlog_storage_kinako_sumi_v1',
+                    'meowlog_storage_v2',
+                    'meowlog_storage_v1'
+                ];
+
+                for (let k of legacyKeys) {
+                    const legacy = localStorage.getItem(k);
+                    if (legacy) {
+                        try {
+                            const parsed = JSON.parse(legacy);
+                            if (parsed && parsed.cats) {
+                                loadedData = parsed;
+                                break;
+                            }
+                        } catch(e) {}
+                    }
+                }
+            }
+
+            // 3. 若均無則使用乾淨預設值
+            if (!loadedData || !loadedData.cats) {
+                appData = JSON.parse(JSON.stringify(DEFAULT_DATA));
+            } else {
+                appData = loadedData;
+                // 確保兩隻貓咪均存在
+                if (!appData.cats.find(c => c.id === 'cat_kinako')) appData.cats.unshift(DEFAULT_DATA.cats[0]);
+                if (!appData.cats.find(c => c.id === 'cat_sumi')) appData.cats.push(DEFAULT_DATA.cats[1]);
+            }
+
+            saveData();
+
+            // 預設今天日期
             const today = new Date().toISOString().split('T')[0];
             ['med-date', 'diet-date', 'exp-date', 'new-w-date'].forEach(id => {
                 const el = document.getElementById(id);
@@ -674,14 +638,13 @@
         }
 
         function saveData() {
-            localStorage.setItem(STORAGE_KEY, JSON.stringify(appData));
+            localStorage.setItem(PERMANENT_STORAGE_KEY, JSON.stringify(appData));
         }
 
         function getCurrentCat() {
             return appData.cats.find(c => c.id === appData.activeCatId) || appData.cats[0];
         }
 
-        // 切換就醫檢視模式 (卡片 vs 條列)
         function switchMedicalView(mode) {
             currentMedView = mode;
             localStorage.setItem(VIEW_PREF_KEY, mode);
@@ -719,7 +682,6 @@
             renderExpenses();
         }
 
-        // 渲染貓咪 Tabs
         function renderCatTabs() {
             const container = document.getElementById('cat-tabs-container');
             container.innerHTML = appData.cats.map(cat => {
@@ -741,7 +703,6 @@
             renderAll();
         }
 
-        // 渲染檔案卡片
         function renderCatProfile() {
             const cat = getCurrentCat();
             const weights = cat.weights || [];
@@ -782,7 +743,6 @@
             `;
         }
 
-        // 智慧提醒橫幅
         function renderReminders() {
             const cat = getCurrentCat();
             const container = document.getElementById('reminder-banner-container');
@@ -822,7 +782,6 @@
             }).join('');
         }
 
-        // 渲染體重折線圖
         function renderWeightChart() {
             const cat = getCurrentCat();
             const weights = (cat.weights || []).slice().sort((a,b) => new Date(a.date) - new Date(b.date));
@@ -876,7 +835,6 @@
             });
         }
 
-        // 渲染就醫紀錄 (卡片與條列雙模式)
         function renderMedicalRecords() {
             const cat = getCurrentCat();
             const records = (cat.medicalRecords || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -895,7 +853,7 @@
             }
             emptyTip.classList.add('hidden');
 
-            // 1. 卡片模式
+            // 卡片模式
             cardBox.innerHTML = records.map(r => `
                 <div class="p-4 rounded-2xl border border-rose-100 bg-rose-50/20 hover:bg-rose-50/40 transition text-xs space-y-2">
                     <div class="flex items-center justify-between">
@@ -922,7 +880,7 @@
                 </div>
             `).join('');
 
-            // 2. 條列模式 (表格)
+            // 條列表格模式
             tableRows.innerHTML = records.map(r => `
                 <tr class="hover:bg-amber-50/30 transition">
                     <td class="py-3 px-3 whitespace-nowrap font-bold text-stone-800">${r.date}</td>
@@ -948,7 +906,6 @@
             `).join('');
         }
 
-        // 渲染飲食紀錄
         function renderDietRecords() {
             const cat = getCurrentCat();
             const records = (cat.dietRecords || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -983,7 +940,6 @@
             `).join('');
         }
 
-        // 渲染生活花費與雙圖表
         function renderExpenses() {
             const cat = getCurrentCat();
             const expenses = (cat.expenses || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1035,9 +991,7 @@
             renderExpenseCharts(categoryMap, monthlyTrend);
         }
 
-        // 渲染花費雙圖表 (甜甜圈圓餅圖 + 近月長條圖)
         function renderExpenseCharts(categoryMap, monthlyTrend) {
-            // 1. 圓餅圖
             const doughnutCtx = document.getElementById('expenseDoughnutChart').getContext('2d');
             const catLabels = Object.keys(categoryMap);
             const catData = Object.values(categoryMap);
@@ -1074,10 +1028,9 @@
                 });
             }
 
-            // 2. 長條圖 (月度走勢)
             const barCtx = document.getElementById('expenseBarChart').getContext('2d');
             const sortedMonths = Object.keys(monthlyTrend).sort();
-            const barLabels = sortedMonths.slice(-6); // 取最近半年
+            const barLabels = sortedMonths.slice(-6);
             const barData = barLabels.map(m => monthlyTrend[m]);
 
             if (expenseBarInstance) expenseBarInstance.destroy();
@@ -1105,12 +1058,11 @@
             });
         }
 
-        // ================= 彈跳視窗與操作邏輯 =================
+        // ================= 操作與事件 =================
         function closeModal(id) {
             document.getElementById(id).classList.add('hidden');
         }
 
-        // 就醫
         function openMedicalModal() {
             document.getElementById('medical-modal').classList.remove('hidden');
         }
@@ -1131,9 +1083,11 @@
                 nextDate: document.getElementById('med-next-date').value,
                 nextNote: document.getElementById('med-next-note').value
             };
+            if (!cat.medicalRecords) cat.medicalRecords = [];
             cat.medicalRecords.push(record);
 
             if (document.getElementById('med-sync-exp').checked && cost > 0) {
+                if (!cat.expenses) cat.expenses = [];
                 cat.expenses.push({
                     id: 'e_' + Date.now(),
                     date: record.date,
@@ -1156,7 +1110,6 @@
             renderAll();
         }
 
-        // 體重
         function openWeightModal() {
             const cat = getCurrentCat();
             renderWeightHistoryRows(cat);
@@ -1217,7 +1170,6 @@
             }
         }
 
-        // 飲食
         function openDietModal() {
             document.getElementById('diet-modal').classList.remove('hidden');
         }
@@ -1225,6 +1177,7 @@
         function saveDietRecord(e) {
             e.preventDefault();
             const cat = getCurrentCat();
+            if (!cat.dietRecords) cat.dietRecords = [];
             cat.dietRecords.push({
                 id: 'd_' + Date.now(),
                 date: document.getElementById('diet-date').value,
@@ -1249,7 +1202,6 @@
             renderDietRecords();
         }
 
-        // 花費
         function openExpenseModal() {
             document.getElementById('expense-modal').classList.remove('hidden');
         }
@@ -1257,6 +1209,7 @@
         function saveExpenseRecord(e) {
             e.preventDefault();
             const cat = getCurrentCat();
+            if (!cat.expenses) cat.expenses = [];
             cat.expenses.push({
                 id: 'e_' + Date.now(),
                 date: document.getElementById('exp-date').value,
@@ -1277,7 +1230,6 @@
             renderExpenses();
         }
 
-        // 編輯貓咪
         function openCatEditModal() {
             const cat = getCurrentCat();
             document.getElementById('cat-name-input').value = cat.name;
