@@ -510,8 +510,6 @@
         </div>
     </div>
 
-    <!-- Modal 彈窗系列 (大量相片上傳、相簿批量管理、飲食、觀察、生活、就醫、體重、開銷、貓咪) -->
-
     <!-- A. 大量/多張相簿上傳 Modal -->
     <div id="gallery-upload-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
@@ -1152,7 +1150,6 @@
 
     <!-- JavaScript 核心程式碼 -->
     <script>
-        // ================= 您的專屬 Firebase 金鑰配置 =================
         const firebaseConfig = {
             apiKey: "AIzaSyAAISsQDlwW4G7UomWbRUeUCVvVlYoNmhE",
             authDomain: "sk2-catlog.firebaseapp.com",
@@ -1164,7 +1161,6 @@
             measurementId: "G-ER361LTZ7K"
         };
 
-        // 初始化 Firebase
         let firebaseDb = null;
         try {
             firebase.initializeApp(firebaseConfig);
@@ -1334,13 +1330,10 @@
             initResizableRow();
             renderAll();
             startSlideshow();
-
-            // 啟動 Firebase 雲端即時雙向同步
             initFirebaseSync();
         }
 
-        // ================= 雲端即時同步核心邏輯 =================
-        function updateSyncBadge(status, text) {
+        function updateSyncBadge(status) {
             const badge = document.getElementById('sync-status-badge');
             if (!badge) return;
             if (status === 'connected') {
@@ -1365,19 +1358,16 @@
 
             const dbRef = firebaseDb.ref('sk2_cats_data');
 
-            // 監聽雲端資料變動 (A電腦改完，B電腦立刻自動更新)
             dbRef.on('value', (snapshot) => {
                 const cloudData = snapshot.val();
                 if (cloudData && cloudData.cats) {
                     isIncomingCloudUpdate = true;
                     appData = cloudData;
-                    // 本地備份快取
                     localStorage.setItem(PERMANENT_STORAGE_KEY, JSON.stringify(appData));
                     renderAll();
                     updateSyncBadge('connected');
                     isIncomingCloudUpdate = false;
                 } else {
-                    // 若雲端尚無資料，自動將當前本地資料同步上雲端
                     saveData();
                     updateSyncBadge('connected');
                 }
@@ -1388,10 +1378,8 @@
         }
 
         function saveData() {
-            // 儲存至本地快取
             localStorage.setItem(PERMANENT_STORAGE_KEY, JSON.stringify(appData));
 
-            // 即時同步推送到 Firebase 雲端
             if (firebaseDb && !isIncomingCloudUpdate) {
                 updateSyncBadge('syncing');
                 firebaseDb.ref('sk2_cats_data').set(appData).then(() => {
@@ -1403,7 +1391,10 @@
             }
         }
 
-        // ================= 滑鼠拖曳縮放 Splitter 功能 =================
+        function getCurrentCat() {
+            return appData.cats.find(c => c.id === appData.activeCatId) || appData.cats[0];
+        }
+
         function initResizableRow() {
             const row = document.getElementById('resizable-dashboard-row');
             const resizer = document.getElementById('drag-resizer');
@@ -1417,7 +1408,7 @@
 
             let isDragging = false;
 
-            resizer.addEventListener('mousedown', function(e) {
+            resizer.addEventListener('mousedown', function() {
                 isDragging = true;
                 resizer.classList.add('resizing');
                 document.body.style.cursor = 'col-resize';
@@ -1453,7 +1444,189 @@
             });
         }
 
-        // ================= 縮小版體重走勢圖渲染 =================
+        function switchView(module, mode) {
+            viewPreferences[module] = mode;
+            localStorage.setItem(`meowlog_view_${module}`, mode);
+            updateViewUI(module);
+            if (module === 'diet') renderDietRecords();
+            if (module === 'obs') renderObservations();
+            if (module === 'life') renderLifeRecords();
+            if (module === 'med') renderMedicalRecords();
+        }
+
+        function updateViewUI(module) {
+            const mode = viewPreferences[module];
+            const cardBtn = document.getElementById(`${module}-card-btn`);
+            const listBtn = document.getElementById(`${module}-list-btn`);
+            const cardBox = document.getElementById(module === 'med' ? 'medical-card-container' : `${module}-card-container`);
+            const listBox = document.getElementById(module === 'med' ? 'medical-list-container' : `${module}-list-container`);
+
+            const activeClass = "px-2.5 py-1 rounded-lg transition flex items-center gap-1 bg-white text-stone-800 shadow-2xs font-bold";
+            const inactiveClass = "px-2.5 py-1 rounded-lg transition flex items-center gap-1 text-stone-500 hover:text-stone-800 font-medium";
+
+            if (mode === 'card') {
+                if (cardBtn) cardBtn.className = activeClass;
+                if (listBtn) listBtn.className = inactiveClass;
+                if (cardBox) cardBox.classList.remove('hidden');
+                if (listBox) listBox.classList.add('hidden');
+            } else {
+                if (listBtn) listBtn.className = activeClass;
+                if (cardBtn) cardBtn.className = inactiveClass;
+                if (cardBox) cardBox.classList.add('hidden');
+                if (listBox) listBox.classList.remove('hidden');
+            }
+        }
+
+        function renderAll() {
+            renderCatTabs();
+            renderCatProfile();
+            renderReminders();
+            renderWeightChart();
+            renderGalleryPhoto();
+            
+            ['diet', 'obs', 'life', 'med'].forEach(m => updateViewUI(m));
+
+            renderDietRecords();
+            renderObservations();
+            renderLifeRecords();
+            renderMedicalRecords();
+            renderExpenses();
+        }
+
+        function renderCatTabs() {
+            const container = document.getElementById('cat-tabs-container');
+            container.innerHTML = appData.cats.map(cat => {
+                const isActive = cat.id === appData.activeCatId;
+                return `
+                    <button onclick="switchCat('${cat.id}')" class="px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-2 transition ${
+                        isActive ? 'bg-brand-500 text-white shadow-xs' : 'text-stone-500 hover:text-stone-800'
+                    }">
+                        <img src="${cat.photo}" class="w-5 h-5 rounded-full object-cover border border-white/50" alt="${cat.name}">
+                        <span>${cat.name}</span>
+                    </button>
+                `;
+            }).join('');
+        }
+
+        function switchCat(id) {
+            appData.activeCatId = id;
+            saveData();
+            renderAll();
+        }
+
+        function renderCatProfile() {
+            const cat = getCurrentCat();
+            const weights = cat.weights || [];
+            const latestWeight = weights.length > 0 ? weights[weights.length - 1].weight + ' kg' : '待記錄 (0.00 kg)';
+
+            let ageStr = '未設定生日';
+            if (cat.birthday) {
+                const diffTime = Math.abs(new Date() - new Date(cat.birthday));
+                const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+                const years = Math.floor(diffDays / 365);
+                const months = Math.floor((diffDays % 365) / 30);
+                ageStr = `${years} 歲 ${months} 個月`;
+            }
+
+            let adoptStr = '';
+            if (cat.adoptDate) {
+                const diffAdopt = Math.abs(new Date() - new Date(cat.adoptDate));
+                const daysTogether = Math.floor(diffAdopt / (1000 * 60 * 60 * 24));
+                const yearsTogether = Math.floor(daysTogether / 365);
+                const monthsTogether = Math.floor((daysTogether % 365) / 30);
+                adoptStr = `回家 ${yearsTogether > 0 ? yearsTogether + '年' : ''}${monthsTogether}個月 (第 ${daysTogether} 天)`;
+            }
+
+            document.getElementById('cat-profile-banner').innerHTML = `
+                <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+                    <div class="flex items-center gap-5">
+                        <img src="${cat.photo}" class="w-20 h-20 rounded-2xl object-cover border-2 border-brand-200/80 shadow-md" alt="${cat.name}">
+                        <div>
+                            <div class="flex items-center gap-2">
+                                <h1 class="text-xl font-bold text-stone-800">${cat.name}</h1>
+                                <span class="text-xs bg-brand-50 text-brand-700 font-semibold px-2 py-0.5 rounded-full border border-brand-200">${cat.breed || '米克斯'}</span>
+                                <span class="text-xs bg-stone-100 text-stone-600 px-2 py-0.5 rounded-full">${cat.gender || '已結紮'}</span>
+                            </div>
+                            <div class="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1.5 text-xs text-stone-500">
+                                <span><i class="fa-solid fa-cake-candles text-brand-500 mr-1"></i>年齡：<strong class="text-stone-700">${ageStr}</strong></span>
+                                ${adoptStr ? `<span><i class="fa-solid fa-house-chimney-heart text-rose-500 mr-1"></i>${adoptStr}</span>` : ''}
+                                <span><i class="fa-solid fa-weight-scale text-amber-500 mr-1"></i>體重：<strong class="text-stone-700">${latestWeight}</strong></span>
+                                <span><i class="fa-solid fa-microchip text-brand-500 mr-1"></i>晶片：${cat.chip || '未植入'}</span>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="openCatEditModal()" class="self-start sm:self-center px-4 py-2 bg-stone-100 hover:bg-brand-50 hover:text-brand-700 hover:border-brand-200 border border-stone-200 text-stone-700 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 shadow-2xs">
+                        <i class="fa-solid fa-user-pen"></i> 編輯檔案與照片
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderReminders() {
+            const cat = getCurrentCat();
+            const container = document.getElementById('reminder-banner-container');
+            const now = new Date();
+            const alerts = [];
+
+            (cat.medicalRecords || []).forEach(r => {
+                if (!r.nextDate) return;
+                if ((appData.dismissedReminders || []).includes(r.id)) return;
+                const isFulfilled = (cat.medicalRecords || []).some(other => other.id !== r.id && other.date >= r.nextDate);
+                if (isFulfilled) return;
+
+                const target = new Date(r.nextDate);
+                const diffDays = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+                alerts.push({ id: r.id, type: '就醫', note: r.nextNote || '回診追蹤', date: r.nextDate, diffDays });
+            });
+
+            (cat.lifeRecords || []).forEach(l => {
+                if (!l.nextDate) return;
+                if ((appData.dismissedReminders || []).includes(l.id)) return;
+                const isFulfilled = (cat.lifeRecords || []).some(other => other.id !== l.id && other.date >= l.nextDate);
+                if (isFulfilled) return;
+
+                const target = new Date(l.nextDate);
+                const diffDays = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+                alerts.push({ id: l.id, type: '生活', note: l.nextNote || '生活護理提醒', date: l.nextDate, diffDays });
+            });
+
+            if (alerts.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            container.innerHTML = alerts.map(a => {
+                const isOverdue = a.diffDays < 0;
+                const isUrgent = a.diffDays >= 0 && a.diffDays <= 7;
+                const badgeClass = isOverdue ? 'bg-red-500 text-white' : isUrgent ? 'bg-amber-500 text-white' : 'bg-brand-100 text-brand-800';
+                const statusText = isOverdue ? `已逾期 ${Math.abs(a.diffDays)} 天` : a.diffDays === 0 ? '就是今天！' : `倒數 ${a.diffDays} 天`;
+
+                return `
+                    <div class="p-3 bg-amber-50/90 border border-amber-200/80 rounded-2xl flex items-center justify-between text-xs shadow-2xs">
+                        <div class="flex items-center gap-2 text-stone-700">
+                            <span class="w-6 h-6 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center text-xs">
+                                <i class="fa-solid fa-bell"></i>
+                            </span>
+                            <span><strong>${cat.name}</strong> 提醒：[${a.type}] ${a.note}（預定：${a.date}）</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <span class="px-2.5 py-0.5 rounded-full font-bold text-[11px] ${badgeClass}">${statusText}</span>
+                            <button onclick="dismissReminder('${a.id}')" title="標記為已完成" class="text-stone-400 hover:text-emerald-600 px-2 py-0.5 border border-stone-200 rounded-lg bg-white text-[10px]">
+                                <i class="fa-solid fa-check"></i> 完成
+                            </button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function dismissReminder(id) {
+            if (!appData.dismissedReminders) appData.dismissedReminders = [];
+            appData.dismissedReminders.push(id);
+            saveData();
+            renderReminders();
+        }
+
         function renderWeightChart() {
             const cat = getCurrentCat();
             const weights = (cat.weights || []).slice().sort((a,b) => new Date(a.date) - new Date(b.date));
@@ -1526,7 +1699,6 @@
             });
         }
 
-        // ================= 貓貓生活寫真 (大圖隨機輪播 + 燈箱檢視) =================
         function startSlideshow() {
             if (slideshowTimer) clearInterval(slideshowTimer);
             slideshowTimer = setInterval(() => {
@@ -1635,7 +1807,6 @@
             if (e.key === 'Escape') closePhotoLightbox();
         });
 
-        // ================= 大量相片上傳處理 (Multi-upload) =================
         function openGalleryUploadModal() {
             clearBatchSelected();
             document.getElementById('gallery-caption-input').value = '';
@@ -1694,7 +1865,7 @@
             const tip = document.getElementById('batch-count-tip');
             tip.innerText = `已選取 ${batchSelectedFilesBase64.length} 張照片`;
 
-            grid.innerHTML = batchSelectedFilesBase64.map((item, idx) => `
+            grid.innerHTML = batchSelectedFilesBase64.map((item) => `
                 <div class="relative group rounded-xl overflow-hidden border border-stone-200 aspect-square bg-stone-100">
                     <img src="${item.url}" class="w-full h-full object-cover">
                     <button type="button" onclick="removeSingleBatchItem('${item.tempId}')" class="absolute top-1 right-1 w-5 h-5 rounded-full bg-red-500/80 hover:bg-red-600 text-white flex items-center justify-center text-[10px] shadow-sm">
@@ -1750,7 +1921,6 @@
             clearBatchSelected();
         }
 
-        // ================= 相簿批量管理與刪除 (Batch Manage) =================
         function openGalleryManagerModal() {
             managerSelectedPhotoIds.clear();
             renderGalleryManagerGrid();
@@ -1864,7 +2034,6 @@
             document.getElementById('photo-lightbox').classList.remove('hidden');
         }
 
-        // ================= 1. 飲食日誌渲染 =================
         function renderDietRecords() {
             const cat = getCurrentCat();
             const records = (cat.dietRecords || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1939,7 +2108,6 @@
             }).join('');
         }
 
-        // ================= 2. 觀察日誌渲染 =================
         function renderObservations() {
             const cat = getCurrentCat();
             const list = (cat.observations || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -2028,7 +2196,6 @@
             }).join('');
         }
 
-        // ================= 3. 生活日誌渲染 =================
         function renderLifeRecords() {
             const cat = getCurrentCat();
             const list = (cat.lifeRecords || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -2100,7 +2267,6 @@
             }).join('');
         }
 
-        // ================= 4. 就醫日誌渲染 =================
         function renderMedicalRecords() {
             const cat = getCurrentCat();
             const records = (cat.medicalRecords || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -2170,7 +2336,6 @@
             `).join('');
         }
 
-        // ================= 5. 生活開銷帳本 =================
         function setExpenseCatFilter(val) {
             currentExpenseCatFilter = val;
             document.querySelectorAll('#exp-cat-filter button').forEach(b => {
@@ -2335,7 +2500,6 @@
             });
         }
 
-        // ================= 智慧品牌搜尋 =================
         function getAllBrandCandidates() {
             const list = [...BRAND_PRESET_DICTIONARY];
             appData.cats.forEach(c => {
@@ -2406,7 +2570,6 @@
             document.getElementById(id).classList.add('hidden');
         }
 
-        // ================= 飲食、觀察、生活、就醫、體重、開銷、貓咪 動作邏輯 =================
         function openDietModal() {
             document.getElementById('diet-modal-title').innerHTML = '<span class="text-brand-500"><i class="fa-solid fa-bowl-food"></i></span> 記錄飲食';
             document.getElementById('diet-edit-id').value = '';
