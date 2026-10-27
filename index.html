@@ -61,7 +61,6 @@
     <header class="bg-white/90 backdrop-blur-md sticky top-0 z-40 border-b border-brand-100 shadow-sm transition-all">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3.5 flex flex-wrap items-center justify-between gap-4">
             
-            <!-- Logo 與標題 -->
             <div class="flex items-center gap-3">
                 <div class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-500 to-amber-300 flex items-center justify-center text-white text-xl shadow-md shadow-brand-500/20">
                     <i class="fa-solid fa-paw"></i>
@@ -77,9 +76,7 @@
 
             <!-- 貓咪切換 Tab 與備份功能按鈕 -->
             <div class="flex items-center gap-3">
-                <div id="cat-tabs-container" class="flex p-1 bg-stone-100 rounded-2xl border border-stone-200/60 shadow-inner">
-                    <!-- 動態載入貓咪 Tab -->
-                </div>
+                <div id="cat-tabs-container" class="flex p-1 bg-stone-100 rounded-2xl border border-stone-200/60 shadow-inner"></div>
 
                 <div class="h-6 w-px bg-stone-200 mx-1 hidden sm:block"></div>
 
@@ -101,18 +98,13 @@
     <!-- 主體內容 -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 flex-1 w-full space-y-6">
 
-        <!-- 智慧回診 / 疫苗到期警示 (自動掃描與核銷) -->
         <div id="reminder-banner-container"></div>
 
-        <!-- 貓咪基本資料卡 (含真實頭貼與生日/領養日) -->
-        <section id="cat-profile-banner" class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm relative overflow-hidden">
-            <!-- 動態注入貓咪資料 -->
-        </section>
+        <section id="cat-profile-banner" class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm relative overflow-hidden"></section>
 
-        <!-- 核心功能區塊：左右分欄 -->
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-            <!-- 左側主欄 (8欄)：體重趨勢、就醫紀錄、飲食日誌、觀察日誌 -->
+            <!-- 左側主欄：體重趨勢、就醫日誌、飲食日誌、觀察日誌 -->
             <div class="lg:col-span-8 space-y-6">
 
                 <!-- 體重變化趨勢卡片 -->
@@ -138,14 +130,14 @@
                     </div>
                 </div>
 
-                <!-- 就醫看診歷程 (含卡片與條列雙模式切換) -->
+                <!-- 就醫日誌 (原就醫看診紀錄更名，支援編輯) -->
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-4">
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-100 pb-4">
                         <div class="flex items-center gap-2">
                             <div class="w-8 h-8 rounded-xl bg-rose-50 text-rose-500 flex items-center justify-center text-sm">
                                 <i class="fa-solid fa-stethoscope"></i>
                             </div>
-                            <h2 class="text-base font-bold text-stone-800">就醫看診紀錄</h2>
+                            <h2 class="text-base font-bold text-stone-800">就醫日誌</h2>
                             <span id="med-count-badge" class="text-xs bg-rose-50 text-rose-600 font-bold px-2 py-0.5 rounded-full border border-rose-100">0 筆</span>
                         </div>
 
@@ -165,10 +157,8 @@
                         </div>
                     </div>
 
-                    <!-- 1. 卡片檢視容器 -->
                     <div id="medical-card-container" class="space-y-3"></div>
 
-                    <!-- 2. 條列檢視容器 (表格) -->
                     <div id="medical-list-container" class="overflow-x-auto hide-scrollbar hidden border border-stone-100 rounded-2xl">
                         <table class="w-full text-left text-xs border-collapse">
                             <thead>
@@ -193,7 +183,7 @@
                     </div>
                 </div>
 
-                <!-- 飲食日誌 (獨立模組) -->
+                <!-- 飲食日誌 -->
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-4">
                     <div class="flex items-center justify-between border-b border-stone-100 pb-4">
                         <div class="flex items-center gap-2">
@@ -214,7 +204,7 @@
                     </div>
                 </div>
 
-                <!-- 觀察日誌 (獨立模組：皮膚患部 + 腸胃排便) -->
+                <!-- 觀察日誌 (皮膚多部位多選 + 支援編輯) -->
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-4">
                     <div class="flex items-center justify-between border-b border-stone-100 pb-4">
                         <div class="flex items-center gap-2">
@@ -238,7 +228,7 @@
 
             </div>
 
-            <!-- 右側欄 (4欄)：生活開銷帳本 (支援單獨看貓咪、單獨看醫療/生活用品) -->
+            <!-- 右側欄：生活開銷帳本 (支援編輯) -->
             <div class="lg:col-span-4 space-y-6">
 
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-5">
@@ -256,7 +246,6 @@
 
                     <!-- 帳本多維度快速篩選按鈕列 -->
                     <div class="space-y-2 bg-stone-50 p-3 rounded-2xl border border-stone-200/60 text-xs">
-                        <!-- 對象篩選 -->
                         <div class="flex items-center justify-between">
                             <span class="text-stone-500 font-semibold text-[11px]">查看對象：</span>
                             <div class="inline-flex rounded-lg bg-stone-200/60 p-0.5" id="exp-cat-filter">
@@ -265,7 +254,6 @@
                                 <button onclick="setExpenseCatFilter('cat_sumi')" data-val="cat_sumi" class="px-2 py-0.5 rounded-md text-stone-500 hover:text-stone-800 transition">Sumi</button>
                             </div>
                         </div>
-                        <!-- 類別篩選 -->
                         <div class="flex items-center justify-between">
                             <span class="text-stone-500 font-semibold text-[11px]">支出情境：</span>
                             <div class="inline-flex rounded-lg bg-stone-200/60 p-0.5" id="exp-type-filter">
@@ -304,7 +292,7 @@
                         </div>
                     </div>
 
-                    <!-- 近期開銷列表 -->
+                    <!-- 明細清單 -->
                     <div class="pt-2 border-t border-stone-100">
                         <span class="text-xs font-bold text-stone-600 block mb-2">明細清單</span>
                         <div id="expense-list-container" class="space-y-2 max-h-60 overflow-y-auto hide-scrollbar"></div>
@@ -318,18 +306,19 @@
 
     </main>
 
-    <!-- Modal 彈出視窗組件 -->
+    <!-- Modal 彈出視窗組件 (均具備新增與編輯狀態) -->
 
-    <!-- 1. 就醫 Modal -->
+    <!-- 1. 就醫 Modal (新增/編輯) -->
     <div id="medical-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
-                <h3 class="font-bold text-base text-stone-800 flex items-center gap-2">
+                <h3 id="med-modal-title" class="font-bold text-base text-stone-800 flex items-center gap-2">
                     <span class="text-rose-500"><i class="fa-solid fa-stethoscope"></i></span> 新增就醫紀錄
                 </h3>
                 <button onclick="closeModal('medical-modal')" class="text-stone-400 hover:text-stone-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form onsubmit="saveMedicalRecord(event)" class="mt-4 space-y-3.5 text-xs">
+                <input type="hidden" id="med-edit-id">
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block font-semibold text-stone-600 mb-1">看診日期 *</label>
@@ -369,7 +358,7 @@
                         <input type="text" id="med-next-note" placeholder="提醒事項 (例: 複診皮屑)" class="w-full px-2.5 py-1.5 border rounded-lg bg-white">
                     </div>
                 </div>
-                <div class="flex items-center gap-2 pt-1">
+                <div id="med-sync-container" class="flex items-center gap-2 pt-1">
                     <input type="checkbox" id="med-sync-exp" checked class="rounded text-rose-500">
                     <label for="med-sync-exp" class="text-stone-600">將看診費用自動同步記進生活開銷（醫療分類）</label>
                 </div>
@@ -420,16 +409,17 @@
         </div>
     </div>
 
-    <!-- 3. 飲食紀錄 Modal -->
+    <!-- 3. 飲食紀錄 Modal (新增/編輯) -->
     <div id="diet-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
-                <h3 class="font-bold text-base text-stone-800 flex items-center gap-2">
+                <h3 id="diet-modal-title" class="font-bold text-base text-stone-800 flex items-center gap-2">
                     <span class="text-brand-500"><i class="fa-solid fa-bowl-food"></i></span> 記錄飲食
                 </h3>
                 <button onclick="closeModal('diet-modal')" class="text-stone-400 hover:text-stone-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form onsubmit="saveDietRecord(event)" class="mt-4 space-y-3.5 text-xs">
+                <input type="hidden" id="diet-edit-id">
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block font-semibold text-stone-600 mb-1">記錄日期 *</label>
@@ -482,16 +472,17 @@
         </div>
     </div>
 
-    <!-- 4. 觀察日誌 Modal (皮膚患部 + 腸胃排便) -->
+    <!-- 4. 觀察日誌 Modal (支援皮膚多部位勾選 + 編輯) -->
     <div id="observation-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
-                <h3 class="font-bold text-base text-stone-800 flex items-center gap-2">
+                <h3 id="obs-modal-title" class="font-bold text-base text-stone-800 flex items-center gap-2">
                     <span class="text-purple-600"><i class="fa-solid fa-magnifying-glass-plus"></i></span> 記錄觀察日誌
                 </h3>
                 <button onclick="closeModal('observation-modal')" class="text-stone-400 hover:text-stone-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form onsubmit="saveObservationRecord(event)" class="mt-4 space-y-3.5 text-xs">
+                <input type="hidden" id="obs-edit-id">
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block font-semibold text-stone-600 mb-1">記錄日期 *</label>
@@ -507,38 +498,67 @@
                     </div>
                 </div>
 
-                <!-- 皮膚患部專用欄位 -->
-                <div id="skin-fields-group" class="p-3 bg-purple-50/50 rounded-2xl border border-purple-100 space-y-3">
-                    <span class="block font-bold text-purple-900 text-[11px]"><i class="fa-solid fa-hand-dots mr-1"></i> 皮膚患部詳細記錄</span>
-                    <div class="grid grid-cols-2 gap-3">
-                        <div>
-                            <label class="block font-semibold text-stone-600 mb-1">好發/觀察部位 *</label>
-                            <select id="obs-part" class="w-full px-3 py-2 border rounded-xl bg-white outline-none">
-                                <option value="耳廓 / 耳後 / 耳根">耳廓 / 耳後 / 耳根</option>
-                                <option value="後頸 / 脖子">後頸 / 脖子</option>
-                                <option value="臉部 / 眼睛周圍">臉部 / 眼睛周圍</option>
-                                <option value="下巴 (粉刺常見)">下巴 (粉刺常見)</option>
-                                <option value="腳掌 / 指縫肉球">腳掌 / 指縫肉球</option>
-                                <option value="腹部 / 大腿內側">腹部 / 大腿內側</option>
-                                <option value="背部 / 尾巴根部">背部 / 尾巴根部</option>
-                                <option value="全身多處分散">全身多處分散</option>
-                                <option value="其他部位">其他部位</option>
-                            </select>
+                <!-- 皮膚患部專用欄位 (支援多個部位同時勾選) -->
+                <div id="skin-fields-group" class="p-3.5 bg-purple-50/50 rounded-2xl border border-purple-100 space-y-3">
+                    <div>
+                        <label class="block font-bold text-purple-900 mb-1.5 flex items-center justify-between">
+                            <span><i class="fa-solid fa-hand-dots mr-1 text-purple-600"></i> 好發/觀察部位 (可多選) *</span>
+                            <span class="text-[10px] text-purple-500 font-normal">勾選多處免重複輸入</span>
+                        </label>
+                        <!-- 多選 Checkbox 按鈕群 -->
+                        <div class="grid grid-cols-2 sm:grid-cols-3 gap-2" id="obs-part-checkboxes">
+                            <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-purple-100 hover:border-purple-300 cursor-pointer text-[11px] text-stone-700">
+                                <input type="checkbox" name="obs_parts" value="耳廓/耳後" class="rounded text-purple-600 focus:ring-purple-300">
+                                <span>耳廓/耳後</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-purple-100 hover:border-purple-300 cursor-pointer text-[11px] text-stone-700">
+                                <input type="checkbox" name="obs_parts" value="後頸/脖子" class="rounded text-purple-600 focus:ring-purple-300">
+                                <span>後頸/脖子</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-purple-100 hover:border-purple-300 cursor-pointer text-[11px] text-stone-700">
+                                <input type="checkbox" name="obs_parts" value="臉部/眼周" class="rounded text-purple-600 focus:ring-purple-300">
+                                <span>臉部/眼周</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-purple-100 hover:border-purple-300 cursor-pointer text-[11px] text-stone-700">
+                                <input type="checkbox" name="obs_parts" value="下巴/唇周" class="rounded text-purple-600 focus:ring-purple-300">
+                                <span>下巴/唇周</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-purple-100 hover:border-purple-300 cursor-pointer text-[11px] text-stone-700">
+                                <input type="checkbox" name="obs_parts" value="腳掌/肉球" class="rounded text-purple-600 focus:ring-purple-300">
+                                <span>腳掌/肉球</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-purple-100 hover:border-purple-300 cursor-pointer text-[11px] text-stone-700">
+                                <input type="checkbox" name="obs_parts" value="腹部/大腿" class="rounded text-purple-600 focus:ring-purple-300">
+                                <span>腹部/大腿</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-purple-100 hover:border-purple-300 cursor-pointer text-[11px] text-stone-700">
+                                <input type="checkbox" name="obs_parts" value="背部/尾根" class="rounded text-purple-600 focus:ring-purple-300">
+                                <span>背部/尾根</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-purple-100 hover:border-purple-300 cursor-pointer text-[11px] text-stone-700">
+                                <input type="checkbox" name="obs_parts" value="全身分散" class="rounded text-purple-600 focus:ring-purple-300">
+                                <span>全身分散</span>
+                            </label>
+                            <label class="flex items-center gap-1.5 p-2 bg-white rounded-xl border border-purple-100 hover:border-purple-300 cursor-pointer text-[11px] text-stone-700">
+                                <input type="checkbox" name="obs_parts" value="其他部位" class="rounded text-purple-600 focus:ring-purple-300">
+                                <span>其他部位</span>
+                            </label>
                         </div>
-                        <div>
-                            <label class="block font-semibold text-stone-600 mb-1">主要臨床表現 *</label>
-                            <select id="obs-skin-symptom" class="w-full px-3 py-2 border rounded-xl bg-white outline-none">
-                                <option value="脫屑 / 大量皮屑">脫屑 / 大量皮屑</option>
-                                <option value="局部脫毛 (圓形斑塊)">局部脫毛 (圓形斑塊)</option>
-                                <option value="紅腫 / 紅斑發炎">紅腫 / 紅斑發炎</option>
-                                <option value="結痂 / 硬痂皮">結痂 / 硬痂皮</option>
-                                <option value="過度抓癢 / 頻繁甩頭">過度抓癢 / 頻繁甩頭</option>
-                                <option value="黑頭粉刺 (下巴煤渣)">黑頭粉刺 (下巴煤渣)</option>
-                                <option value="抓傷破皮 / 滲出液">抓傷破皮 / 滲出液</option>
-                                <option value="丘疹 / 紅疹子">丘疹 / 紅疹子</option>
-                                <option value="狀況穩定 / 毛髮長回中">狀況穩定 / 毛髮長回中</option>
-                            </select>
-                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block font-semibold text-stone-600 mb-1">主要臨床表現 / 症狀 *</label>
+                        <select id="obs-skin-symptom" class="w-full px-3 py-2 border rounded-xl bg-white outline-none">
+                            <option value="脫屑 / 大量皮屑">脫屑 / 大量皮屑</option>
+                            <option value="局部脫毛 (圓形斑塊)">局部脫毛 (圓形斑塊)</option>
+                            <option value="紅腫 / 紅斑發炎">紅腫 / 紅斑發炎</option>
+                            <option value="結痂 / 硬痂皮">結痂 / 硬痂皮</option>
+                            <option value="過度抓癢 / 頻繁甩頭">過度抓癢 / 頻繁甩頭</option>
+                            <option value="黑頭粉刺 (下巴煤渣)">黑頭粉刺 (下巴煤渣)</option>
+                            <option value="抓傷破皮 / 滲出液">抓傷破皮 / 滲出液</option>
+                            <option value="丘疹 / 紅疹子">丘疹 / 紅疹子</option>
+                            <option value="狀況穩定 / 毛髮長回中">狀況穩定 / 毛髮長回中</option>
+                        </select>
                     </div>
                 </div>
 
@@ -581,16 +601,17 @@
         </div>
     </div>
 
-    <!-- 5. 花費 Modal -->
+    <!-- 5. 花費 Modal (新增/編輯) -->
     <div id="expense-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
-                <h3 class="font-bold text-base text-stone-800 flex items-center gap-2">
+                <h3 id="exp-modal-title" class="font-bold text-base text-stone-800 flex items-center gap-2">
                     <span class="text-emerald-600"><i class="fa-solid fa-receipt"></i></span> 記一筆生活開銷
                 </h3>
                 <button onclick="closeModal('expense-modal')" class="text-stone-400 hover:text-stone-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form onsubmit="saveExpenseRecord(event)" class="mt-4 space-y-3.5 text-xs">
+                <input type="hidden" id="exp-edit-id">
                 <div>
                     <label class="block font-semibold text-stone-600 mb-1">歸屬對象 *</label>
                     <select id="exp-target-cat" required class="w-full px-3 py-2 border rounded-xl bg-white outline-none">
@@ -630,7 +651,7 @@
         </div>
     </div>
 
-    <!-- 6. 編輯貓咪 Modal (生日與領養日獨立) -->
+    <!-- 6. 編輯貓咪 Modal -->
     <div id="cat-edit-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-md w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
@@ -640,7 +661,6 @@
                 <button onclick="closeModal('cat-edit-modal')" class="text-stone-400 hover:text-stone-600"><i class="fa-solid fa-xmark text-lg"></i></button>
             </div>
             <form onsubmit="saveCatProfile(event)" class="mt-4 space-y-3.5 text-xs">
-                <!-- 照片選取 -->
                 <div class="flex items-center gap-4 bg-stone-50 p-3 rounded-2xl border border-stone-200/60">
                     <img id="edit-cat-avatar-preview" class="w-14 h-14 rounded-2xl object-cover border border-stone-200 shadow-2xs" src="" alt="預覽">
                     <div class="space-y-1">
@@ -673,7 +693,6 @@
                     <input type="text" id="cat-breed-input" placeholder="例如：米克斯短毛" class="w-full px-3 py-2 border rounded-xl">
                 </div>
 
-                <!-- 生日與領養日分開 -->
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block font-semibold text-stone-600 mb-1">生日 (計算年齡)</label>
@@ -703,7 +722,6 @@
         const PERMANENT_STORAGE_KEY = 'meowlog_permanent_data';
         const VIEW_PREF_KEY = 'meowlog_med_view_style';
 
-        // 預設高品質照片
         const DEFAULT_AVATARS = {
             kinako: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?w=240&auto=format&fit=crop&q=80',
             sumi: 'https://images.unsplash.com/photo-1543852786-1cf6624b9987?w=240&auto=format&fit=crop&q=80'
@@ -711,7 +729,7 @@
 
         const DEFAULT_DATA = {
             activeCatId: 'cat_kinako',
-            dismissedReminders: [], // 記錄手動或自動消除的預約 ID
+            dismissedReminders: [],
             cats: [
                 {
                     id: 'cat_kinako',
@@ -752,9 +770,8 @@
         let expenseBarInstance = null;
         let currentMedView = localStorage.getItem(VIEW_PREF_KEY) || 'card';
 
-        // 帳本當前篩選狀態
-        let currentExpenseCatFilter = 'all'; // 'all', 'cat_kinako', 'cat_sumi'
-        let currentExpenseTypeFilter = 'all'; // 'all', 'medical', 'supplies'
+        let currentExpenseCatFilter = 'all';
+        let currentExpenseTypeFilter = 'all';
         let tempAvatarBase64 = '';
 
         function initApp() {
@@ -764,7 +781,6 @@
                 try { loadedData = JSON.parse(saved); } catch(e) {}
             }
 
-            // 舊資料自動救援
             if (!loadedData) {
                 const legacyKeys = [
                     'meowlog_storage_kinako_sumi_v3',
@@ -788,7 +804,6 @@
             } else {
                 appData = loadedData;
                 if (!appData.dismissedReminders) appData.dismissedReminders = [];
-                // 確保預設欄位結構完整
                 appData.cats.forEach(c => {
                     if (!c.photo) c.photo = c.id === 'cat_kinako' ? DEFAULT_AVATARS.kinako : DEFAULT_AVATARS.sumi;
                     if (!c.adoptDate) c.adoptDate = c.birthday || '';
@@ -827,7 +842,6 @@
             renderExpenses();
         }
 
-        // 頂部貓咪頁籤 (附帶小圓頭貼)
         function renderCatTabs() {
             const container = document.getElementById('cat-tabs-container');
             container.innerHTML = appData.cats.map(cat => {
@@ -849,13 +863,11 @@
             renderAll();
         }
 
-        // 貓咪個人卡片 (生日與領養日分開顯示)
         function renderCatProfile() {
             const cat = getCurrentCat();
             const weights = cat.weights || [];
             const latestWeight = weights.length > 0 ? weights[weights.length - 1].weight + ' kg' : '待記錄 (0.00 kg)';
 
-            // 年齡計算
             let ageStr = '未設定生日';
             if (cat.birthday) {
                 const diffTime = Math.abs(new Date() - new Date(cat.birthday));
@@ -865,7 +877,6 @@
                 ageStr = `${years} 歲 ${months} 個月`;
             }
 
-            // 陪伴/領養時間計算
             let adoptStr = '';
             if (cat.adoptDate) {
                 const diffAdopt = Math.abs(new Date() - new Date(cat.adoptDate));
@@ -900,7 +911,6 @@
             `;
         }
 
-        // 智慧提醒橫幅 (自動判斷回診日期是否已被履行，或手動消除)
         function renderReminders() {
             const cat = getCurrentCat();
             const container = document.getElementById('reminder-banner-container');
@@ -912,7 +922,6 @@
                 if (!r.nextDate) return;
                 if ((appData.dismissedReminders || []).includes(r.id)) return;
 
-                // 自動消除邏輯：若存在任一就醫紀錄的看診日期 >= 該提醒預約日期，視為已履行
                 const isFulfilled = records.some(other => other.id !== r.id && other.date >= r.nextDate);
                 if (isFulfilled) return;
 
@@ -958,7 +967,6 @@
             renderReminders();
         }
 
-        // 體重圖表
         function renderWeightChart() {
             const cat = getCurrentCat();
             const weights = (cat.weights || []).slice().sort((a,b) => new Date(a.date) - new Date(b.date));
@@ -1006,7 +1014,6 @@
             });
         }
 
-        // 就醫紀錄 (卡片 & 條列表格)
         function switchMedicalView(mode) {
             currentMedView = mode;
             localStorage.setItem(VIEW_PREF_KEY, mode);
@@ -1033,6 +1040,7 @@
             }
         }
 
+        // 就醫日誌 (新增「編輯」按鈕)
         function renderMedicalRecords() {
             const cat = getCurrentCat();
             const records = (cat.medicalRecords || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1061,7 +1069,8 @@
                         </div>
                         <div class="flex items-center gap-2">
                             <span class="font-bold text-stone-800 text-sm">NT$ ${Number(r.cost || 0).toLocaleString()}</span>
-                            <button onclick="deleteMedicalRecord('${r.id}')" class="text-stone-300 hover:text-red-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
+                            <button onclick="editMedicalRecord('${r.id}')" title="編輯看診" class="text-stone-400 hover:text-brand-600 transition p-1"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteMedicalRecord('${r.id}')" title="刪除" class="text-stone-300 hover:text-red-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </div>
                     <div class="space-y-1">
@@ -1093,7 +1102,10 @@
                         ${r.nextDate ? `<span class="bg-rose-50 text-rose-700 px-2 py-0.5 rounded-md font-semibold border border-rose-100">${r.nextDate}</span>` : '-'}
                     </td>
                     <td class="py-3 px-3 whitespace-nowrap text-right font-bold text-stone-800">NT$ ${Number(r.cost || 0).toLocaleString()}</td>
-                    <td class="py-3 px-2 text-center whitespace-nowrap">
+                    <td class="py-3 px-2 text-center whitespace-nowrap flex items-center justify-center gap-1.5 pt-3">
+                        <button onclick="editMedicalRecord('${r.id}')" title="編輯" class="text-stone-400 hover:text-brand-600 transition p-1">
+                            <i class="fa-solid fa-pen"></i>
+                        </button>
                         <button onclick="deleteMedicalRecord('${r.id}')" title="刪除" class="text-stone-300 hover:text-red-500 transition p-1">
                             <i class="fa-solid fa-trash-can"></i>
                         </button>
@@ -1102,7 +1114,7 @@
             `).join('');
         }
 
-        // 飲食日誌
+        // 飲食日誌 (新增「編輯」按鈕)
         function renderDietRecords() {
             const cat = getCurrentCat();
             const records = (cat.dietRecords || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1131,12 +1143,15 @@
                         </div>
                         ${d.note ? `<p class="text-stone-500 text-[11px] pt-0.5"><i class="fa-regular fa-comment-dots mr-1 text-brand-400"></i>${d.note}</p>` : ''}
                     </div>
-                    <button onclick="deleteDietRecord('${d.id}')" class="text-stone-300 hover:text-red-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
+                    <div class="flex items-center gap-1">
+                        <button onclick="editDietRecord('${d.id}')" title="編輯" class="text-stone-400 hover:text-brand-600 transition p-1"><i class="fa-solid fa-pen"></i></button>
+                        <button onclick="deleteDietRecord('${d.id}')" title="刪除" class="text-stone-300 hover:text-red-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
+                    </div>
                 </div>
             `).join('');
         }
 
-        // 觀察日誌 (皮膚狀態 + 排便腸胃)
+        // 觀察日誌 (支援多部位標籤呈現 + 編輯按鈕)
         function renderObservations() {
             const cat = getCurrentCat();
             const list = (cat.observations || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1154,35 +1169,49 @@
                 const isSkin = o.category === '皮膚狀況';
                 const tagColor = isSkin ? 'bg-purple-100 text-purple-700' : 'bg-amber-100 text-amber-800';
 
+                // 處理多部位顯示標籤
+                let partBadges = '';
+                if (isSkin) {
+                    const partsArr = Array.isArray(o.parts) ? o.parts : (o.part ? [o.part] : []);
+                    partBadges = partsArr.map(p => `
+                        <span class="bg-purple-50 text-purple-700 border border-purple-200/60 px-2 py-0.5 rounded-md font-medium text-[11px]">
+                            <i class="fa-solid fa-location-dot text-purple-400 mr-1"></i>${p}
+                        </span>
+                    `).join(' ');
+                }
+
                 return `
                     <div class="p-3.5 rounded-2xl border border-stone-200/80 bg-stone-50/40 hover:bg-stone-50 transition flex items-start justify-between text-xs">
                         <div class="space-y-1.5">
-                            <div class="flex items-center gap-2">
+                            <div class="flex flex-wrap items-center gap-2">
                                 <span class="font-bold text-stone-800">${o.date}</span>
                                 <span class="${tagColor} px-2 py-0.5 rounded-md font-semibold">${o.category}</span>
-                                ${isSkin ? `<span class="bg-stone-200/70 text-stone-700 px-2 py-0.5 rounded-md font-medium"><i class="fa-solid fa-location-dot text-purple-500 mr-1"></i>${o.part}</span>` : ''}
+                                ${partBadges}
                             </div>
                             
                             ${isSkin ? `
-                                <div class="flex items-center gap-2">
-                                    <span class="text-rose-600 font-bold bg-rose-50 px-2 py-0.5 rounded border border-rose-100">${o.skinSymptom}</span>
+                                <div class="flex items-center gap-2 mt-1">
+                                    <span class="text-rose-600 font-bold bg-rose-50 px-2.5 py-0.5 rounded-md border border-rose-100">${o.skinSymptom}</span>
                                 </div>
                             ` : `
-                                <div class="flex flex-wrap items-center gap-x-4 text-stone-600">
+                                <div class="flex flex-wrap items-center gap-x-4 text-stone-600 mt-1">
                                     <span>便便型態：<strong class="text-amber-900 font-semibold">${o.poopShape}</strong></span>
                                     <span>異常反應：<strong class="text-stone-700">${o.vomit}</strong></span>
                                 </div>
                             `}
 
-                            ${o.note ? `<p class="text-stone-500 text-[11px]"><i class="fa-regular fa-comment-dots mr-1 text-purple-400"></i>${o.note}</p>` : ''}
+                            ${o.note ? `<p class="text-stone-500 text-[11px] pt-0.5"><i class="fa-regular fa-comment-dots mr-1 text-purple-400"></i>${o.note}</p>` : ''}
                         </div>
-                        <button onclick="deleteObservationRecord('${o.id}')" class="text-stone-300 hover:text-red-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
+                        <div class="flex items-center gap-1">
+                            <button onclick="editObservationRecord('${o.id}')" title="編輯" class="text-stone-400 hover:text-purple-600 transition p-1"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteObservationRecord('${o.id}')" title="刪除" class="text-stone-300 hover:text-red-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
                     </div>
                 `;
             }).join('');
         }
 
-        // 生活開銷帳本 (支援篩選：對象與情境)
+        // 生活開銷帳本 (支援編輯)
         function setExpenseCatFilter(val) {
             currentExpenseCatFilter = val;
             document.querySelectorAll('#exp-cat-filter button').forEach(b => {
@@ -1208,7 +1237,6 @@
         }
 
         function renderExpenses() {
-            // 聚合支出清單
             let allExpenses = [];
             appData.cats.forEach(c => {
                 (c.expenses || []).forEach(e => {
@@ -1216,12 +1244,10 @@
                 });
             });
 
-            // 1. 貓咪對象過濾
             if (currentExpenseCatFilter !== 'all') {
                 allExpenses = allExpenses.filter(e => e.catId === currentExpenseCatFilter);
             }
 
-            // 2. 支出情境過濾
             if (currentExpenseTypeFilter === 'medical') {
                 allExpenses = allExpenses.filter(e => e.category === '醫療看診');
             } else if (currentExpenseTypeFilter === 'supplies') {
@@ -1268,9 +1294,10 @@
                             </div>
                             <div class="font-medium text-stone-700 mt-0.5">${e.note}</div>
                         </div>
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-stone-800">NT$ ${Number(e.amount).toLocaleString()}</span>
-                            <button onclick="deleteExpenseRecord('${e.catId}', '${e.id}')" class="text-stone-300 hover:text-red-500 transition"><i class="fa-solid fa-trash-can"></i></button>
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-bold text-stone-800 mr-1">NT$ ${Number(e.amount).toLocaleString()}</span>
+                            <button onclick="editExpenseRecord('${e.catId}', '${e.id}')" title="編輯" class="text-stone-400 hover:text-emerald-600 transition p-1"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteExpenseRecord('${e.catId}', '${e.id}')" title="刪除" class="text-stone-300 hover:text-red-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
                         </div>
                     </div>
                 `).join('');
@@ -1280,7 +1307,6 @@
         }
 
         function renderExpenseCharts(categoryMap, monthlyTrend) {
-            // 甜甜圈圓餅圖
             const doughnutCtx = document.getElementById('expenseDoughnutChart').getContext('2d');
             const catLabels = Object.keys(categoryMap);
             const catData = Object.values(categoryMap);
@@ -1315,7 +1341,6 @@
                 });
             }
 
-            // 長條圖
             const barCtx = document.getElementById('expenseBarChart').getContext('2d');
             const sortedMonths = Object.keys(monthlyTrend).sort();
             const barLabels = sortedMonths.slice(-6);
@@ -1346,44 +1371,95 @@
             });
         }
 
-        // ================= 操作與事件 =================
+        // ================= 操作與編輯邏輯 =================
         function closeModal(id) {
             document.getElementById(id).classList.add('hidden');
         }
 
-        // 就醫
+        // 就醫日誌：新增 & 編輯
         function openMedicalModal() {
+            document.getElementById('med-modal-title').innerHTML = '<span class="text-rose-500"><i class="fa-solid fa-stethoscope"></i></span> 新增就醫紀錄';
+            document.getElementById('med-edit-id').value = '';
+            document.getElementById('med-clinic').value = '';
+            document.getElementById('med-doctor').value = '';
+            document.getElementById('med-cost').value = '';
+            document.getElementById('med-symptom').value = '';
+            document.getElementById('med-diagnosis').value = '';
+            document.getElementById('med-treatment').value = '';
+            document.getElementById('med-next-date').value = '';
+            document.getElementById('med-next-note').value = '';
+            document.getElementById('med-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('med-sync-container').classList.remove('hidden');
+            document.getElementById('medical-modal').classList.remove('hidden');
+        }
+
+        function editMedicalRecord(id) {
+            const cat = getCurrentCat();
+            const record = (cat.medicalRecords || []).find(r => r.id === id);
+            if (!record) return;
+
+            document.getElementById('med-modal-title').innerHTML = '<span class="text-rose-500"><i class="fa-solid fa-pen-to-square"></i></span> 編輯就醫紀錄';
+            document.getElementById('med-edit-id').value = record.id;
+            document.getElementById('med-date').value = record.date;
+            document.getElementById('med-clinic').value = record.clinic;
+            document.getElementById('med-doctor').value = record.doctor || '';
+            document.getElementById('med-cost').value = record.cost || 0;
+            document.getElementById('med-symptom').value = record.symptom;
+            document.getElementById('med-diagnosis').value = record.diagnosis || '';
+            document.getElementById('med-treatment').value = record.treatment || '';
+            document.getElementById('med-next-date').value = record.nextDate || '';
+            document.getElementById('med-next-note').value = record.nextNote || '';
+            document.getElementById('med-sync-container').classList.add('hidden'); // 編輯時避免重複連動花費
             document.getElementById('medical-modal').classList.remove('hidden');
         }
 
         function saveMedicalRecord(e) {
             e.preventDefault();
             const cat = getCurrentCat();
+            const editId = document.getElementById('med-edit-id').value;
             const cost = Number(document.getElementById('med-cost').value || 0);
-            const record = {
-                id: 'm_' + Date.now(),
-                date: document.getElementById('med-date').value,
-                clinic: document.getElementById('med-clinic').value,
-                doctor: document.getElementById('med-doctor').value,
-                symptom: document.getElementById('med-symptom').value,
-                diagnosis: document.getElementById('med-diagnosis').value,
-                treatment: document.getElementById('med-treatment').value,
-                cost: cost,
-                nextDate: document.getElementById('med-next-date').value,
-                nextNote: document.getElementById('med-next-note').value
-            };
-            if (!cat.medicalRecords) cat.medicalRecords = [];
-            cat.medicalRecords.push(record);
 
-            if (document.getElementById('med-sync-exp').checked && cost > 0) {
-                if (!cat.expenses) cat.expenses = [];
-                cat.expenses.push({
-                    id: 'e_' + Date.now(),
-                    date: record.date,
-                    category: '醫療看診',
-                    amount: cost,
-                    note: `${record.clinic} - ${record.diagnosis || record.symptom}`
-                });
+            if (editId) {
+                // 編輯更新
+                const idx = cat.medicalRecords.findIndex(r => r.id === editId);
+                if (idx !== -1) {
+                    cat.medicalRecords[idx].date = document.getElementById('med-date').value;
+                    cat.medicalRecords[idx].clinic = document.getElementById('med-clinic').value;
+                    cat.medicalRecords[idx].doctor = document.getElementById('med-doctor').value;
+                    cat.medicalRecords[idx].symptom = document.getElementById('med-symptom').value;
+                    cat.medicalRecords[idx].diagnosis = document.getElementById('med-diagnosis').value;
+                    cat.medicalRecords[idx].treatment = document.getElementById('med-treatment').value;
+                    cat.medicalRecords[idx].cost = cost;
+                    cat.medicalRecords[idx].nextDate = document.getElementById('med-next-date').value;
+                    cat.medicalRecords[idx].nextNote = document.getElementById('med-next-note').value;
+                }
+            } else {
+                // 新增
+                const record = {
+                    id: 'm_' + Date.now(),
+                    date: document.getElementById('med-date').value,
+                    clinic: document.getElementById('med-clinic').value,
+                    doctor: document.getElementById('med-doctor').value,
+                    symptom: document.getElementById('med-symptom').value,
+                    diagnosis: document.getElementById('med-diagnosis').value,
+                    treatment: document.getElementById('med-treatment').value,
+                    cost: cost,
+                    nextDate: document.getElementById('med-next-date').value,
+                    nextNote: document.getElementById('med-next-note').value
+                };
+                if (!cat.medicalRecords) cat.medicalRecords = [];
+                cat.medicalRecords.push(record);
+
+                if (document.getElementById('med-sync-exp').checked && cost > 0) {
+                    if (!cat.expenses) cat.expenses = [];
+                    cat.expenses.push({
+                        id: 'e_' + Date.now(),
+                        date: record.date,
+                        category: '醫療看診',
+                        amount: cost,
+                        note: `${record.clinic} - ${record.diagnosis || record.symptom}`
+                    });
+                }
             }
 
             saveData();
@@ -1460,25 +1536,67 @@
             }
         }
 
-        // 飲食
+        // 飲食日誌：新增 & 編輯
         function openDietModal() {
+            document.getElementById('diet-modal-title').innerHTML = '<span class="text-brand-500"><i class="fa-solid fa-bowl-food"></i></span> 記錄飲食';
+            document.getElementById('diet-edit-id').value = '';
+            document.getElementById('diet-item').value = '';
+            document.getElementById('diet-type').value = '主食罐頭';
+            document.getElementById('diet-amount').value = '';
+            document.getElementById('diet-water').value = '';
+            document.getElementById('diet-taste').value = '⭐⭐⭐⭐⭐';
+            document.getElementById('diet-note').value = '';
+            document.getElementById('diet-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('diet-modal').classList.remove('hidden');
+        }
+
+        function editDietRecord(id) {
+            const cat = getCurrentCat();
+            const d = (cat.dietRecords || []).find(x => x.id === id);
+            if (!d) return;
+
+            document.getElementById('diet-modal-title').innerHTML = '<span class="text-brand-500"><i class="fa-solid fa-pen-to-square"></i></span> 編輯飲食日誌';
+            document.getElementById('diet-edit-id').value = d.id;
+            document.getElementById('diet-date').value = d.date;
+            document.getElementById('diet-item').value = d.item;
+            document.getElementById('diet-type').value = d.type;
+            document.getElementById('diet-amount').value = d.amount || '';
+            document.getElementById('diet-water').value = d.water || '';
+            document.getElementById('diet-taste').value = d.taste;
+            document.getElementById('diet-note').value = d.note || '';
             document.getElementById('diet-modal').classList.remove('hidden');
         }
 
         function saveDietRecord(e) {
             e.preventDefault();
             const cat = getCurrentCat();
-            if (!cat.dietRecords) cat.dietRecords = [];
-            cat.dietRecords.push({
-                id: 'd_' + Date.now(),
-                date: document.getElementById('diet-date').value,
-                item: document.getElementById('diet-item').value,
-                type: document.getElementById('diet-type').value,
-                amount: document.getElementById('diet-amount').value,
-                water: document.getElementById('diet-water').value,
-                taste: document.getElementById('diet-taste').value,
-                note: document.getElementById('diet-note').value
-            });
+            const editId = document.getElementById('diet-edit-id').value;
+
+            if (editId) {
+                const idx = cat.dietRecords.findIndex(x => x.id === editId);
+                if (idx !== -1) {
+                    cat.dietRecords[idx].date = document.getElementById('diet-date').value;
+                    cat.dietRecords[idx].item = document.getElementById('diet-item').value;
+                    cat.dietRecords[idx].type = document.getElementById('diet-type').value;
+                    cat.dietRecords[idx].amount = document.getElementById('diet-amount').value;
+                    cat.dietRecords[idx].water = document.getElementById('diet-water').value;
+                    cat.dietRecords[idx].taste = document.getElementById('diet-taste').value;
+                    cat.dietRecords[idx].note = document.getElementById('diet-note').value;
+                }
+            } else {
+                if (!cat.dietRecords) cat.dietRecords = [];
+                cat.dietRecords.push({
+                    id: 'd_' + Date.now(),
+                    date: document.getElementById('diet-date').value,
+                    item: document.getElementById('diet-item').value,
+                    type: document.getElementById('diet-type').value,
+                    amount: document.getElementById('diet-amount').value,
+                    water: document.getElementById('diet-water').value,
+                    taste: document.getElementById('diet-taste').value,
+                    note: document.getElementById('diet-note').value
+                });
+            }
+
             saveData();
             closeModal('diet-modal');
             renderDietRecords();
@@ -1492,8 +1610,43 @@
             renderDietRecords();
         }
 
-        // 觀察日誌
+        // 觀察日誌：新增 & 編輯 (多部位多選)
         function openObservationModal() {
+            document.getElementById('obs-modal-title').innerHTML = '<span class="text-purple-600"><i class="fa-solid fa-magnifying-glass-plus"></i></span> 記錄觀察日誌';
+            document.getElementById('obs-edit-id').value = '';
+            document.getElementById('obs-category').value = '皮膚狀況';
+            document.getElementById('obs-skin-symptom').value = '脫屑 / 大量皮屑';
+            document.getElementById('obs-poop-shape').value = '漂亮條狀 (健康)';
+            document.getElementById('obs-vomit').value = '無嘔吐';
+            document.getElementById('obs-note').value = '';
+            document.getElementById('obs-date').value = new Date().toISOString().split('T')[0];
+
+            // 清空所有多選部位 Checkbox
+            document.querySelectorAll('input[name="obs_parts"]').forEach(cb => cb.checked = false);
+            toggleObsFields();
+            document.getElementById('observation-modal').classList.remove('hidden');
+        }
+
+        function editObservationRecord(id) {
+            const cat = getCurrentCat();
+            const o = (cat.observations || []).find(x => x.id === id);
+            if (!o) return;
+
+            document.getElementById('obs-modal-title').innerHTML = '<span class="text-purple-600"><i class="fa-solid fa-pen-to-square"></i></span> 編輯觀察日誌';
+            document.getElementById('obs-edit-id').value = o.id;
+            document.getElementById('obs-date').value = o.date;
+            document.getElementById('obs-category').value = o.category;
+            document.getElementById('obs-skin-symptom').value = o.skinSymptom || '脫屑 / 大量皮屑';
+            document.getElementById('obs-poop-shape').value = o.poopShape || '漂亮條狀 (健康)';
+            document.getElementById('obs-vomit').value = o.vomit || '無嘔吐';
+            document.getElementById('obs-note').value = o.note || '';
+
+            // 還原多部位勾選狀態
+            const partsArr = Array.isArray(o.parts) ? o.parts : (o.part ? [o.part] : []);
+            document.querySelectorAll('input[name="obs_parts"]').forEach(cb => {
+                cb.checked = partsArr.includes(cb.value);
+            });
+
             toggleObsFields();
             document.getElementById('observation-modal').classList.remove('hidden');
         }
@@ -1518,21 +1671,41 @@
         function saveObservationRecord(e) {
             e.preventDefault();
             const cat = getCurrentCat();
-            if (!cat.observations) cat.observations = [];
-
+            const editId = document.getElementById('obs-edit-id').value;
             const category = document.getElementById('obs-category').value;
-            const record = {
-                id: 'obs_' + Date.now(),
-                date: document.getElementById('obs-date').value,
-                category: category,
-                part: category === '皮膚狀況' ? document.getElementById('obs-part').value : '',
-                skinSymptom: category === '皮膚狀況' ? document.getElementById('obs-skin-symptom').value : '',
-                poopShape: category === '排便腸胃' ? document.getElementById('obs-poop-shape').value : '',
-                vomit: category === '排便腸胃' ? document.getElementById('obs-vomit').value : '',
-                note: document.getElementById('obs-note').value
-            };
 
-            cat.observations.push(record);
+            // 收集多部位勾選值
+            const selectedParts = [];
+            if (category === '皮膚狀況') {
+                document.querySelectorAll('input[name="obs_parts"]:checked').forEach(cb => selectedParts.push(cb.value));
+                if (selectedParts.length === 0) selectedParts.push('一般皮膚');
+            }
+
+            if (editId) {
+                const idx = cat.observations.findIndex(x => x.id === editId);
+                if (idx !== -1) {
+                    cat.observations[idx].date = document.getElementById('obs-date').value;
+                    cat.observations[idx].category = category;
+                    cat.observations[idx].parts = category === '皮膚狀況' ? selectedParts : [];
+                    cat.observations[idx].skinSymptom = category === '皮膚狀況' ? document.getElementById('obs-skin-symptom').value : '';
+                    cat.observations[idx].poopShape = category === '排便腸胃' ? document.getElementById('obs-poop-shape').value : '';
+                    cat.observations[idx].vomit = category === '排便腸胃' ? document.getElementById('obs-vomit').value : '';
+                    cat.observations[idx].note = document.getElementById('obs-note').value;
+                }
+            } else {
+                if (!cat.observations) cat.observations = [];
+                cat.observations.push({
+                    id: 'obs_' + Date.now(),
+                    date: document.getElementById('obs-date').value,
+                    category: category,
+                    parts: category === '皮膚狀況' ? selectedParts : [],
+                    skinSymptom: category === '皮膚狀況' ? document.getElementById('obs-skin-symptom').value : '',
+                    poopShape: category === '排便腸胃' ? document.getElementById('obs-poop-shape').value : '',
+                    vomit: category === '排便腸胃' ? document.getElementById('obs-vomit').value : '',
+                    note: document.getElementById('obs-note').value
+                });
+            }
+
             saveData();
             closeModal('observation-modal');
             renderObservations();
@@ -1546,24 +1719,71 @@
             renderObservations();
         }
 
-        // 花費
+        // 花費帳本：新增 & 編輯
         function openExpenseModal() {
+            document.getElementById('exp-modal-title').innerHTML = '<span class="text-emerald-600"><i class="fa-solid fa-receipt"></i></span> 記一筆生活開銷';
+            document.getElementById('exp-edit-id').value = '';
             document.getElementById('exp-target-cat').value = appData.activeCatId;
+            document.getElementById('exp-category').value = '主食罐頭/飼料';
+            document.getElementById('exp-amount').value = '';
+            document.getElementById('exp-note').value = '';
+            document.getElementById('exp-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('expense-modal').classList.remove('hidden');
+        }
+
+        function editExpenseRecord(catId, expId) {
+            const cat = appData.cats.find(c => c.id === catId);
+            if (!cat) return;
+            const exp = (cat.expenses || []).find(e => e.id === expId);
+            if (!exp) return;
+
+            document.getElementById('exp-modal-title').innerHTML = '<span class="text-emerald-600"><i class="fa-solid fa-pen-to-square"></i></span> 編輯開銷紀錄';
+            document.getElementById('exp-edit-id').value = exp.id;
+            document.getElementById('exp-target-cat').value = catId;
+            document.getElementById('exp-date').value = exp.date;
+            document.getElementById('exp-category').value = exp.category;
+            document.getElementById('exp-amount').value = exp.amount;
+            document.getElementById('exp-note').value = exp.note;
             document.getElementById('expense-modal').classList.remove('hidden');
         }
 
         function saveExpenseRecord(e) {
             e.preventDefault();
             const targetCatId = document.getElementById('exp-target-cat').value;
-            const cat = appData.cats.find(c => c.id === targetCatId) || getCurrentCat();
-            if (!cat.expenses) cat.expenses = [];
-            cat.expenses.push({
-                id: 'e_' + Date.now(),
-                date: document.getElementById('exp-date').value,
-                category: document.getElementById('exp-category').value,
-                amount: Number(document.getElementById('exp-amount').value),
-                note: document.getElementById('exp-note').value
-            });
+            const editId = document.getElementById('exp-edit-id').value;
+
+            if (editId) {
+                // 先在各貓中找到並移除舊紀錄（因可能更換了歸屬對象）
+                let oldExp = null;
+                appData.cats.forEach(c => {
+                    const idx = (c.expenses || []).findIndex(x => x.id === editId);
+                    if (idx !== -1) {
+                        oldExp = c.expenses.splice(idx, 1)[0];
+                    }
+                });
+
+                // 加入到目標貓咪
+                const targetCat = appData.cats.find(c => c.id === targetCatId) || getCurrentCat();
+                if (!targetCat.expenses) targetCat.expenses = [];
+                targetCat.expenses.push({
+                    id: editId,
+                    date: document.getElementById('exp-date').value,
+                    category: document.getElementById('exp-category').value,
+                    amount: Number(document.getElementById('exp-amount').value),
+                    note: document.getElementById('exp-note').value
+                });
+            } else {
+                const targetCat = appData.cats.find(c => c.id === targetCatId) || getCurrentCat();
+                if (!targetCat.expenses) targetCat.expenses = [];
+                targetCat.expenses.push({
+                    id: 'e_' + Date.now(),
+                    date: document.getElementById('exp-date').value,
+                    category: document.getElementById('exp-category').value,
+                    amount: Number(document.getElementById('exp-amount').value),
+                    note: document.getElementById('exp-note').value
+                });
+            }
+
             saveData();
             closeModal('expense-modal');
             renderExpenses();
@@ -1579,7 +1799,7 @@
             }
         }
 
-        // 編輯貓咪
+        // 編輯貓咪檔案
         function openCatEditModal() {
             const cat = getCurrentCat();
             tempAvatarBase64 = cat.photo || '';
