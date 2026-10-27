@@ -132,7 +132,7 @@
                     </div>
                 </div>
 
-                <!-- 1. 飲食日誌 (雙檢視切換) -->
+                <!-- 1. 飲食日誌 (支援雙品項湯罐混搭、雙檢視切換) -->
                 <div class="bg-cardbg rounded-3xl p-6 border border-stone-200/80 shadow-sm space-y-4">
                     <div class="flex flex-wrap items-center justify-between gap-3 border-b border-stone-100 pb-4">
                         <div class="flex items-center gap-2">
@@ -165,10 +165,11 @@
                             <thead>
                                 <tr class="bg-stone-50 text-stone-600 border-b border-stone-200/60 font-semibold">
                                     <th class="py-3 px-3 whitespace-nowrap">日期</th>
-                                    <th class="py-3 px-3 min-w-[120px]">品項 / 品牌</th>
+                                    <th class="py-3 px-3 min-w-[140px]">主食品項 / 品牌</th>
+                                    <th class="py-3 px-3 min-w-[140px]">搭配湯罐 / 補水</th>
                                     <th class="py-3 px-3 whitespace-nowrap">類別</th>
-                                    <th class="py-3 px-3 whitespace-nowrap text-right">份量</th>
-                                    <th class="py-3 px-3 whitespace-nowrap text-right">飲水</th>
+                                    <th class="py-3 px-3 whitespace-nowrap text-right">總進食量</th>
+                                    <th class="py-3 px-3 whitespace-nowrap text-right">額外飲水</th>
                                     <th class="py-3 px-3 whitespace-nowrap">嗜口性</th>
                                     <th class="py-3 px-3 min-w-[100px]">備註</th>
                                     <th class="py-3 px-2 text-center whitespace-nowrap">操作</th>
@@ -413,7 +414,7 @@
 
     <!-- Modal 彈窗系列 -->
 
-    <!-- 1. 飲食 Modal -->
+    <!-- 1. 飲食 Modal (包含主食品項 + 搭配湯罐補水品項) -->
     <div id="diet-modal" class="fixed inset-0 bg-stone-900/40 backdrop-blur-xs z-50 flex items-center justify-center p-4 hidden">
         <div class="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl border border-stone-200 max-h-[90vh] overflow-y-auto">
             <div class="flex items-center justify-between pb-3 border-b border-stone-100">
@@ -424,54 +425,81 @@
             </div>
             <form onsubmit="saveDietRecord(event)" class="mt-4 space-y-3.5 text-xs">
                 <input type="hidden" id="diet-edit-id">
+                
                 <div class="grid grid-cols-2 gap-3">
                     <div>
                         <label class="block font-semibold text-stone-600 mb-1">記錄日期 *</label>
                         <input type="date" id="diet-date" required class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-brand-200">
                     </div>
-                    <div class="relative">
-                        <label class="block font-semibold text-stone-600 mb-1 flex items-center justify-between">
-                            <span>品項 / 品牌名稱 *</span>
-                            <span class="text-[10px] text-brand-600 font-normal"><i class="fa-solid fa-wand-magic-sparkles mr-0.5"></i>自動聯想</span>
-                        </label>
-                        <input type="text" id="diet-item" placeholder="例如輸入：瑪恩吉、皇家..." autocomplete="off" required oninput="handleBrandAutocomplete(event)" onkeydown="handleBrandKeydown(event)" class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-brand-200">
-                        <div id="brand-autocomplete-list" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-stone-200 rounded-2xl shadow-xl z-50 max-h-48 overflow-y-auto hide-scrollbar p-1 text-xs"></div>
-                    </div>
-                </div>
-                <div class="grid grid-cols-3 gap-3">
                     <div>
-                        <label class="block font-semibold text-stone-600 mb-1">類別</label>
-                        <select id="diet-type" class="w-full px-3 py-2 border rounded-xl bg-white outline-none">
+                        <label class="block font-semibold text-stone-600 mb-1">飲食類別 *</label>
+                        <select id="diet-type" class="w-full px-3 py-2 border rounded-xl bg-white outline-none font-semibold text-brand-700">
                             <option value="主食罐頭">主食罐頭</option>
+                            <option value="主食罐 + 湯罐 (混搭補水)">主食罐 + 湯罐 (混搭補水)</option>
+                            <option value="湯罐 / 補水湯罐">湯罐 / 補水湯罐</option>
                             <option value="乾飼料">乾飼料</option>
                             <option value="零食肉泥">零食肉泥</option>
                             <option value="副食副餐罐">副食副餐罐</option>
                             <option value="鮮食凍乾">鮮食凍乾</option>
                         </select>
                     </div>
-                    <div>
-                        <label class="block font-semibold text-stone-600 mb-1">攝取量 (g)</label>
-                        <input type="number" id="diet-amount" placeholder="例如：85" class="w-full px-3 py-2 border rounded-xl outline-none">
+                </div>
+
+                <!-- 主要品項與克數 -->
+                <div class="grid grid-cols-3 gap-3">
+                    <div class="col-span-2 relative">
+                        <label class="block font-semibold text-stone-600 mb-1 flex items-center justify-between">
+                            <span>主食 / 主要品項品牌 *</span>
+                            <span class="text-[10px] text-brand-600 font-normal"><i class="fa-solid fa-wand-magic-sparkles mr-0.5"></i>自動聯想</span>
+                        </label>
+                        <input type="text" id="diet-item" placeholder="例如：Monge 瑪恩吉兔肉、皇家..." autocomplete="off" required oninput="handleBrandAutocomplete(event, 'main')" onkeydown="handleBrandKeydown(event, 'main')" class="w-full px-3 py-2 border rounded-xl outline-none focus:ring-2 focus:ring-brand-200">
+                        <div id="brand-autocomplete-list-main" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-stone-200 rounded-2xl shadow-xl z-50 max-h-48 overflow-y-auto hide-scrollbar p-1 text-xs"></div>
                     </div>
                     <div>
-                        <label class="block font-semibold text-stone-600 mb-1">喝水量 (ml)</label>
+                        <label class="block font-semibold text-stone-600 mb-1">主食克數 (g)</label>
+                        <input type="number" id="diet-amount" placeholder="例如：50" class="w-full px-3 py-2 border rounded-xl outline-none">
+                    </div>
+                </div>
+
+                <!-- 搭配湯罐區塊 (專屬混搭補水設計) -->
+                <div class="p-3 bg-amber-50/50 rounded-2xl border border-amber-100 space-y-2">
+                    <span class="block font-bold text-amber-900 text-[11px] flex items-center justify-between">
+                        <span><i class="fa-solid fa-droplet mr-1 text-amber-600"></i> 搭配湯罐 / 補水品項 (選填)</span>
+                        <span class="text-[10px] text-amber-700 font-normal">Sumi 吃主食罐同時加湯罐可在此記錄</span>
+                    </span>
+                    <div class="grid grid-cols-3 gap-3">
+                        <div class="col-span-2 relative">
+                            <input type="text" id="diet-soup-item" placeholder="例如：汪喵星球幼母貓補水罐、CIAO金湯罐..." autocomplete="off" oninput="handleBrandAutocomplete(event, 'soup')" onkeydown="handleBrandKeydown(event, 'soup')" class="w-full px-3 py-2 border rounded-xl outline-none bg-white focus:ring-2 focus:ring-amber-200">
+                            <div id="brand-autocomplete-list-soup" class="hidden absolute left-0 right-0 top-full mt-1 bg-white border border-stone-200 rounded-2xl shadow-xl z-50 max-h-48 overflow-y-auto hide-scrollbar p-1 text-xs"></div>
+                        </div>
+                        <div>
+                            <input type="number" id="diet-soup-amount" placeholder="湯罐(g) 例: 35" class="w-full px-3 py-2 border rounded-xl outline-none bg-white focus:ring-2 focus:ring-amber-200">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block font-semibold text-stone-600 mb-1">額外喝水量 (ml)</label>
                         <input type="number" id="diet-water" placeholder="例如：110" class="w-full px-3 py-2 border rounded-xl outline-none">
                     </div>
+                    <div>
+                        <label class="block font-semibold text-stone-600 mb-1">嗜口性評價</label>
+                        <select id="diet-taste" class="w-full px-3 py-2 border rounded-xl bg-white outline-none">
+                            <option value="⭐⭐⭐⭐⭐">⭐⭐⭐⭐⭐ 超愛光盤</option>
+                            <option value="⭐⭐⭐⭐">⭐⭐⭐⭐ 願意吃完</option>
+                            <option value="⭐⭐⭐">⭐⭐⭐ 普通慢慢吃</option>
+                            <option value="⭐⭐">⭐⭐ 剩下很多</option>
+                            <option value="⭐">⭐ 堅決拒吃</option>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <label class="block font-semibold text-stone-600 mb-1">嗜口性評價</label>
-                    <select id="diet-taste" class="w-full px-3 py-2 border rounded-xl bg-white outline-none">
-                        <option value="⭐⭐⭐⭐⭐">⭐⭐⭐⭐⭐ 超愛光盤</option>
-                        <option value="⭐⭐⭐⭐">⭐⭐⭐⭐ 願意吃完</option>
-                        <option value="⭐⭐⭐">⭐⭐⭐ 普通慢慢吃</option>
-                        <option value="⭐⭐">⭐⭐ 剩下很多</option>
-                        <option value="⭐">⭐ 堅決拒吃</option>
-                    </select>
-                </div>
+
                 <div>
                     <label class="block font-semibold text-stone-600 mb-1">備註說明</label>
-                    <input type="text" id="diet-note" placeholder="例如：食慾佳、胃口好" class="w-full px-3 py-2 border rounded-xl outline-none">
+                    <input type="text" id="diet-note" placeholder="例如：主食加湯罐混合騙水成功、胃口好" class="w-full px-3 py-2 border rounded-xl outline-none">
                 </div>
+
                 <div class="flex justify-end gap-2 pt-3">
                     <button type="button" onclick="closeModal('diet-modal')" class="px-4 py-2 border rounded-xl text-stone-600">取消</button>
                     <button type="submit" class="px-5 py-2 bg-brand-500 hover:bg-brand-600 text-white rounded-xl font-bold">儲存日誌</button>
@@ -938,7 +966,9 @@
             sumi: 'https://images.unsplash.com/photo-1543852786-1cf6624b9987?w=240&auto=format&fit=crop&q=80'
         };
 
+        // 知名主食與湯罐品牌資料庫 (內建自動聯想補全字典)
         const BRAND_PRESET_DICTIONARY = [
+            // 主食罐與飼料
             { name: "Monge 瑪恩吉 兔肉主食罐", type: "主食罐頭" },
             { name: "Monge 瑪恩吉 鴨肉主食罐", type: "主食罐頭" },
             { name: "Monge 瑪恩吉 天然處方/特級成貓飼料", type: "乾飼料" },
@@ -953,22 +983,29 @@
             { name: "K9 Natural 紐西蘭無穀主食罐", type: "主食罐頭" },
             { name: "汪喵星球 頂級無膠純肉主食罐", type: "主食罐頭" },
             { name: "汪喵星球 冷凍乾燥生肉糧", type: "鮮食凍乾" },
-            { name: "汪喵星球 原肉無添加肉泥條", type: "零食肉泥" },
             { name: "怪獸部落 98% 鮮肉主食糧", type: "乾飼料" },
             { name: "怪獸部落 無膠寶寶/鮮肉主食罐", type: "主食罐頭" },
-            { name: "怪獸部落 100% 鮮肉肉泥", type: "零食肉泥" },
             { name: "魔力喵 MAC's 德國精緻無穀主食罐", type: "主食罐頭" },
             { name: "法米納 Farmina 天然頂級無穀成貓糧", type: "乾飼料" },
             { name: "荒野饗宴 Taste of the Wild 洛磯山脈鹿肉鮭魚", type: "乾飼料" },
-            { name: "渴望 Orijen 原味鮮肉無穀全貓糧", type: "乾飼料" },
-            { name: "愛肯拿 ACANA 農場盛宴無穀貓糧", type: "乾飼料" },
-            { name: "CIAO 啾嚕液態肉泥條 (鮪魚/干貝)", type: "零食肉泥" }
+            // 補水湯罐與人氣副食罐
+            { name: "汪喵星球 純肉補水湯罐 (嫩雞蔓越莓)", type: "湯罐 / 補水湯罐" },
+            { name: "汪喵星球 純肉補水湯罐 (鰹魚柴魚)", type: "湯罐 / 補水湯罐" },
+            { name: "怪獸部落 鮮肉補水湯罐 (鮮雞肉高湯)", type: "湯罐 / 補水湯罐" },
+            { name: "怪獸部落 鮮肉補水湯罐 (鮭魚燉鯖魚)", type: "湯罐 / 補水湯罐" },
+            { name: "CIAO 鰹魚/鮪魚旨定缶金湯罐", type: "湯罐 / 補水湯罐" },
+            { name: "CIAO 燒鰹魚純肉濃湯包", type: "湯罐 / 補水湯罐" },
+            { name: "惜時 SEEDS 聖萊西愛貓天然食高湯罐", type: "湯罐 / 補水湯罐" },
+            { name: "惜時 SEEDS 特選純鮪魚大湯罐", type: "湯罐 / 補水湯罐" },
+            { name: "AIXIA 愛喜雅 每日黑缶高湯滋味", type: "湯罐 / 補水湯罐" },
+            { name: "AIXIA 愛喜雅 金罐高湯芳醇系列", type: "湯罐 / 補水湯罐" },
+            { name: "Tiki Cat 蒂基 美食家夏威夷補水高湯", type: "湯罐 / 補水湯罐" }
         ];
 
         const DEFAULT_DATA = {
             activeCatId: 'cat_kinako',
             dismissedReminders: [],
-            sharedExpenses: [], // 貓貓們（共用）開銷
+            sharedExpenses: [],
             cats: [
                 {
                     id: 'cat_kinako',
@@ -1017,8 +1054,8 @@
             med: localStorage.getItem('meowlog_view_med') || 'card'
         };
 
-        let currentExpenseCatFilter = 'all'; // 'all', 'cat_kinako', 'cat_sumi', 'shared_cats'
-        let currentExpenseTypeFilter = 'all'; // 'all', 'medical', 'supplies'
+        let currentExpenseCatFilter = 'all';
+        let currentExpenseTypeFilter = 'all';
         let tempAvatarBase64 = '';
 
         function initApp() {
@@ -1051,11 +1088,12 @@
             });
 
             document.addEventListener('click', function(e) {
-                const list = document.getElementById('brand-autocomplete-list');
-                const input = document.getElementById('diet-item');
-                if (list && !list.contains(e.target) && e.target !== input) {
-                    list.classList.add('hidden');
-                }
+                const listMain = document.getElementById('brand-autocomplete-list-main');
+                const listSoup = document.getElementById('brand-autocomplete-list-soup');
+                const inputMain = document.getElementById('diet-item');
+                const inputSoup = document.getElementById('diet-soup-item');
+                if (listMain && !listMain.contains(e.target) && e.target !== inputMain) listMain.classList.add('hidden');
+                if (listSoup && !listSoup.contains(e.target) && e.target !== inputSoup) listSoup.classList.add('hidden');
             });
 
             renderAll();
@@ -1298,7 +1336,7 @@
             });
         }
 
-        // 1. 飲食日誌渲染
+        // 1. 飲食日誌渲染 (卡片與條列表格呈現雙品項)
         function renderDietRecords() {
             const cat = getCurrentCat();
             const records = (cat.dietRecords || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1317,43 +1355,62 @@
             }
             emptyTip.classList.add('hidden');
 
-            cardBox.innerHTML = records.map(d => `
-                <div class="p-3.5 rounded-2xl border border-stone-200/80 bg-stone-50/40 hover:bg-stone-50 transition flex items-start justify-between text-xs">
-                    <div class="space-y-1">
-                        <div class="flex items-center gap-2">
-                            <span class="font-bold text-stone-800">${d.date}</span>
-                            <span class="bg-brand-100 text-brand-700 px-2 py-0.5 rounded-md font-semibold">${d.type}</span>
-                            <strong class="text-stone-800">${d.item}</strong>
-                        </div>
-                        <div class="flex flex-wrap items-center gap-x-4 text-stone-500">
-                            <span>份量：<strong>${d.amount || '-'} g</strong></span>
-                            <span>喝水：<strong>${d.water || '-'} ml</strong></span>
-                            <span>嗜口性：${d.taste}</span>
-                        </div>
-                        ${d.note ? `<p class="text-stone-500 text-[11px] pt-0.5"><i class="fa-regular fa-comment-dots mr-1 text-brand-400"></i>${d.note}</p>` : ''}
-                    </div>
-                    <div class="flex items-center gap-1">
-                        <button onclick="editDietRecord('${d.id}')" title="編輯" class="text-stone-400 hover:text-brand-600 transition p-1"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteDietRecord('${d.id}')" title="刪除" class="text-stone-300 hover:text-red-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
-                    </div>
-                </div>
-            `).join('');
+            // 卡片模式
+            cardBox.innerHTML = records.map(d => {
+                const totalGrams = (Number(d.amount) || 0) + (Number(d.soupAmount) || 0);
+                return `
+                    <div class="p-3.5 rounded-2xl border border-stone-200/80 bg-stone-50/40 hover:bg-stone-50 transition flex items-start justify-between text-xs">
+                        <div class="space-y-1.5">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="font-bold text-stone-800">${d.date}</span>
+                                <span class="bg-brand-100 text-brand-700 px-2 py-0.5 rounded-md font-semibold">${d.type}</span>
+                                <strong class="text-stone-800">${d.item} ${d.amount ? `(${d.amount}g)` : ''}</strong>
+                            </div>
 
-            tableRows.innerHTML = records.map(d => `
-                <tr class="hover:bg-amber-50/30 transition">
-                    <td class="py-3 px-3 whitespace-nowrap font-bold text-stone-800">${d.date}</td>
-                    <td class="py-3 px-3 font-semibold text-stone-800">${d.item}</td>
-                    <td class="py-3 px-3 whitespace-nowrap"><span class="bg-brand-50 text-brand-700 px-2 py-0.5 rounded-md font-semibold">${d.type}</span></td>
-                    <td class="py-3 px-3 whitespace-nowrap text-right font-medium">${d.amount ? d.amount + ' g' : '-'}</td>
-                    <td class="py-3 px-3 whitespace-nowrap text-right font-medium text-teal-600">${d.water ? d.water + ' ml' : '-'}</td>
-                    <td class="py-3 px-3 whitespace-nowrap">${d.taste}</td>
-                    <td class="py-3 px-3 text-stone-500">${d.note || '-'}</td>
-                    <td class="py-3 px-2 text-center whitespace-nowrap">
-                        <button onclick="editDietRecord('${d.id}')" title="編輯" class="text-stone-400 hover:text-brand-600 transition p-1 mr-1"><i class="fa-solid fa-pen"></i></button>
-                        <button onclick="deleteDietRecord('${d.id}')" title="刪除" class="text-stone-300 hover:text-red-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
-                    </td>
-                </tr>
-            `).join('');
+                            ${d.soupItem ? `
+                                <div class="flex items-center gap-1.5 text-amber-800 font-medium pl-1">
+                                    <span class="text-amber-500"><i class="fa-solid fa-plus text-[10px]"></i></span>
+                                    <span class="bg-amber-100/70 border border-amber-200/70 text-amber-800 px-2 py-0.5 rounded-md text-[11px]">
+                                        <i class="fa-solid fa-droplet text-amber-500 mr-1"></i>湯罐：${d.soupItem} ${d.soupAmount ? `(${d.soupAmount}g)` : ''}
+                                    </span>
+                                </div>
+                            ` : ''}
+
+                            <div class="flex flex-wrap items-center gap-x-4 text-stone-500 pt-0.5">
+                                <span>總進食量：<strong class="text-stone-700">${totalGrams > 0 ? totalGrams + ' g' : '-'}</strong></span>
+                                <span>額外喝水：<strong class="text-teal-600">${d.water || '-'} ml</strong></span>
+                                <span>嗜口性：${d.taste}</span>
+                            </div>
+                            ${d.note ? `<p class="text-stone-500 text-[11px] pt-0.5"><i class="fa-regular fa-comment-dots mr-1 text-brand-400"></i>${d.note}</p>` : ''}
+                        </div>
+                        <div class="flex items-center gap-1">
+                            <button onclick="editDietRecord('${d.id}')" title="編輯" class="text-stone-400 hover:text-brand-600 transition p-1"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteDietRecord('${d.id}')" title="刪除" class="text-stone-300 hover:text-red-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            // 條列表格模式
+            tableRows.innerHTML = records.map(d => {
+                const totalGrams = (Number(d.amount) || 0) + (Number(d.soupAmount) || 0);
+                return `
+                    <tr class="hover:bg-amber-50/30 transition">
+                        <td class="py-3 px-3 whitespace-nowrap font-bold text-stone-800">${d.date}</td>
+                        <td class="py-3 px-3 font-semibold text-stone-800">${d.item} ${d.amount ? `<span class="text-[11px] text-stone-400 font-normal">(${d.amount}g)</span>` : ''}</td>
+                        <td class="py-3 px-3 font-medium text-amber-800">${d.soupItem ? `${d.soupItem} ${d.soupAmount ? `<span class="text-[11px] text-amber-600 font-normal">(${d.soupAmount}g)</span>` : ''}` : '-'}</td>
+                        <td class="py-3 px-3 whitespace-nowrap"><span class="bg-brand-50 text-brand-700 px-2 py-0.5 rounded-md font-semibold text-[11px]">${d.type}</span></td>
+                        <td class="py-3 px-3 whitespace-nowrap text-right font-medium">${totalGrams > 0 ? totalGrams + ' g' : '-'}</td>
+                        <td class="py-3 px-3 whitespace-nowrap text-right font-medium text-teal-600">${d.water ? d.water + ' ml' : '-'}</td>
+                        <td class="py-3 px-3 whitespace-nowrap">${d.taste}</td>
+                        <td class="py-3 px-3 text-stone-500">${d.note || '-'}</td>
+                        <td class="py-3 px-2 text-center whitespace-nowrap">
+                            <button onclick="editDietRecord('${d.id}')" title="編輯" class="text-stone-400 hover:text-brand-600 transition p-1 mr-1"><i class="fa-solid fa-pen"></i></button>
+                            <button onclick="deleteDietRecord('${d.id}')" title="刪除" class="text-stone-300 hover:text-red-500 transition p-1"><i class="fa-solid fa-trash-can"></i></button>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
         }
 
         // 2. 觀察日誌渲染
@@ -1445,7 +1502,7 @@
             }).join('');
         }
 
-        // 3. 生活日誌渲染 (護理項目支援多選顯示)
+        // 3. 生活日誌渲染
         function renderLifeRecords() {
             const cat = getCurrentCat();
             const list = (cat.lifeRecords || []).slice().sort((a,b) => new Date(b.date) - new Date(a.date));
@@ -1587,7 +1644,7 @@
             `).join('');
         }
 
-        // 5. 生活開銷帳本 (歸屬對象支援 Kinako / Sumi / 貓貓們)
+        // 5. 生活開銷帳本 (歸屬支援 Kinako / Sumi / 貓貓們)
         function setExpenseCatFilter(val) {
             currentExpenseCatFilter = val;
             document.querySelectorAll('#exp-cat-filter button').forEach(b => {
@@ -1615,24 +1672,20 @@
         function renderExpenses() {
             let allExpenses = [];
             
-            // 個別貓咪的花費
             appData.cats.forEach(c => {
                 (c.expenses || []).forEach(e => {
                     allExpenses.push({ ...e, catId: c.id, catName: c.name });
                 });
             });
 
-            // 貓貓們（共用）花費
             (appData.sharedExpenses || []).forEach(e => {
                 allExpenses.push({ ...e, catId: 'shared_cats', catName: '貓貓們' });
             });
 
-            // 歸屬對象過濾
             if (currentExpenseCatFilter !== 'all') {
                 allExpenses = allExpenses.filter(e => e.catId === currentExpenseCatFilter);
             }
 
-            // 支出情境過濾
             if (currentExpenseTypeFilter === 'medical') {
                 allExpenses = allExpenses.filter(e => e.category === '醫療看診');
             } else if (currentExpenseTypeFilter === 'supplies') {
@@ -1756,7 +1809,7 @@
             });
         }
 
-        // ================= 智慧品牌搜尋 =================
+        // ================= 智慧品牌搜尋 (主食 & 湯罐雙支援) =================
         function getAllBrandCandidates() {
             const list = [...BRAND_PRESET_DICTIONARY];
             appData.cats.forEach(c => {
@@ -1764,14 +1817,17 @@
                     if (d.item && !list.some(x => x.name.toLowerCase() === d.item.toLowerCase())) {
                         list.push({ name: d.item, type: d.type || '主食罐頭' });
                     }
+                    if (d.soupItem && !list.some(x => x.name.toLowerCase() === d.soupItem.toLowerCase())) {
+                        list.push({ name: d.soupItem, type: '湯罐 / 補水湯罐' });
+                    }
                 });
             });
             return list;
         }
 
-        function handleBrandAutocomplete(e) {
+        function handleBrandAutocomplete(e, targetField) {
             const query = e.target.value.trim().toLowerCase();
-            const listBox = document.getElementById('brand-autocomplete-list');
+            const listBox = document.getElementById(targetField === 'main' ? 'brand-autocomplete-list-main' : 'brand-autocomplete-list-soup');
 
             if (!query) {
                 listBox.classList.add('hidden');
@@ -1787,7 +1843,7 @@
             }
 
             listBox.innerHTML = filtered.slice(0, 8).map(item => `
-                <div onclick="selectBrandItem('${item.name.replace(/'/g, "\\'")}', '${item.type || '主食罐頭'}')" 
+                <div onclick="selectBrandItem('${item.name.replace(/'/g, "\\'")}', '${item.type || '主食罐頭'}', '${targetField}')" 
                      class="p-2.5 hover:bg-brand-50 rounded-xl cursor-pointer transition flex items-center justify-between group">
                     <div class="flex items-center gap-2">
                         <i class="fa-solid fa-utensils text-brand-400 group-hover:text-brand-600"></i>
@@ -1800,17 +1856,24 @@
             listBox.classList.remove('hidden');
         }
 
-        function handleBrandKeydown(e) {
-            const listBox = document.getElementById('brand-autocomplete-list');
+        function handleBrandKeydown(e, targetField) {
+            const listBox = document.getElementById(targetField === 'main' ? 'brand-autocomplete-list-main' : 'brand-autocomplete-list-soup');
             if (e.key === 'Escape' && listBox) {
                 listBox.classList.add('hidden');
             }
         }
 
-        function selectBrandItem(name, type) {
-            document.getElementById('diet-item').value = name;
-            if (type) document.getElementById('diet-type').value = type;
-            document.getElementById('brand-autocomplete-list').classList.add('hidden');
+        function selectBrandItem(name, type, targetField) {
+            if (targetField === 'main') {
+                document.getElementById('diet-item').value = name;
+                if (type && type !== '湯罐 / 補水湯罐') {
+                    document.getElementById('diet-type').value = type;
+                }
+                document.getElementById('brand-autocomplete-list-main').classList.add('hidden');
+            } else {
+                document.getElementById('diet-soup-item').value = name;
+                document.getElementById('brand-autocomplete-list-soup').classList.add('hidden');
+            }
         }
 
         // ================= 操作與彈窗 =================
@@ -1818,18 +1881,21 @@
             document.getElementById(id).classList.add('hidden');
         }
 
-        // 1. 飲食
+        // 1. 飲食 (主食品項 + 湯罐品項)
         function openDietModal() {
             document.getElementById('diet-modal-title').innerHTML = '<span class="text-brand-500"><i class="fa-solid fa-bowl-food"></i></span> 記錄飲食';
             document.getElementById('diet-edit-id').value = '';
             document.getElementById('diet-item').value = '';
+            document.getElementById('diet-soup-item').value = '';
             document.getElementById('diet-type').value = '主食罐頭';
             document.getElementById('diet-amount').value = '';
+            document.getElementById('diet-soup-amount').value = '';
             document.getElementById('diet-water').value = '';
             document.getElementById('diet-taste').value = '⭐⭐⭐⭐⭐';
             document.getElementById('diet-note').value = '';
             document.getElementById('diet-date').value = new Date().toISOString().split('T')[0];
-            document.getElementById('brand-autocomplete-list').classList.add('hidden');
+            document.getElementById('brand-autocomplete-list-main').classList.add('hidden');
+            document.getElementById('brand-autocomplete-list-soup').classList.add('hidden');
             document.getElementById('diet-modal').classList.remove('hidden');
         }
 
@@ -1842,12 +1908,15 @@
             document.getElementById('diet-edit-id').value = d.id;
             document.getElementById('diet-date').value = d.date;
             document.getElementById('diet-item').value = d.item;
+            document.getElementById('diet-soup-item').value = d.soupItem || '';
             document.getElementById('diet-type').value = d.type;
             document.getElementById('diet-amount').value = d.amount || '';
+            document.getElementById('diet-soup-amount').value = d.soupAmount || '';
             document.getElementById('diet-water').value = d.water || '';
             document.getElementById('diet-taste').value = d.taste;
             document.getElementById('diet-note').value = d.note || '';
-            document.getElementById('brand-autocomplete-list').classList.add('hidden');
+            document.getElementById('brand-autocomplete-list-main').classList.add('hidden');
+            document.getElementById('brand-autocomplete-list-soup').classList.add('hidden');
             document.getElementById('diet-modal').classList.remove('hidden');
         }
 
@@ -1861,8 +1930,10 @@
                 if (idx !== -1) {
                     cat.dietRecords[idx].date = document.getElementById('diet-date').value;
                     cat.dietRecords[idx].item = document.getElementById('diet-item').value;
+                    cat.dietRecords[idx].soupItem = document.getElementById('diet-soup-item').value;
                     cat.dietRecords[idx].type = document.getElementById('diet-type').value;
                     cat.dietRecords[idx].amount = document.getElementById('diet-amount').value;
+                    cat.dietRecords[idx].soupAmount = document.getElementById('diet-soup-amount').value;
                     cat.dietRecords[idx].water = document.getElementById('diet-water').value;
                     cat.dietRecords[idx].taste = document.getElementById('diet-taste').value;
                     cat.dietRecords[idx].note = document.getElementById('diet-note').value;
@@ -1873,8 +1944,10 @@
                     id: 'd_' + Date.now(),
                     date: document.getElementById('diet-date').value,
                     item: document.getElementById('diet-item').value,
+                    soupItem: document.getElementById('diet-soup-item').value,
                     type: document.getElementById('diet-type').value,
                     amount: document.getElementById('diet-amount').value,
+                    soupAmount: document.getElementById('diet-soup-amount').value,
                     water: document.getElementById('diet-water').value,
                     taste: document.getElementById('diet-taste').value,
                     note: document.getElementById('diet-note').value
@@ -2000,7 +2073,7 @@
             renderObservations();
         }
 
-        // 3. 生活護理 (Checkbox 多選)
+        // 3. 生活護理
         function openLifeModal() {
             document.getElementById('life-modal-title').innerHTML = '<span class="text-teal-600"><i class="fa-solid fa-scissors"></i></span> 記錄生活護理';
             document.getElementById('life-edit-id').value = '';
@@ -2012,7 +2085,6 @@
             document.getElementById('life-date').value = new Date().toISOString().split('T')[0];
 
             document.querySelectorAll('input[name="life_categories"]').forEach(cb => cb.checked = false);
-            // 預設勾選剪指甲
             const firstCb = document.querySelector('input[name="life_categories"][value="剪指甲"]');
             if (firstCb) firstCb.checked = true;
 
@@ -2252,7 +2324,7 @@
             }
         }
 
-        // 開銷 (歸屬對象支援 Kinako / Sumi / 貓貓們)
+        // 開銷
         function openExpenseModal() {
             document.getElementById('exp-modal-title').innerHTML = '<span class="text-emerald-600"><i class="fa-solid fa-receipt"></i></span> 記一筆生活開銷';
             document.getElementById('exp-edit-id').value = '';
@@ -2289,7 +2361,6 @@
             const targetCatId = document.getElementById('exp-target-cat').value;
             const editId = document.getElementById('exp-edit-id').value;
 
-            // 若為編輯，先自各處移除舊記錄
             if (editId) {
                 appData.cats.forEach(c => {
                     c.expenses = (c.expenses || []).filter(x => x.id !== editId);
@@ -2421,7 +2492,6 @@
                             }
                         });
 
-                        // 合併共用花費
                         if (imported.sharedExpenses) {
                             if (!appData.sharedExpenses) appData.sharedExpenses = [];
                             const existSharedIds = new Set(appData.sharedExpenses.map(s => s.id));
